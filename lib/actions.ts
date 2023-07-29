@@ -9,3 +9,11 @@ export async function helloApi() {
   const { data } = await axios.get(`${serverUrl}/api/hello`)
   return data
 }
+
+export async function search(query: string) {
+  const params = { query }
+  const { data } = await axios.get<SearchResult>(`${serverUrl}/api/search`, {
+    params,
+  })
+  return data
+}

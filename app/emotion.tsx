@@ -28,6 +28,7 @@ export default function RootStyleRegistry({
         withNormalizeCSS
         theme={{
           fontFamily: 'Nunito, sans-serif',
+          primaryColor: 'yellow',
         }}
       >
         {children}

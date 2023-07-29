@@ -1,9 +1,9 @@
-import Test from './my-list/page'
+import SearchPage from './search/page'
 
 export default function Home() {
   return (
     <main>
-      <Test />
+      <SearchPage />
     </main>
   )
 }
