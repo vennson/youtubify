@@ -7,8 +7,15 @@ import {
   Text,
   UnstyledButton,
 } from '@mantine/core'
-import { IconCheck, IconPlus } from '@tabler/icons-react'
+import {
+  IconCheck,
+  IconHeart,
+  IconHeartFilled,
+  IconPlus,
+} from '@tabler/icons-react'
 import Image from 'next/image'
+import { useState } from 'react'
+import { RED } from '~/constants/colors'
 
 function abbreviateNumber(number: number, decimalPlaces = 2) {
   // 2 decimal places => 100, 3 => 1000, etc
@@ -47,10 +54,13 @@ function abbreviateNumber(number: number, decimalPlaces = 2) {
 }
 
 export default function ResultItem({ video }: { video: Video }) {
-  const isAdded = true
+  // const [active, setActive] = useState(false)
+  const [votes, setVotes] = useState(0)
+  // const isAdded = true
+  // const votes = 2
 
   return (
-    <UnstyledButton>
+    <UnstyledButton onClick={() => setVotes((prev) => prev + 1)}>
       <Card withBorder p='xs'>
         <Flex gap='sm' justify='space-between' align='center'>
           <Flex gap='sm'>
@@ -74,13 +84,14 @@ export default function ResultItem({ video }: { video: Video }) {
             </Box>
           </Flex>
 
-          <ActionIcon pos='relative' right={0}>
-            {isAdded ? (
-              <IconCheck size={24} color='green' />
-            ) : (
-              <IconPlus size={24} />
-            )}
-          </ActionIcon>
+          {votes > 0 ? (
+            <Flex align='center'>
+              <IconHeartFilled size={24} style={{ color: RED }} />
+              {votes}
+            </Flex>
+          ) : (
+            <IconPlus size={24} />
+          )}
         </Flex>
       </Card>
     </UnstyledButton>

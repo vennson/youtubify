@@ -4,22 +4,22 @@ type YouTubeImage = {
   width: number
 }
 
+type Badge = {
+  text: string
+  type: string
+}
+
 type Author = {
   avatar: YouTubeImage[]
-  badges: [
-    {
-      text: string
-      type: string
-    },
-  ]
-  canonicalBaseUrl: null
+  badges: Badge[] | []
+  canonicalBaseUrl: string | null
   channelId: string
   title: string
 }
 
 type Video = {
   author: Author
-  badges: []
+  badges: Badge[] | []
   descriptionSnippet: string
   isLiveNow: boolean
   lengthSeconds: number
