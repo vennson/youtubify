@@ -1,6 +1,14 @@
 'use client'
 
-import { Box, Center, Stack, Text } from '@mantine/core'
+import {
+  Box,
+  Center,
+  Divider,
+  Kbd,
+  ScrollArea,
+  Stack,
+  Text,
+} from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useEffect, useState } from 'react'
 import { dummyVids } from '~/constants/dummy'
@@ -9,11 +17,14 @@ import SearchBar from './SearchBar'
 import QueueItem from '../queue/QueueItem'
 import { useAppStore } from '~/store/store'
 import Player from '../player'
+import { GRAY } from '~/constants/colors'
+
+const UPPER_BODY_HEIGHT = 418
 
 export default function Search() {
   const initUserId = useAppStore((state) => state.initUserId)
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<Video[]>()
+  const [results, setResults] = useState<Video[]>([])
   const [queue, setQueue] = useState<QueueVideo[]>([])
   const [nowPlaying, setNowPlaying] = useState<string>()
 
@@ -29,50 +40,80 @@ export default function Search() {
   }, [initUserId])
 
   return (
-    <Box maw={600} mx='auto' my='sm' px='sm'>
-      <Player
-        queue={queue}
-        setQueue={setQueue}
-        nowPlaying={nowPlaying}
-        setNowPlaying={setNowPlaying}
-      />
-      <Box mt='md'>
-        <SearchBar
-          loading={loading}
-          setLoading={setLoading}
-          setResults={setResults}
-          form={form}
-        />
+    <Box maw={600} mx='auto' mt={UPPER_BODY_HEIGHT} px='sm'>
+      <Box
+        pos='fixed'
+        maw={600}
+        mx='auto'
+        left={0}
+        right={0}
+        top={0}
+        bg='white'
+        sx={{ zIndex: 100 }}
+      >
+        <Box mx='md'>
+          <Player
+            queue={queue}
+            setQueue={setQueue}
+            nowPlaying={nowPlaying}
+            setNowPlaying={setNowPlaying}
+          />
+        </Box>
+        <Box mt='md' mx='md'>
+          <SearchBar
+            loading={loading}
+            setLoading={setLoading}
+            setResults={setResults}
+            form={form}
+          />
+        </Box>
+        <Divider mt='lg' />
       </Box>
-      <Stack mt='md' spacing='xs'>
-        {hasQuery &&
-          results?.map((searchedVideo) => (
-            <ResultItem
-              key={searchedVideo.videoId}
-              searchedVideo={searchedVideo}
-              setQueue={setQueue}
-              queue={queue}
-            />
-          ))}
-        {!hasQuery && (
-          <>
-            {queue?.map((queuedVideo) => (
+
+      {hasQuery && (
+        <>
+          <Stack spacing='xs' my='xs'>
+            {results.map((searchedVideo, i) => (
+              <ResultItem
+                key={`${searchedVideo.videoId}-${i}`}
+                searchedVideo={searchedVideo}
+                setQueue={setQueue}
+                queue={queue}
+              />
+            ))}
+          </Stack>
+
+          {results.length === 0 && hasQuery && !loading && (
+            <Center>
+              <Text color='dimmed' fs='italic' fz='sm'>
+                press <Kbd>enter</Kbd> or <Kbd>return</Kbd> to search
+              </Text>
+            </Center>
+          )}
+        </>
+      )}
+
+      {!hasQuery && (
+        <>
+          <Stack spacing='xs' my='xs'>
+            {queue?.map((queuedVideo, i) => (
               <QueueItem
-                key={queuedVideo.videoId}
+                key={`${queuedVideo.videoId}-${i}`}
                 queuedVideo={queuedVideo}
                 setQueue={setQueue}
               />
             ))}
-            {queue.length === 0 && nowPlaying && (
-              <Center>
-                <Text color='dimmed' fs='italic'>
-                  bruh... no queue?
-                </Text>
-              </Center>
-            )}
-          </>
-        )}
-      </Stack>
+          </Stack>
+
+          {queue.length === 0 && nowPlaying && (
+            <Center>
+              <Text color='dimmed' fs='italic'>
+                bruh... no queue?
+              </Text>
+            </Center>
+          )}
+        </>
+      )}
     </Box>
   )
 }

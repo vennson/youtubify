@@ -33,7 +33,7 @@ export default function Player(props: Props) {
   }, [nowPlaying, setQueue])
 
   return (
-    <Card p={0} mt='sm' h={VIDEO_HEIGHT}>
+    <Card p={0} h={VIDEO_HEIGHT}>
       {nowPlaying && (
         <ReactPlayer
           url={`https://www.youtube.com/watch?v=${nowPlaying}`}

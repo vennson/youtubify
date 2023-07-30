@@ -1,7 +1,7 @@
 import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
 import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useEffect } from 'react'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber } from './utils'
@@ -58,6 +58,23 @@ export default function ResultItem(props: Props) {
   function onClick() {
     setQueue((prev) => toggleVote(prev))
   }
+
+  /**
+   * if queuedVideo has no more votes, remove it from queue
+   */
+  useEffect(() => {
+    if (queuedVideo?.votes && queuedVideo.votes.length === 0) {
+      setQueue((prev) => {
+        const newQueue = [...prev]
+        const index = newQueue.findIndex(
+          (queueVid) => queueVid.videoId === queuedVideo.videoId,
+        )
+        newQueue.splice(index, 1)
+
+        return newQueue
+      })
+    }
+  }, [queuedVideo, setQueue])
 
   return (
     <UnstyledButton onClick={onClick}>

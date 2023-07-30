@@ -21,7 +21,7 @@ import { filterVids } from './utils'
 type Props = {
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
-  setResults: Dispatch<SetStateAction<Video[] | undefined>>
+  setResults: Dispatch<SetStateAction<Video[]>>
   form: UseFormReturnType<{ query: string }>
 }
 
