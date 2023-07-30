@@ -19,11 +19,11 @@ type Author = {
 
 type Video = {
   author: Author
-  badges: Badge[] | []
+  badges: Badge[] | string[]
   descriptionSnippet: string
   isLiveNow: boolean
   lengthSeconds: number
-  movingThumbnails: YouTubeImage[]
+  movingThumbnails: YouTubeImage[] | null
   publishedTimeText: string
   stats: {
     views: number
