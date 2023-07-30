@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Stack } from '@mantine/core'
+import { Box, Center, Stack, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useEffect, useState } from 'react'
 import { dummyVids } from '~/constants/dummy'
@@ -54,14 +54,24 @@ export default function Search() {
               queue={queue}
             />
           ))}
-        {!hasQuery &&
-          queue?.map((queuedVideo) => (
-            <QueueItem
-              key={queuedVideo.videoId}
-              queuedVideo={queuedVideo}
-              setQueue={setQueue}
-            />
-          ))}
+        {!hasQuery && (
+          <>
+            {queue?.map((queuedVideo) => (
+              <QueueItem
+                key={queuedVideo.videoId}
+                queuedVideo={queuedVideo}
+                setQueue={setQueue}
+              />
+            ))}
+            {queue.length === 0 && nowPlaying && (
+              <Center>
+                <Text color='dimmed' fs='italic'>
+                  bruh... no queue?
+                </Text>
+              </Center>
+            )}
+          </>
+        )}
       </Stack>
     </Box>
   )
