@@ -1,14 +1,6 @@
 'use client'
 
-import {
-  Box,
-  Center,
-  Divider,
-  Kbd,
-  ScrollArea,
-  Stack,
-  Text,
-} from '@mantine/core'
+import { Box, Center, Divider, Kbd, Stack, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useEffect, useState } from 'react'
 import { dummyVids } from '~/constants/dummy'
@@ -17,16 +9,16 @@ import SearchBar from './SearchBar'
 import QueueItem from '../queue/QueueItem'
 import { useAppStore } from '~/store/store'
 import Player from '../player'
-import { GRAY } from '~/constants/colors'
+import { PLAYER_HEIGHT } from '~/constants/numbers'
 
-const UPPER_BODY_HEIGHT = 435
+const UPPER_BODY_HEIGHT = PLAYER_HEIGHT + 130
 
 export default function Search() {
   const initUserId = useAppStore((state) => state.initUserId)
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<Video[]>(dummyVids)
+  const [results, setResults] = useState<Video[]>(dummyVids) //! remove dummyVids
   const [queue, setQueue] = useState<QueueVideo[]>([])
-  const [nowPlaying, setNowPlaying] = useState<string>()
+  const [nowPlaying, setNowPlaying] = useState<string>('TZE9gVF1QbA') //! remove dummyVids
 
   const form = useForm({
     initialValues: {
@@ -107,7 +99,7 @@ export default function Search() {
 
           {queue.length === 0 && nowPlaying && (
             <Center>
-              <Text color='dimmed' fs='italic'>
+              <Text color='dimmed' fs='italic' fz='sm'>
                 bruh... no queue?
               </Text>
             </Center>

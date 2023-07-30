@@ -77,7 +77,7 @@ export default function QueueItem({ queuedVideo, setQueue }: Props) {
 
             <Box>
               <Text size='sm' lineClamp={1}>
-                {queuedVideo.title} queue
+                {queuedVideo.title}
               </Text>
               <Text size='xs' color='dimmed'>
                 {abbreviateNumber(queuedVideo.stats.views)} views

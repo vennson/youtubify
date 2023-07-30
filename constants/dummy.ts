@@ -1744,4 +1744,4 @@ const moreDummy: SearchResultData = {
 }
 const vidsOnly = filterVids(moreDummy.contents)
 export const dummyVids = vidsOnly.map((content) => content.video)
-const dummyQueue = vidsOnly.map((content) => content.video).slice(0, 1)
+export const dummyQueue = vidsOnly.map((content) => content.video).slice(0, 1)

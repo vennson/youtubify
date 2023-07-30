@@ -1,21 +1,8 @@
-import {
-  ActionIcon,
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Center,
-  Flex,
-  Loader,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core'
-import { UseFormReturnType, useForm } from '@mantine/form'
+import { ActionIcon, Center, Loader, TextInput } from '@mantine/core'
+import { UseFormReturnType } from '@mantine/form'
 import { IconArrowLeft, IconSearch } from '@tabler/icons-react'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { helloApi, search } from '~/lib/actions'
-import ResultItem from './ResultItem'
+import { Dispatch, SetStateAction } from 'react'
+import { search } from '~/lib/actions'
 import { filterVids } from './utils'
 
 type Props = {
@@ -53,11 +40,12 @@ export default function SearchBar(props: Props) {
     setResults([])
   }
 
-  useEffect(() => {
-    if (form.values.query.length === 0) {
-      setResults([])
-    }
-  }, [form.values.query.length, setResults])
+  // !
+  // useEffect(() => {
+  //   if (form.values.query.length === 0) {
+  //     setResults([])
+  //   }
+  // }, [form.values.query.length, setResults])
 
   return (
     <form onSubmit={form.onSubmit((values) => onSearch(values.query))}>
