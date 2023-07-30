@@ -213,14 +213,18 @@ export default function SearchPage() {
           results?.map((video) => (
             <ResultItem
               key={video.videoId}
-              video={video}
+              searchedVideo={video}
               setQueue={setQueue}
               queue={queue}
             />
           ))}
         {!hasQuery &&
           queue?.map((video) => (
-            <QueueItem key={video.videoId} video={video} />
+            <QueueItem
+              key={video.videoId}
+              queuedVideo={video}
+              setQueue={setQueue}
+            />
           ))}
       </Stack>
     </Box>

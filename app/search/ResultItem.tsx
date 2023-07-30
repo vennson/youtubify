@@ -7,22 +7,45 @@ import { isProduction } from '~/lib/actions'
 import { abbreviateNumber } from './utils'
 
 type Props = {
-  video: Video
+  searchedVideo: Video
   queue: QueueVideo[]
   setQueue: Dispatch<SetStateAction<QueueVideo[]>>
 }
 
-export default function ResultItem({ video, setQueue, queue }: Props) {
+export default function ResultItem(props: Props) {
+  const { searchedVideo, setQueue, queue } = props
   const videoInQueue = queue.find(
-    (queueVid) => queueVid.videoId === video.videoId,
+    (queuedVideo) => queuedVideo.videoId === searchedVideo.videoId,
   )
+
+  function changeVote(_queue: QueueVideo[]) {
+    let votes = 1
+    if (videoInQueue?.votes) {
+      votes = videoInQueue.votes + 1
+    }
+
+    let newQueue = [..._queue]
+    if (videoInQueue) {
+      newQueue = _queue.map((queryVid) => {
+        if (queryVid.videoId === searchedVideo.videoId) {
+          return { ...queryVid, votes }
+        }
+        return queryVid
+      })
+    } else {
+      newQueue.push({ ...searchedVideo, votes })
+    }
+
+    console.log('newQueue', newQueue)
+    return newQueue
+  }
 
   function onClick() {
     let votes = 1
     if (videoInQueue?.votes) {
       votes = videoInQueue.votes + 1
     }
-    setQueue((prev) => [...prev, { ...video, votes }])
+    setQueue((prev) => changeVote(prev))
   }
 
   return (
@@ -32,22 +55,24 @@ export default function ResultItem({ video, setQueue, queue }: Props) {
           <Flex gap='sm'>
             <Avatar miw={60} mih={60}>
               <Image
-                src={isProduction ? video.thumbnails[0].url : '/avatar.jpg'}
+                src={
+                  isProduction ? searchedVideo.thumbnails[0].url : '/avatar.jpg'
+                }
                 fill
                 style={{ objectFit: 'cover', flex: 1 }}
-                alt='video'
+                alt='searchedVideo'
               />
             </Avatar>
 
             <Box>
               <Text size='sm' lineClamp={1}>
-                {video.title}
+                {searchedVideo.title}
               </Text>
               <Text size='xs' color='dimmed'>
-                {abbreviateNumber(video.stats.views)} views
+                {abbreviateNumber(searchedVideo.stats.views)} views
               </Text>
               <Text size='xs' color='dimmed'>
-                {video.author.title}
+                {searchedVideo.author.title}
               </Text>
             </Box>
           </Flex>
