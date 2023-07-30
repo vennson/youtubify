@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Dispatch, SetStateAction, useEffect } from 'react'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
-import { abbreviateNumber } from '../search/utils'
+import { abbreviateNumber, formatSeconds } from '../search/utils'
 import { useAppStore } from '~/store/store'
 
 type Props = {
@@ -80,7 +80,8 @@ export default function QueueItem({ queuedVideo, setQueue }: Props) {
                 {queuedVideo.title}
               </Text>
               <Text size='xs' color='dimmed'>
-                {abbreviateNumber(queuedVideo.stats.views)} views
+                {abbreviateNumber(queuedVideo.stats.views)} views ·{' '}
+                {formatSeconds(queuedVideo.lengthSeconds)}
               </Text>
               <Text size='xs' color='dimmed'>
                 {queuedVideo.author.title}

@@ -50,7 +50,7 @@ export function formatSeconds(seconds?: number) {
   }
 
   let formatted = new Date(seconds * 1000).toISOString().substring(14, 19)
-  if (seconds > 3600) {
+  if (seconds >= 3600) {
     formatted = new Date(seconds * 1000).toISOString().substring(11, 8)
   }
 

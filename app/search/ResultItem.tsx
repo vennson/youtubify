@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Dispatch, SetStateAction, useEffect } from 'react'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
-import { abbreviateNumber } from './utils'
+import { abbreviateNumber, formatSeconds } from './utils'
 import { useAppStore } from '~/store/store'
 
 type Props = {
@@ -97,7 +97,8 @@ export default function ResultItem(props: Props) {
                 {searchedVideo.title}
               </Text>
               <Text size='xs' color='dimmed'>
-                {abbreviateNumber(searchedVideo.stats.views)} views
+                {abbreviateNumber(searchedVideo.stats.views)} views ·{' '}
+                {formatSeconds(searchedVideo.lengthSeconds)}
               </Text>
               <Text size='xs' color='dimmed'>
                 {searchedVideo.author.title}

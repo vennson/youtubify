@@ -3,7 +3,6 @@
 import { Box, Center, Divider, Kbd, Stack, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useEffect, useState } from 'react'
-import { dummyVids } from '~/constants/dummy'
 import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
 import QueueItem from '../queue/QueueItem'
@@ -16,9 +15,9 @@ const UPPER_BODY_HEIGHT = PLAYER_HEIGHT + 130
 export default function Search() {
   const initUserId = useAppStore((state) => state.initUserId)
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<Video[]>(dummyVids) //! remove dummyVids
+  const [results, setResults] = useState<Video[]>([])
   const [queue, setQueue] = useState<QueueVideo[]>([])
-  const [nowPlaying, setNowPlaying] = useState<string>('TZE9gVF1QbA') //! remove dummyVids
+  const [nowPlaying, setNowPlaying] = useState<string>()
 
   const form = useForm({
     initialValues: {

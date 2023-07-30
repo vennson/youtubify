@@ -1,25 +1,11 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Center,
-  Flex,
-  Progress,
-  Text,
-} from '@mantine/core'
-import {
-  IconBrandYoutubeFilled,
-  IconPlayerPauseFilled,
-  IconPlayerPlayFilled,
-  IconPlayerTrackNextFilled,
-} from '@tabler/icons-react'
+import { Avatar, Box, Button, Card, Center, Flex, Text } from '@mantine/core'
+import { IconBrandYoutubeFilled } from '@tabler/icons-react'
 import Image from 'next/image'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
 import { dummyQueue } from '~/constants/dummy'
 import { isProduction } from '~/lib/actions'
-import { abbreviateNumber, formatSeconds } from '../search/utils'
+import { abbreviateNumber } from '../search/utils'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
 import YouTubePlayer from 'react-player/youtube'
 import Control from './Control'
@@ -38,9 +24,7 @@ export default function Player(props: Props) {
     dummyQueue[0],
   )
   const playerRef = useRef<YouTubePlayer>(null)
-  const currentPlayTime = playerRef.current?.getCurrentTime()
-  const playDuration = playerRef.current?.getDuration()
-  // const playProgress = currentPlayTime / playDuration
+
   const nextVideo = queue[0]
 
   function playNext() {
@@ -62,11 +46,6 @@ export default function Player(props: Props) {
       return newQueue
     })
   }, [nowPlaying, setQueue])
-
-  // const duration = playerRef.current?.getDuration()
-
-  // console.log('orig duration', duration)
-  // console.log('format', formatSeconds(duration))
 
   return (
     <Box h={PLAYER_HEIGHT}>
