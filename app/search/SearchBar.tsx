@@ -50,6 +50,7 @@ export default function SearchBar(props: Props) {
 
   function clearQuery() {
     form.reset()
+    setResults([])
   }
 
   return (
