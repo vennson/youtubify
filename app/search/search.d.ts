@@ -72,6 +72,4 @@ type SearchResult = {
   data: SearchResultData
 }
 
-type QueueVideo = Video & {
-  votes?: number
-}
+

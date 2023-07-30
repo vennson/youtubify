@@ -1,10 +1,11 @@
 import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
 import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber } from './utils'
+import { useAppStore } from '~/store/store'
 
 type Props = {
   searchedVideo: Video
@@ -14,38 +15,48 @@ type Props = {
 
 export default function ResultItem(props: Props) {
   const { searchedVideo, setQueue, queue } = props
-  const videoInQueue = queue.find(
+  const userId = useAppStore((state) => state.userId)
+  const queuedVideo = queue.find(
     (queuedVideo) => queuedVideo.videoId === searchedVideo.videoId,
   )
 
-  function changeVote(_queue: QueueVideo[]) {
-    let votes = 1
-    if (videoInQueue?.votes) {
-      votes = videoInQueue.votes + 1
+  let userInVotes = false
+  if (queuedVideo?.votes) {
+    userInVotes = !!queuedVideo?.votes?.find((vote) => vote.userId === userId)
+  }
+
+  /**
+   * toggles vote by appending or removing the user from Votes array of a queued video
+   */
+  function toggleVote(_queue: QueueVideo[]) {
+    let newVotes: Vote[] = [{ userId }]
+    if (queuedVideo?.votes) {
+      if (userInVotes) {
+        newVotes = queuedVideo.votes.filter((vote) => {
+          return vote.userId !== userId
+        })
+      } else {
+        newVotes = [...queuedVideo.votes, { userId }]
+      }
     }
 
     let newQueue = [..._queue]
-    if (videoInQueue) {
+    if (queuedVideo) {
       newQueue = _queue.map((queryVid) => {
         if (queryVid.videoId === searchedVideo.videoId) {
-          return { ...queryVid, votes }
+          return { ...queryVid, votes: newVotes }
         }
         return queryVid
       })
     } else {
-      newQueue.push({ ...searchedVideo, votes })
+      newQueue.push({ ...searchedVideo, votes: newVotes })
     }
 
-    console.log('newQueue', newQueue)
     return newQueue
   }
 
   function onClick() {
-    let votes = 1
-    if (videoInQueue?.votes) {
-      votes = videoInQueue.votes + 1
-    }
-    setQueue((prev) => changeVote(prev))
+    setQueue((prev) => toggleVote(prev))
   }
 
   return (
@@ -77,10 +88,10 @@ export default function ResultItem(props: Props) {
             </Box>
           </Flex>
 
-          {videoInQueue?.votes && videoInQueue.votes > 0 ? (
+          {queuedVideo?.votes && queuedVideo.votes.length > 0 ? (
             <Flex align='center'>
               <IconHeartFilled size={24} style={{ color: RED }} />
-              {videoInQueue.votes}
+              {queuedVideo.votes.length}
             </Flex>
           ) : (
             <IconPlus size={24} />

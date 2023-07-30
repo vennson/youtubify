@@ -8,12 +8,13 @@ import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
 import QueueItem from './QueueItem'
 import shortUUID from 'short-uuid'
+import { useAppStore } from '~/store/store'
 
 export default function SearchPage() {
+  const initUserId = useAppStore((state) => state.initUserId)
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>(dummyVids)
   const [queue, setQueue] = useState<QueueVideo[]>([])
-  const [session, setSession] = useState<string>()
 
   const form = useForm({
     initialValues: {
@@ -23,16 +24,8 @@ export default function SearchPage() {
   const hasQuery = form.values.query.length > 0
 
   useEffect(() => {
-    const session = localStorage.getItem('session')
-
-    if (!session) {
-      const newSession = shortUUID.generate()
-      localStorage.setItem('session', newSession)
-      setSession(newSession)
-    } else {
-      setSession(session)
-    }
-  }, [])
+    initUserId()
+  }, [initUserId])
 
   return (
     <Box maw={600} mx='auto' my='sm'>
@@ -44,19 +37,19 @@ export default function SearchPage() {
       />
       <Stack mt='md' spacing='xs'>
         {hasQuery &&
-          results?.map((video) => (
+          results?.map((searchedVideo) => (
             <ResultItem
-              key={video.videoId}
-              searchedVideo={video}
+              key={searchedVideo.videoId}
+              searchedVideo={searchedVideo}
               setQueue={setQueue}
               queue={queue}
             />
           ))}
         {!hasQuery &&
-          queue?.map((video) => (
+          queue?.map((queuedVideo) => (
             <QueueItem
-              key={video.videoId}
-              queuedVideo={video}
+              key={queuedVideo.videoId}
+              queuedVideo={queuedVideo}
               setQueue={setQueue}
             />
           ))}
