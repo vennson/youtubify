@@ -43,3 +43,16 @@ export function abbreviateNumber(number: number, decimalPlaces = 2) {
 
   return number
 }
+
+export function formatSeconds(seconds?: number) {
+  if (!seconds) {
+    return '0:00'
+  }
+
+  let formatted = new Date(seconds * 1000).toISOString().substring(14, 19)
+  if (seconds > 3600) {
+    formatted = new Date(seconds * 1000).toISOString().substring(11, 8)
+  }
+
+  return formatted
+}

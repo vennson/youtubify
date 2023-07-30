@@ -15,12 +15,14 @@ import {
   IconPlayerTrackNextFilled,
 } from '@tabler/icons-react'
 import Image from 'next/image'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
 import { dummyQueue } from '~/constants/dummy'
 import { isProduction } from '~/lib/actions'
-import { abbreviateNumber } from '../search/utils'
+import { abbreviateNumber, formatSeconds } from '../search/utils'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
+import YouTubePlayer from 'react-player/youtube'
+import Control from './Control'
 
 type Props = {
   queue: QueueVideo[]
@@ -35,6 +37,10 @@ export default function Player(props: Props) {
   const [currentVidInfo, setCurrentVidInfo] = useState<QueueVideo>(
     dummyQueue[0],
   )
+  const playerRef = useRef<YouTubePlayer>(null)
+  const currentPlayTime = playerRef.current?.getCurrentTime()
+  const playDuration = playerRef.current?.getDuration()
+  // const playProgress = currentPlayTime / playDuration
   const nextVideo = queue[0]
 
   function playNext() {
@@ -57,11 +63,17 @@ export default function Player(props: Props) {
     })
   }, [nowPlaying, setQueue])
 
+  // const duration = playerRef.current?.getDuration()
+
+  // console.log('orig duration', duration)
+  // console.log('format', formatSeconds(duration))
+
   return (
     <Box h={PLAYER_HEIGHT}>
       {nowPlaying && (
         <>
           <ReactPlayer
+            ref={playerRef}
             url={`https://www.youtube.com/watch?v=${nowPlaying}`}
             width='100%'
             height={0}
@@ -97,40 +109,12 @@ export default function Player(props: Props) {
                 </Box>
               </Flex>
 
-              <Flex gap='xs' mt='xs'>
-                {playing ? (
-                  <Button
-                    color='gray'
-                    variant='outline'
-                    leftIcon={<IconPlayerPauseFilled size={16} />}
-                    onClick={() => setPlaying(false)}
-                  >
-                    pause
-                  </Button>
-                ) : (
-                  <Button
-                    leftIcon={<IconPlayerPlayFilled size={16} />}
-                    onClick={() => setPlaying(true)}
-                    miw={96}
-                  >
-                    play
-                  </Button>
-                )}
-                <Button
-                  color='gray'
-                  variant='outline'
-                  leftIcon={<IconPlayerTrackNextFilled size={16} />}
-                  onClick={playNext}
-                >
-                  skip
-                </Button>
-                <Box w='100%'>
-                  <Progress value={50} />
-                  <Text color='dimmed' fz='xs' mt={6}>
-                    3:40
-                  </Text>
-                </Box>
-              </Flex>
+              <Control
+                playing={playing}
+                setPlaying={setPlaying}
+                playNext={playNext}
+                playerRef={playerRef}
+              />
             </Card>
           </Box>
         </>
