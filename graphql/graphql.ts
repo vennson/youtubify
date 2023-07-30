@@ -16,13 +16,11 @@ export const createQueueMutation = `
         owner {
           id
         }
-        id
+        roomId
       }
     }
   }
 `
-
-
 
 export const getQueueByOwnerQuery = `
   query QueueByOwner($owner: String!) {

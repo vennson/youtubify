@@ -13,7 +13,7 @@ type QueueCreateResponse = {
       owner: {
         id: string
       }
-      id: string
+      roomId: string
     }
   }
 }

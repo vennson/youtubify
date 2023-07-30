@@ -28,6 +28,7 @@ const queue = g
       .list()
       .optional(),
     owner: g.relation(() => user),
+    roomId: g.string().unique(),
   })
   .auth((rules) => {
     rules.public().create().read().update()

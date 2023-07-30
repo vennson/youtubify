@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { GraphQLClient } from 'graphql-request'
+import { nanoid } from 'nanoid'
 import {
   createQueueMutation,
   createUserMutation,
@@ -43,11 +44,13 @@ export async function createUser(name: string) {
 }
 
 export async function createQueue(userId: string) {
+  const roomId = nanoid(11)
   const variables = {
     input: {
       owner: {
         link: userId,
       },
+      roomId,
     },
   }
   return makeGraphQLRequest(

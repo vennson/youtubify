@@ -29,8 +29,8 @@ export default function WelcomeModal() {
   const setUser = useAppStore((state) => state.setUser)
   const initUser = useAppStore((state) => state.initUser)
   const user = useAppStore((state) => state.user)
-  const setJoinedQueue = useAppStore((state) => state.setJoinedQueue)
-  const joinedQueue = useAppStore((state) => state.joinedQueue)
+  const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
+  const joinedRoom = useAppStore((state) => state.joinedRoom)
 
   const [opened, setOpened] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -47,23 +47,23 @@ export default function WelcomeModal() {
   }
 
   function onJoinRoom(roomId: string) {
-    setJoinedQueue(roomId)
+    setJoinedRoom(roomId)
   }
 
   async function onCreateRoom() {
     setLoading(true)
     if (user?.id) {
       const { queueCreate } = await createQueue(user?.id)
-      setJoinedQueue(queueCreate.queue.id)
+      setJoinedRoom(queueCreate.queue.roomId)
     }
     setLoading(false)
   }
 
   useEffect(() => {
-    if (joinedQueue) {
-      router.push(`/room/${joinedQueue}/`)
+    if (joinedRoom) {
+      router.push(`/room/${joinedRoom}/`)
     }
-  }, [joinedQueue, router])
+  }, [joinedRoom, router])
 
   useEffect(() => {
     if (!user?.id) {
@@ -73,7 +73,7 @@ export default function WelcomeModal() {
 
   return (
     <Modal
-      opened={opened && !joinedQueue}
+      opened={opened && !joinedRoom}
       onClose={onClose}
       centered
       withCloseButton={false}
