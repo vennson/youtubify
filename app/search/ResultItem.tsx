@@ -14,8 +14,9 @@ import {
   IconPlus,
 } from '@tabler/icons-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { RED } from '~/constants/colors'
+import { isProduction } from '~/lib/actions'
 
 function abbreviateNumber(number: number, decimalPlaces = 2) {
   // 2 decimal places => 100, 3 => 1000, etc
@@ -59,6 +60,8 @@ export default function ResultItem({ video }: { video: Video }) {
   // const isAdded = true
   // const votes = 2
 
+  console.log('video.thumbnails[0].url', video.thumbnails[0].url)
+
   return (
     <UnstyledButton onClick={() => setVotes((prev) => prev + 1)}>
       <Card withBorder p='xs'>
@@ -66,7 +69,7 @@ export default function ResultItem({ video }: { video: Video }) {
           <Flex gap='sm'>
             <Avatar miw={60} mih={60}>
               <Image
-                src={video.thumbnails[0].url}
+                src={isProduction ? video.thumbnails[0].url : '/avatar.jpg'}
                 fill
                 style={{ objectFit: 'cover', flex: 1 }}
                 alt='video'

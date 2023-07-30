@@ -19,6 +19,7 @@ import { helloApi, search } from '~/lib/actions'
 import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
 import { filterVids } from './utils'
+import Image from 'next/image'
 
 const dummy: SearchResultData = {
   contents: [
@@ -1935,6 +1936,7 @@ export default function SearchPage() {
         setLoading={setLoading}
         setResults={setResults}
       />
+
       <Stack mt='md' spacing='xs'>
         {results?.map((video) => (
           <ResultItem key={video.videoId} video={video} />
