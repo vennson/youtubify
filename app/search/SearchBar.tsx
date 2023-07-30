@@ -13,7 +13,7 @@ import {
 } from '@mantine/core'
 import { UseFormReturnType, useForm } from '@mantine/form'
 import { IconArrowLeft, IconSearch } from '@tabler/icons-react'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { helloApi, search } from '~/lib/actions'
 import ResultItem from './ResultItem'
 import { filterVids } from './utils'
@@ -52,6 +52,12 @@ export default function SearchBar(props: Props) {
     form.reset()
     setResults([])
   }
+
+  useEffect(() => {
+    if (form.values.query.length === 0) {
+      setResults([])
+    }
+  }, [form.values.query.length, setResults])
 
   return (
     <form onSubmit={form.onSubmit((values) => onSearch(values.query))}>

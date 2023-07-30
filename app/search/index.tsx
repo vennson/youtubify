@@ -19,7 +19,7 @@ import { useAppStore } from '~/store/store'
 import Player from '../player'
 import { GRAY } from '~/constants/colors'
 
-const UPPER_BODY_HEIGHT = 418
+const UPPER_BODY_HEIGHT = 435
 
 export default function Search() {
   const initUserId = useAppStore((state) => state.initUserId)
@@ -51,7 +51,7 @@ export default function Search() {
         bg='white'
         sx={{ zIndex: 100 }}
       >
-        <Box mx='md' mt='md'>
+        <Box mx='sm' mt='md'>
           <Player
             queue={queue}
             setQueue={setQueue}
@@ -59,7 +59,7 @@ export default function Search() {
             setNowPlaying={setNowPlaying}
           />
         </Box>
-        <Box mt='md' mx='md'>
+        <Box mt='md' mx='sm'>
           <SearchBar
             loading={loading}
             setLoading={setLoading}
@@ -72,7 +72,7 @@ export default function Search() {
 
       {hasQuery && (
         <>
-          <Stack spacing='xs' my='xs'>
+          <Stack spacing='xs' mt='xs' mb='lg'>
             {results.map((searchedVideo, i) => (
               <ResultItem
                 key={`${searchedVideo.videoId}-${i}`}
@@ -95,7 +95,7 @@ export default function Search() {
 
       {!hasQuery && (
         <>
-          <Stack spacing='xs' my='xs'>
+          <Stack spacing='xs' mt='xs' mb='lg'>
             {queue?.map((queuedVideo, i) => (
               <QueueItem
                 key={`${queuedVideo.videoId}-${i}`}
