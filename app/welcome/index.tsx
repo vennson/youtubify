@@ -1,3 +1,5 @@
+'use client'
+
 import { Button, Card, Loader, Modal, Text, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
@@ -5,10 +7,11 @@ import { z } from 'zod'
 import { createQueue, createUser } from '~/lib/actions'
 import { useAppStore } from '~/store/store'
 import { useRouter } from 'next/navigation'
+import NicknameForm from './NicknameForm'
 
 type Props = {
-  opened: boolean
-  setWelcomeModalOpened: Dispatch<SetStateAction<boolean>>
+  // opened: boolean
+  // setWelcomeModalOpened: Dispatch<SetStateAction<boolean>>
 }
 
 const validSchema = z.object({
@@ -22,17 +25,18 @@ const validSchema = z.object({
     .regex(/^[a-z0-9]+$/i, { message: 'invalid room id' }),
 })
 
-export default function WelcomeModal({ opened, setWelcomeModalOpened }: Props) {
+export default function WelcomeModal() {
   const setUser = useAppStore((state) => state.setUser)
+  const initUser = useAppStore((state) => state.initUser)
   const user = useAppStore((state) => state.user)
   const setJoinedQueue = useAppStore((state) => state.setJoinedQueue)
   const joinedQueue = useAppStore((state) => state.joinedQueue)
 
+  const [opened, setOpened] = useState(true)
   const [loading, setLoading] = useState(false)
   const form = useForm({
     validate: zodResolver(validSchema),
     initialValues: {
-      name: '',
       roomId: '',
     },
   })
@@ -40,14 +44,6 @@ export default function WelcomeModal({ opened, setWelcomeModalOpened }: Props) {
 
   function onClose() {
     console.log('close')
-    // setWelcomeModalOpened(false)
-  }
-
-  async function onCreateUser(name: string) {
-    setLoading(true)
-    const { userCreate } = await createUser(name)
-    setUser(userCreate.user)
-    setLoading(false)
   }
 
   function onJoinRoom(roomId: string) {
@@ -69,6 +65,12 @@ export default function WelcomeModal({ opened, setWelcomeModalOpened }: Props) {
     }
   }, [joinedQueue, router])
 
+  useEffect(() => {
+    if (!user?.id) {
+      initUser()
+    }
+  }, [initUser, user?.id])
+
   return (
     <Modal
       opened={opened && !joinedQueue}
@@ -76,19 +78,7 @@ export default function WelcomeModal({ opened, setWelcomeModalOpened }: Props) {
       centered
       withCloseButton={false}
     >
-      {!user?.id && (
-        <form onSubmit={form.onSubmit((values) => onCreateUser(values.name))}>
-          <TextInput
-            id='name'
-            placeholder='type your nickname'
-            label='nickname'
-            {...form.getInputProps('name')}
-          />
-          <Button type='submit' disabled={loading} fullWidth mt='md'>
-            {loading ? <Loader size={16} /> : 'submit'}
-          </Button>
-        </form>
-      )}
+      <NicknameForm />
 
       {user?.id && (
         <>

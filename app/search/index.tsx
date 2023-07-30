@@ -19,15 +19,16 @@ import { useAppStore } from '~/store/store'
 import Player from '../player'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
 import { createQueue, createUser, getQueueByOwner } from '~/lib/actions'
-import WelcomeModal from '../welcome/WelcomeModal'
+import WelcomeModal from '../welcome'
 
 type Props = {
-  roomId?: string
+  roomId: string
 }
 
 const UPPER_BODY_HEIGHT = PLAYER_HEIGHT + 130
 
 export default function SearchPage({ roomId }: Props) {
+  console.log('roomId', roomId)
   // const initUserId = useAppStore((state) => state.initUserId)
   const user = useAppStore((state) => state.user)
   const initUser = useAppStore((state) => state.initUser)
@@ -35,7 +36,7 @@ export default function SearchPage({ roomId }: Props) {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
   const [queue, setQueue] = useState<QueueVideo[]>([])
-  const [welcomeModalOpened, setWelcomeModalOpened] = useState(true)
+  // const [welcomeModalOpened, setWelcomeModalOpened] = useState(true)
   const [nowPlaying, setNowPlaying] = useState<string>()
   const form = useForm({
     initialValues: {
@@ -63,10 +64,6 @@ export default function SearchPage({ roomId }: Props) {
 
   return (
     <Box maw={600} mx='auto' mt={UPPER_BODY_HEIGHT} px='sm'>
-      <WelcomeModal
-        opened={welcomeModalOpened}
-        setWelcomeModalOpened={setWelcomeModalOpened}
-      />
       {/* <Button onClick={test}>test</Button> */}
 
       <Box
