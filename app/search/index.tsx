@@ -24,7 +24,7 @@ const UPPER_BODY_HEIGHT = 418
 export default function Search() {
   const initUserId = useAppStore((state) => state.initUserId)
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<Video[]>([])
+  const [results, setResults] = useState<Video[]>(dummyVids)
   const [queue, setQueue] = useState<QueueVideo[]>([])
   const [nowPlaying, setNowPlaying] = useState<string>()
 
@@ -51,7 +51,7 @@ export default function Search() {
         bg='white'
         sx={{ zIndex: 100 }}
       >
-        <Box mx='md'>
+        <Box mx='md' mt='md'>
           <Player
             queue={queue}
             setQueue={setQueue}
