@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Dispatch, SetStateAction } from 'react'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
-import { abbreviateNumber } from './utils'
+import { abbreviateNumber } from '../search/utils'
 import { useAppStore } from '~/store/store'
 
 type Props = {

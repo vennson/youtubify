@@ -6,8 +6,7 @@ import { useEffect, useState } from 'react'
 import { dummyVids } from '~/constants/dummy'
 import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
-import QueueItem from './QueueItem'
-import shortUUID from 'short-uuid'
+import QueueItem from '../queue/QueueItem'
 import { useAppStore } from '~/store/store'
 
 export default function SearchPage() {
