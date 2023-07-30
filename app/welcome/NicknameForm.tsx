@@ -1,14 +1,23 @@
 import { Button, Loader, TextInput } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { useForm, zodResolver } from '@mantine/form'
 import { useState } from 'react'
+import { z } from 'zod'
 import { createUser } from '~/lib/actions'
 import { useAppStore } from '~/store/store'
+
+const validSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: 'nickname is required' })
+    .regex(/^[a-z0-9]+$/i, { message: 'invalid nickname' }),
+})
 
 export default function NicknameForm() {
   const user = useAppStore((state) => state.user)
   const setUser = useAppStore((state) => state.setUser)
   const [loading, setLoading] = useState(false)
   const form = useForm({
+    validate: zodResolver(validSchema),
     initialValues: {
       name: '',
     },

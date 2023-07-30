@@ -22,26 +22,28 @@ export const createQueueMutation = `
   }
 `
 
-export const getQueueByOwnerQuery = `
-  query QueueByOwner($owner: String!) {
-    queue(by: { owner: $owner }) {
-      owner
-      videos(first: 20) {
-        edges {
-          node {
-            author
-            lengthSeconds
-            stats
-            thumbnails
-            title
-            videoId
-            votes
-          }
-        }
-      }
-    }
-  }
-`
+export const getLiveQueueQuery = ``
+
+// export const getQueueByOwnerQuery = `
+//   query QueueByOwner($owner: String!) {
+//     queue(by: { owner: $owner }) {
+//       owner
+//       videos(first: 20) {
+//         edges {
+//           node {
+//             author
+//             lengthSeconds
+//             stats
+//             thumbnails
+//             title
+//             videoId
+//             votes
+//           }
+//         }
+//       }
+//     }
+//   }
+// `
 
 // export const createQueueMutation = `
 //   mutation QueueCreate($input: QueueCreateInput!) {
