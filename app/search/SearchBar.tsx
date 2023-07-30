@@ -15,6 +15,7 @@ import { IconSearch } from '@tabler/icons-react'
 import { useState } from 'react'
 import { helloApi, search } from '~/lib/actions'
 import ResultItem from './ResultItem'
+import { filterVids } from './utils'
 
 type Props = {
   loading: boolean
@@ -45,7 +46,8 @@ export default function SearchBar(props: Props) {
     setLoading(true)
     const { data } = await search(query)
     setLoading(false)
-    const videos = data.contents.map((content) => content.video)
+    const vidsOnly = filterVids(data.contents)
+    const videos = vidsOnly.map((content) => content.video)
     setResults(videos)
     console.log('data', data)
   }

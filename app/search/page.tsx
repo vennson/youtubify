@@ -18,6 +18,7 @@ import { useState } from 'react'
 import { helloApi, search } from '~/lib/actions'
 import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
+import { filterVids } from './utils'
 
 const dummy: SearchResultData = {
   contents: [
@@ -1920,12 +1921,7 @@ const dummy: SearchResultData = {
     'helluva boss queen bee reaction',
   ],
 }
-const vidsOnly = dummy.contents.filter((content) => {
-  if (content.type === 'video') {
-    return content
-  }
-}) as VideoContent[]
-
+const vidsOnly = filterVids(dummy.contents)
 const dummyVids = vidsOnly.map((content) => content.video)
 
 export default function SearchPage() {
