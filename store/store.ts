@@ -9,6 +9,8 @@ interface AppState {
   user?: User
   initUser: () => void
   setUser: (user: User) => void
+  joinedQueue?: string
+  setJoinedQueue: (queueId: string) => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -37,4 +39,6 @@ export const useAppStore = create<AppState>((set) => ({
     set({ user })
     localStorage.setItem('user', JSON.stringify(user))
   },
+  joinedQueue: undefined,
+  setJoinedQueue: (joinedQueue) => set({ joinedQueue }),
 }))

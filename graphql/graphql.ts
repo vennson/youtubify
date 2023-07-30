@@ -9,6 +9,21 @@ export const createUserMutation = `
   }
 `
 
+export const createQueueMutation = `
+  mutation QueueCreate($input: QueueCreateInput!) {
+    queueCreate(input: $input) {
+      queue {
+        owner {
+          id
+        }
+        id
+      }
+    }
+  }
+`
+
+
+
 export const getQueueByOwnerQuery = `
   query QueueByOwner($owner: String!) {
     queue(by: { owner: $owner }) {
@@ -30,12 +45,12 @@ export const getQueueByOwnerQuery = `
   }
 `
 
-export const createQueueMutation = `
-  mutation QueueCreate($input: QueueCreateInput!) {
-    queueCreate(input: $input) {
-      queue {
-        owner
-      }
-    }
-  }
-`
+// export const createQueueMutation = `
+//   mutation QueueCreate($input: QueueCreateInput!) {
+//     queueCreate(input: $input) {
+//       queue {
+//         owner
+//       }
+//     }
+//   }
+// `

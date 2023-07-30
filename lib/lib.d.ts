@@ -6,3 +6,14 @@ type UserCreateResponse = {
     }
   }
 }
+
+type QueueCreateResponse = {
+  queueCreate: {
+    queue: {
+      owner: {
+        id: string
+      }
+      id: string
+    }
+  }
+}

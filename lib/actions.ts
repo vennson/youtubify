@@ -42,9 +42,18 @@ export async function createUser(name: string) {
   ) as Promise<UserCreateResponse>
 }
 
-export async function createQueue(owner: string) {
-  const variables = { input: { owner } }
-  return makeGraphQLRequest(createQueueMutation, variables)
+export async function createQueue(userId: string) {
+  const variables = {
+    input: {
+      owner: {
+        link: userId,
+      },
+    },
+  }
+  return makeGraphQLRequest(
+    createQueueMutation,
+    variables,
+  ) as Promise<QueueCreateResponse>
 }
 
 export async function getQueueByOwner(owner: string) {

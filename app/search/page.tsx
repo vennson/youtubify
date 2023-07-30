@@ -21,9 +21,13 @@ import { PLAYER_HEIGHT } from '~/constants/numbers'
 import { createQueue, createUser, getQueueByOwner } from '~/lib/actions'
 import WelcomeModal from '../welcome/WelcomeModal'
 
+type Props = {
+  roomId?: string
+}
+
 const UPPER_BODY_HEIGHT = PLAYER_HEIGHT + 130
 
-export default function SearchPage() {
+export default function SearchPage({ roomId }: Props) {
   // const initUserId = useAppStore((state) => state.initUserId)
   const user = useAppStore((state) => state.user)
   const initUser = useAppStore((state) => state.initUser)
@@ -53,13 +57,17 @@ export default function SearchPage() {
     }
   }, [initUser, user?.id])
 
+  useEffect(() => {
+    // get queue from db using roomId
+  })
+
   return (
     <Box maw={600} mx='auto' mt={UPPER_BODY_HEIGHT} px='sm'>
       <WelcomeModal
         opened={welcomeModalOpened}
         setWelcomeModalOpened={setWelcomeModalOpened}
       />
-      <Button onClick={test}>test</Button>
+      {/* <Button onClick={test}>test</Button> */}
 
       <Box
         pos='fixed'
