@@ -6,7 +6,7 @@ import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber } from './utils'
 
-export default function QueueItem({ video }: { video: Video }) {
+export default function QueueItem({ video }: { video: QueueVideo }) {
   const [votes, setVotes] = useState(0)
   const [voted, setVoted] = useState(false)
 

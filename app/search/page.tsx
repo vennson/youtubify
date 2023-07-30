@@ -191,7 +191,7 @@ const dummyQueue = vidsOnly.map((content) => content.video).slice(0, 1)
 export default function SearchPage() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>(dummyVids)
-  const [queue, setQueue] = useState<Video[]>(dummyQueue)
+  const [queue, setQueue] = useState<QueueVideo[]>([])
 
   const form = useForm({
     initialValues: {
@@ -211,7 +211,12 @@ export default function SearchPage() {
       <Stack mt='md' spacing='xs'>
         {hasQuery &&
           results?.map((video) => (
-            <ResultItem key={video.videoId} video={video} setQueue={setQueue} />
+            <ResultItem
+              key={video.videoId}
+              video={video}
+              setQueue={setQueue}
+              queue={queue}
+            />
           ))}
         {!hasQuery &&
           queue?.map((video) => (

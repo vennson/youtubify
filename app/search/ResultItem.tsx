@@ -8,15 +8,21 @@ import { abbreviateNumber } from './utils'
 
 type Props = {
   video: Video
-  setQueue: Dispatch<SetStateAction<Video[]>>
+  queue: QueueVideo[]
+  setQueue: Dispatch<SetStateAction<QueueVideo[]>>
 }
 
-export default function ResultItem({ video, setQueue }: Props) {
-  const [votes, setVotes] = useState(0)
+export default function ResultItem({ video, setQueue, queue }: Props) {
+  const videoInQueue = queue.find(
+    (queueVid) => queueVid.videoId === video.videoId,
+  )
 
   function onClick() {
-    setVotes((prev) => prev + 1)
-    setQueue((prev) => [...prev, video])
+    let votes = 1
+    if (videoInQueue?.votes) {
+      votes = videoInQueue.votes + 1
+    }
+    setQueue((prev) => [...prev, { ...video, votes }])
   }
 
   return (
@@ -46,10 +52,10 @@ export default function ResultItem({ video, setQueue }: Props) {
             </Box>
           </Flex>
 
-          {votes > 0 ? (
+          {videoInQueue?.votes && videoInQueue.votes > 0 ? (
             <Flex align='center'>
               <IconHeartFilled size={24} style={{ color: RED }} />
-              {votes}
+              {videoInQueue.votes}
             </Flex>
           ) : (
             <IconPlus size={24} />
