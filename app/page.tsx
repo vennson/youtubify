@@ -1,4 +1,4 @@
-import SearchPage from './search/page'
+import SearchPage from './search'
 
 export default function Home() {
   return (

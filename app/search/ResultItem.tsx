@@ -94,7 +94,9 @@ export default function ResultItem(props: Props) {
               {queuedVideo.votes.length}
             </Flex>
           ) : (
-            <IconPlus size={24} />
+            <Box miw={24}>
+              <IconPlus size={24} />
+            </Box>
           )}
         </Flex>
       </Card>
