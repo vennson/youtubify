@@ -3,12 +3,18 @@ import { create } from 'zustand'
 
 interface AppState {
   userId: string
+  setUserId: (userId: string) => void
   initUserId: () => void
+
+  user?: User
+  initUser: () => void
+  setUser: (user: User) => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
   userId: '',
-  initUserId: () => {
+  setUserId: (userId: string) => set({ userId }),
+  initUserId: async () => {
     const userId = localStorage.getItem('userId')
 
     if (userId) {
@@ -18,5 +24,17 @@ export const useAppStore = create<AppState>((set) => ({
       localStorage.setItem('userId', newUserId)
       set({ userId: newUserId })
     }
+  },
+
+  user: undefined,
+  initUser: () => {
+    const user = localStorage.getItem('user')
+    if (user) {
+      set({ user: JSON.parse(user) })
+    }
+  },
+  setUser: (user: User) => {
+    set({ user })
+    localStorage.setItem('user', JSON.stringify(user))
   },
 }))

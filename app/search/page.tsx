@@ -1,6 +1,15 @@
 'use client'
 
-import { Box, Center, Divider, Kbd, Stack, Text } from '@mantine/core'
+import {
+  Box,
+  Button,
+  Center,
+  Divider,
+  Kbd,
+  Modal,
+  Stack,
+  Text,
+} from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useEffect, useState } from 'react'
 import ResultItem from './ResultItem'
@@ -9,16 +18,21 @@ import QueueItem from '../queue/QueueItem'
 import { useAppStore } from '~/store/store'
 import Player from '../player'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
+import { createQueue, createUser, getQueueByOwner } from '~/lib/actions'
+import WelcomeModal from '../welcome/WelcomeModal'
 
 const UPPER_BODY_HEIGHT = PLAYER_HEIGHT + 130
 
-export default function Search() {
-  const initUserId = useAppStore((state) => state.initUserId)
+export default function SearchPage() {
+  // const initUserId = useAppStore((state) => state.initUserId)
+  const user = useAppStore((state) => state.user)
+  const initUser = useAppStore((state) => state.initUser)
+  const userId = useAppStore((state) => state.userId)
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
   const [queue, setQueue] = useState<QueueVideo[]>([])
+  const [welcomeModalOpened, setWelcomeModalOpened] = useState(true)
   const [nowPlaying, setNowPlaying] = useState<string>()
-
   const form = useForm({
     initialValues: {
       query: '',
@@ -26,12 +40,27 @@ export default function Search() {
   })
   const hasQuery = form.values.query.length > 0
 
+  async function test() {
+    // await createQueue(userId)
+    // const res = await getQueueByOwner(userId)
+    const res = await createUser('meme')
+    console.log('res', res)
+  }
+
   useEffect(() => {
-    initUserId()
-  }, [initUserId])
+    if (!user?.id) {
+      initUser()
+    }
+  }, [initUser, user?.id])
 
   return (
     <Box maw={600} mx='auto' mt={UPPER_BODY_HEIGHT} px='sm'>
+      <WelcomeModal
+        opened={welcomeModalOpened}
+        setWelcomeModalOpened={setWelcomeModalOpened}
+      />
+      <Button onClick={test}>test</Button>
+
       <Box
         pos='fixed'
         maw={600}
