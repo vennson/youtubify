@@ -1,22 +1,18 @@
 import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
-import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
+import { IconHeart, IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber } from './utils'
 
-type Props = {
-  video: Video
-  setQueue: Dispatch<SetStateAction<Video[]>>
-}
-
-export default function ResultItem({ video, setQueue }: Props) {
+export default function QueueItem({ video }: { video: Video }) {
   const [votes, setVotes] = useState(0)
+  const [voted, setVoted] = useState(false)
 
   function onClick() {
     setVotes((prev) => prev + 1)
-    setQueue((prev) => [...prev, video])
+    setVoted(true)
   }
 
   return (
@@ -35,7 +31,7 @@ export default function ResultItem({ video, setQueue }: Props) {
 
             <Box>
               <Text size='sm' lineClamp={1}>
-                {video.title}
+                {video.title} queue
               </Text>
               <Text size='xs' color='dimmed'>
                 {abbreviateNumber(video.stats.views)} views
@@ -46,14 +42,14 @@ export default function ResultItem({ video, setQueue }: Props) {
             </Box>
           </Flex>
 
-          {votes > 0 ? (
-            <Flex align='center'>
+          <Flex align='center'>
+            {voted ? (
               <IconHeartFilled size={24} style={{ color: RED }} />
-              {votes}
-            </Flex>
-          ) : (
-            <IconPlus size={24} />
-          )}
+            ) : (
+              <IconHeart size={24} />
+            )}
+            {votes > 0 && votes}
+          </Flex>
         </Flex>
       </Card>
     </UnstyledButton>

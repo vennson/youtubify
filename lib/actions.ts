@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 export const isProduction = process.env.NODE_ENV === 'production'
+
 const serverUrl = isProduction
   ? process.env.NEXT_PUBLIC_SERVER_URL
   : 'http://localhost:3000'

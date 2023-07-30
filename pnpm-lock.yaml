@@ -9,12 +9,14 @@ specifiers:
   '@mantine/hooks': ^6.0.17
   '@mantine/next': ^6.0.17
   '@tabler/icons-react': ^2.30.0
+  '@types/lodash': ^4.14.196
   '@types/node': 20.4.5
   '@types/react': 18.2.16
   '@types/react-dom': 18.2.7
   axios: ^1.4.0
   eslint: 8.45.0
   eslint-config-next: 13.4.12
+  lodash: ^4.17.21
   next: 13.4.12
   react: 18.2.0
   react-dom: 18.2.0
@@ -28,12 +30,14 @@ dependencies:
   '@mantine/hooks': 6.0.17_react@18.2.0
   '@mantine/next': 6.0.17_2dvpqjzaxzql6p4wemmrmaugfy
   '@tabler/icons-react': 2.30.0_react@18.2.0
+  '@types/lodash': 4.14.196
   '@types/node': 20.4.5
   '@types/react': 18.2.16
   '@types/react-dom': 18.2.7
   axios: 1.4.0
   eslint: 8.45.0
   eslint-config-next: 13.4.12_ko3fmmbeyij36muomfgt2u76xu
+  lodash: 4.17.21
   next: 13.4.12_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -656,6 +660,10 @@ packages:
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: false
+
+  /@types/lodash/4.14.196:
+    resolution: {integrity: sha512-22y3o88f4a94mKljsZcanlNWPzO0uBsBdzLAngf2tp533LzZcQzb6+eZPJ+vCTt+bqF2XnvT9gejTLsAcJAJyQ==}
     dev: false
 
   /@types/node/20.4.5:
@@ -2251,6 +2259,10 @@ packages:
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: false
 
   /loose-envify/1.4.0:
