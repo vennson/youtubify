@@ -13,7 +13,7 @@ import Player from '../player'
 export default function Search() {
   const initUserId = useAppStore((state) => state.initUserId)
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<Video[]>(dummyVids)
+  const [results, setResults] = useState<Video[]>()
   const [queue, setQueue] = useState<QueueVideo[]>([])
   const [nowPlaying, setNowPlaying] = useState<string>()
 
@@ -30,7 +30,12 @@ export default function Search() {
 
   return (
     <Box maw={600} mx='auto' my='sm' px='sm'>
-      <Player videoId={nowPlaying} />
+      <Player
+        queue={queue}
+        setQueue={setQueue}
+        nowPlaying={nowPlaying}
+        setNowPlaying={setNowPlaying}
+      />
       <Box mt='md'>
         <SearchBar
           loading={loading}

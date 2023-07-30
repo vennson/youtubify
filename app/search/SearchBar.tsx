@@ -21,7 +21,7 @@ import { filterVids } from './utils'
 type Props = {
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
-  setResults: Dispatch<SetStateAction<Video[]>>
+  setResults: Dispatch<SetStateAction<Video[] | undefined>>
   form: UseFormReturnType<{ query: string }>
 }
 
@@ -38,6 +38,8 @@ export default function SearchBar(props: Props) {
 
   async function onSearch(query: string) {
     setLoading(true)
+    setResults([])
+
     const { data } = await search(query)
     setLoading(false)
     const vidsOnly = filterVids(data.contents)
@@ -52,7 +54,7 @@ export default function SearchBar(props: Props) {
 
   return (
     <form onSubmit={form.onSubmit((values) => onSearch(values.query))}>
-      {hasQuery && (
+      {hasQuery && !loading && (
         <Center pos='absolute' w={36} h={36}>
           <ActionIcon size={34} sx={{ zIndex: 1000 }} onClick={clearQuery}>
             <IconArrowLeft size={16} />
