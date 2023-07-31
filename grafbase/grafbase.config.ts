@@ -1,13 +1,34 @@
 import { g, config } from '@grafbase/sdk'
 
+// // @ts-ignore
+// const video = g
+//   .model('Video', {
+//     author: g.json(),
+//     lengthSeconds: g.int(),
+//     stats: g.json(),
+//     thumbnails: g.json().list(),
+//     title: g.string(),
+//     videoId: g.string().unique(),
+//     votes: g
+//       .relation(() => user)
+//       .list()
+//       .optional(),
+//     queue: g.relation(() => queue).optional(),
+//   })
+//   .auth((rules) => {
+//     rules.public().create().read().update()
+//     rules.private().delete()
+//   })
+
 // @ts-ignore
+// !for testing only
 const video = g
   .model('Video', {
-    author: g.json(),
-    lengthSeconds: g.int(),
-    stats: g.json(),
-    thumbnails: g.json().list(),
-    title: g.string(),
+    author: g.json().optional(),
+    lengthSeconds: g.int().optional(),
+    stats: g.json().optional(),
+    thumbnails: g.json().list().optional(),
+    title: g.string().optional(),
     videoId: g.string().unique(),
     votes: g
       .relation(() => user)
@@ -28,7 +49,6 @@ const queue = g
       .list()
       .optional(),
     owner: g.relation(() => user),
-    roomId: g.string().unique(),
   })
   .auth((rules) => {
     rules.public().create().read().update()

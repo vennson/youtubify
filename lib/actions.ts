@@ -1,10 +1,9 @@
 import axios from 'axios'
 import { GraphQLClient } from 'graphql-request'
-import { nanoid } from 'nanoid'
 import {
   createQueueMutation,
   createUserMutation,
-  getQueueByOwnerQuery,
+  createVideoMutation,
 } from '~/graphql/graphql'
 
 export const isProduction = process.env.NODE_ENV === 'production'
@@ -44,13 +43,11 @@ export async function createUser(name: string) {
 }
 
 export async function createQueue(userId: string) {
-  const roomId = nanoid(11)
   const variables = {
     input: {
       owner: {
         link: userId,
       },
-      roomId,
     },
   }
   return makeGraphQLRequest(
@@ -59,6 +56,42 @@ export async function createQueue(userId: string) {
   ) as Promise<QueueCreateResponse>
 }
 
-export async function getQueueByOwner(owner: string) {
-  return makeGraphQLRequest(getQueueByOwnerQuery, { owner })
+// author:JSON!
+// lengthSeconds:Int!
+// queue:QueueToVideoCreateQueueRelation
+// stats:JSON!
+// thumbnails:[JSON!]!
+// title:String!
+// videoId:String!
+// votes:[UserToVideoCreateUserRelation!]
+
+export async function createVideo(
+  video: Video,
+  queueId: string,
+  userId: string,
+) {
+  const { author, lengthSeconds, stats, thumbnails, title, videoId } = video
+
+  const variables = {
+    input: {
+      author,
+      lengthSeconds,
+      stats,
+      thumbnails,
+      title,
+      videoId,
+      queue: {
+        link: queueId,
+      },
+      votes: {
+        link: userId,
+      },
+    },
+  }
+
+  return makeGraphQLRequest(createVideoMutation, variables) as Promise<unknown>
 }
+
+// export async function getQueueByOwner(owner: string) {
+//   return makeGraphQLRequest(getQueueByOwnerQuery, { owner })
+// }

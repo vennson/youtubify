@@ -20,7 +20,7 @@ export default function SearchBar(props: Props) {
   if (loading) {
     searchBarIcon = <Loader size={16} />
   } else if (hasQuery) {
-    searchBarIcon = <IconSearch size={16} color='white' />
+    searchBarIcon = <IconSearch size={16} opacity={0} />
   }
 
   async function onSearch(query: string) {

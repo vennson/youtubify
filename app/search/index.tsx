@@ -18,7 +18,7 @@ import QueueItem from '../queue/QueueItem'
 import { useAppStore } from '~/store/store'
 import Player from '../player'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
-import { createQueue, createUser, getQueueByOwner } from '~/lib/actions'
+import { createQueue, createUser } from '~/lib/actions'
 import WelcomeModal from '../welcome'
 
 type Props = {
@@ -31,6 +31,8 @@ export default function SearchPage({ roomId }: Props) {
   console.log('roomId', roomId)
   // const initUserId = useAppStore((state) => state.initUserId)
   const user = useAppStore((state) => state.user)
+  const joinedRoom = useAppStore((state) => state.joinedRoom)
+  const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
   const initUser = useAppStore((state) => state.initUser)
   const userId = useAppStore((state) => state.userId)
   const [loading, setLoading] = useState(false)
@@ -61,6 +63,12 @@ export default function SearchPage({ roomId }: Props) {
   useEffect(() => {
     // get queue from db using roomId
   })
+
+  useEffect(() => {
+    if (!joinedRoom) {
+      setJoinedRoom(roomId)
+    }
+  }, [joinedRoom, roomId, setJoinedRoom])
 
   return (
     <Box maw={600} mx='auto' mt={UPPER_BODY_HEIGHT} px='sm'>

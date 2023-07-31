@@ -16,7 +16,18 @@ export const createQueueMutation = `
         owner {
           id
         }
-        roomId
+        id
+      }
+    }
+  }
+`
+
+export const createVideoMutation = `
+  mutation VideoCreate($input: VideoCreateInput!) {
+    videoCreate(input: $input) {
+      video {
+        title
+        videoId
       }
     }
   }

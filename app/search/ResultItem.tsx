@@ -3,7 +3,7 @@ import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
 import { Dispatch, SetStateAction, useEffect } from 'react'
 import { RED } from '~/constants/colors'
-import { isProduction } from '~/lib/actions'
+import { createVideo, isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from './utils'
 import { useAppStore } from '~/store/store'
 
@@ -15,7 +15,10 @@ type Props = {
 
 export default function ResultItem(props: Props) {
   const { searchedVideo, setQueue, queue } = props
-  const userId = useAppStore((state) => state.userId)
+  const user = useAppStore((state) => state.user)
+  const joinedRoom = useAppStore((state) => state.joinedRoom)
+  const userId = useAppStore((state) => state.userId) //! to be removed
+
   const queuedVideo = queue.find(
     (queuedVideo) => queuedVideo.videoId === searchedVideo.videoId,
   )
@@ -55,7 +58,13 @@ export default function ResultItem(props: Props) {
     return newQueue
   }
 
-  function onClick() {
+  async function onClickResultItem() {
+    console.log('joinedRoom', joinedRoom)
+    console.log('user?.id', user?.id)
+    if (joinedRoom && user?.id) {
+      const res = await createVideo(searchedVideo, joinedRoom, user?.id)
+      console.log('res', res)
+    }
     setQueue((prev) => toggleVote(prev))
   }
 
@@ -77,7 +86,7 @@ export default function ResultItem(props: Props) {
   }, [queuedVideo, setQueue])
 
   return (
-    <UnstyledButton onClick={onClick}>
+    <UnstyledButton onClick={onClickResultItem}>
       <Card withBorder p='xs'>
         <Flex gap='sm' justify='space-between' align='center'>
           <Flex gap='sm'>
