@@ -4,6 +4,7 @@ import {
   createQueueMutation,
   createUserMutation,
   createVideoMutation,
+  getLiveQueueQuery,
 } from '~/graphql/graphql'
 
 export const isProduction = process.env.NODE_ENV === 'production'
@@ -56,15 +57,6 @@ export async function createQueue(userId: string) {
   ) as Promise<QueueCreateResponse>
 }
 
-// author:JSON!
-// lengthSeconds:Int!
-// queue:QueueToVideoCreateQueueRelation
-// stats:JSON!
-// thumbnails:[JSON!]!
-// title:String!
-// videoId:String!
-// votes:[UserToVideoCreateUserRelation!]
-
 export async function createVideo(
   video: Video,
   queueId: string,
@@ -92,6 +84,6 @@ export async function createVideo(
   return makeGraphQLRequest(createVideoMutation, variables) as Promise<unknown>
 }
 
-// export async function getQueueByOwner(owner: string) {
-//   return makeGraphQLRequest(getQueueByOwnerQuery, { owner })
-// }
+export async function getLiveQueue(queueId: string) {
+  return makeGraphQLRequest(getLiveQueueQuery, { id: queueId })
+}
