@@ -1,73 +1,48 @@
 import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react'
 import Image from 'next/image'
-import { Dispatch, SetStateAction, useEffect } from 'react'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from '../search/utils'
 import { useAppStore } from '~/store/store'
+import { refreshQueue, updateVideo } from '~/graphql/actions'
 
 type Props = {
-  queuedVideo: QueueVideo
-  setQueue: Dispatch<SetStateAction<QueueVideo[]>>
+  queuedVideo: DBVideo
 }
 
-export default function QueueItem({ queuedVideo, setQueue }: Props) {
-  const userId = useAppStore((state) => state.userId)
+export default function QueueItem({ queuedVideo }: Props) {
+  const user = useAppStore((state) => state.user)
+  const joinedRoom = useAppStore((state) => state.joinedRoom)
+
   let userInVotes = false
-  if (queuedVideo?.votes) {
-    userInVotes = !!queuedVideo?.votes?.find((vote) => vote.userId === userId)
+  if (queuedVideo?.node.votes) {
+    userInVotes = !!queuedVideo?.node.votes?.edges.find(
+      (edge) => edge.node.id === user?.id,
+    )
   }
-  const hasVotes = queuedVideo?.votes?.length && queuedVideo.votes.length > 0
+  const hasVotes =
+    queuedVideo?.node.votes?.edges.length &&
+    queuedVideo.node.votes.edges.length > 0
 
-  /**
-   * toggles vote by appending or removing the user from Votes array of a queued video
-   */
-  function toggleVote(_queue: QueueVideo[]) {
-    let newVotes: Vote[] = [{ userId }]
-
-    if (queuedVideo.votes) {
-      if (userInVotes) {
-        newVotes = queuedVideo.votes.filter((vote) => vote.userId !== userId)
-      } else {
-        newVotes = [...queuedVideo.votes, { userId }]
-      }
-    }
-
-    const newQueue = _queue.map((queryVid) => {
-      if (queryVid.videoId === queuedVideo.videoId) {
-        return { ...queryVid, votes: newVotes }
-      }
-      return queryVid
-    })
-
-    return newQueue
+  async function toggleVote() {
+    if (!joinedRoom || !user?.id) return
+    const linkStatus = userInVotes ? 'unlink' : 'link'
+    await updateVideo(queuedVideo.node.id, user.id, linkStatus)
+    await refreshQueue()
   }
-
-  function onClick() {
-    setQueue((prev) => toggleVote(prev))
-  }
-
-  /**
-   * if queuedVideo has no more votes, remove it from queue
-   */
-  useEffect(() => {
-    if (queuedVideo.votes && queuedVideo.votes.length === 0) {
-      setQueue((prev) => {
-        return prev.filter((vid) => vid.videoId !== queuedVideo.videoId)
-      })
-    }
-  }, [queuedVideo.votes, queuedVideo.videoId, setQueue])
 
   return (
-    <UnstyledButton onClick={onClick} hidden={!hasVotes}>
+    <UnstyledButton onClick={toggleVote} hidden={!hasVotes}>
       <Card withBorder p='xs'>
         <Flex gap='sm' justify='space-between' align='center'>
           <Flex gap='sm'>
             <Avatar miw={60} mih={60}>
               <Image
                 src={
-                  isProduction ? queuedVideo.thumbnails[0].url : '/avatar.jpg'
+                  isProduction
+                    ? queuedVideo.node.thumbnails[0].url
+                    : '/avatar.jpg'
                 }
                 fill
                 style={{ objectFit: 'cover', flex: 1 }}
@@ -77,14 +52,14 @@ export default function QueueItem({ queuedVideo, setQueue }: Props) {
 
             <Box>
               <Text size='sm' lineClamp={1}>
-                {queuedVideo.title}
+                {queuedVideo.node.title}
               </Text>
               <Text size='xs' color='dimmed'>
-                {abbreviateNumber(queuedVideo.stats.views)} views ·{' '}
-                {formatSeconds(queuedVideo.lengthSeconds)}
+                {abbreviateNumber(queuedVideo.node.stats.views)} views ·{' '}
+                {formatSeconds(queuedVideo.node.lengthSeconds)}
               </Text>
               <Text size='xs' color='dimmed'>
-                {queuedVideo.author.title}
+                {queuedVideo.node.author.title}
               </Text>
             </Box>
           </Flex>
@@ -95,9 +70,9 @@ export default function QueueItem({ queuedVideo, setQueue }: Props) {
             ) : (
               <IconHeart size={24} />
             )}
-            {queuedVideo.votes &&
-              queuedVideo.votes.length > 0 &&
-              queuedVideo.votes.length}
+            {queuedVideo.node.votes &&
+              queuedVideo.node.votes.edges.length > 0 &&
+              queuedVideo.node.votes.edges.length}
           </Flex>
         </Flex>
       </Card>

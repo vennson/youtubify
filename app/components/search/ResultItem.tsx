@@ -2,14 +2,14 @@ import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
 import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED } from '~/constants/colors'
-import { createVideo, getQueue, updateVideo } from '~/graphql/actions'
+import { createVideo, refreshQueue, updateVideo } from '~/graphql/actions'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from './utils'
 import { useAppStore } from '~/store/store'
 
 type Props = {
   searchedVideo: Video
-  queue: QueueVideo[]
+  queue: DBVideo[]
 }
 
 export default function ResultItem(props: Props) {
@@ -17,7 +17,6 @@ export default function ResultItem(props: Props) {
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const queue = useAppStore((state) => state.queue)
-  const setQueue = useAppStore((state) => state.setQueue)
 
   const queuedVideo = queue.find(
     (queuedVideo) => queuedVideo.node.videoId === searchedVideo.videoId,
@@ -31,15 +30,6 @@ export default function ResultItem(props: Props) {
     userInVotes = !!queuedVideo?.node.votes.edges.find(
       (edge) => edge.node.id === user?.id,
     )
-  }
-
-  //! move somewhere
-  async function refreshQueue() {
-    if (!joinedRoom) return
-
-    const { queue: dbQueue } = await getQueue(joinedRoom)
-    console.log('dbQueue.owner', dbQueue.owner)
-    setQueue(dbQueue.videos.edges)
   }
 
   async function onClickResultItem() {

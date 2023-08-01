@@ -8,7 +8,8 @@ export function filterVids(contents: Content[]) {
   return filtered
 }
 
-export function abbreviateNumber(number: number, decimalPlaces = 2) {
+export function abbreviateNumber(number?: number, decimalPlaces = 2) {
+  if (!number) return 0
   // 2 decimal places => 100, 3 => 1000, etc
   decimalPlaces = Math.pow(10, decimalPlaces)
 

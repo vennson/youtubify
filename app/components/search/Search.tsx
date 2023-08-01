@@ -18,7 +18,7 @@ import QueueItem from '../queue/QueueItem'
 import { useAppStore } from '~/store/store'
 import Player from '../player/Player'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
-import { createQueue, createUser, joinRoomIfExists } from '~/graphql/actions'
+import { createUser, joinRoomIfExists } from '~/graphql/actions'
 import { useRouter } from 'next/navigation'
 
 type Props = {
@@ -32,10 +32,10 @@ export default function SearchPage({ roomId }: Props) {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
   const initUser = useAppStore((state) => state.initUser)
-  const userId = useAppStore((state) => state.userId)
+  const queue = useAppStore((state) => state.queue)
+
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
-  const [queue, setQueue] = useState<QueueVideo[]>([])
   const [nowPlaying, setNowPlaying] = useState<string>()
   const form = useForm({
     initialValues: {
@@ -98,12 +98,7 @@ export default function SearchPage({ roomId }: Props) {
           sx={{ zIndex: 100 }}
         >
           <Box mx='sm' mt='md'>
-            <Player
-              queue={queue}
-              setQueue={setQueue}
-              nowPlaying={nowPlaying}
-              setNowPlaying={setNowPlaying}
-            />
+            <Player nowPlaying={nowPlaying} setNowPlaying={setNowPlaying} />
           </Box>
           <Box mt='md' mx='sm'>
             <SearchBar
@@ -143,9 +138,8 @@ export default function SearchPage({ roomId }: Props) {
             <Stack spacing='xs' mt='xs' mb='lg'>
               {queue?.map((queuedVideo, i) => (
                 <QueueItem
-                  key={`${queuedVideo.videoId}-${i}`}
+                  key={`${queuedVideo.node.videoId}-${i}`}
                   queuedVideo={queuedVideo}
-                  setQueue={setQueue}
                 />
               ))}
             </Stack>

@@ -107,3 +107,10 @@ export async function updateVideo(
     variables,
   ) as Promise<VideoUpdateResponse>
 }
+
+export async function refreshQueue() {
+  const { joinedRoom, setQueue } = useAppStore.getState()
+  if (!joinedRoom) return
+  const { queue: dbQueue } = await getQueue(joinedRoom)
+  setQueue(dbQueue.videos.edges)
+}

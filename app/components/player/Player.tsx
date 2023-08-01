@@ -1,51 +1,49 @@
 import { Avatar, Box, Button, Card, Center, Flex, Text } from '@mantine/core'
 import { IconBrandYoutubeFilled } from '@tabler/icons-react'
 import Image from 'next/image'
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useRef, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
-import { dummyQueue } from '~/constants/dummy'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber } from '../search/utils'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
 import YouTubePlayer from 'react-player/youtube'
 import Control from './Control'
+import { useAppStore } from '~/store/store'
 
 type Props = {
-  queue: QueueVideo[]
-  setQueue: Dispatch<SetStateAction<QueueVideo[]>>
   nowPlaying?: string
   setNowPlaying: Dispatch<SetStateAction<string | undefined>>
 }
 
 export default function Player(props: Props) {
-  const { setQueue, queue, setNowPlaying, nowPlaying } = props
+  const { setNowPlaying, nowPlaying } = props
+  const queue = useAppStore((state) => state.queue)
   const [playing, setPlaying] = useState(true)
-  const [currentVidInfo, setCurrentVidInfo] = useState<QueueVideo>(
-    dummyQueue[0],
-  )
+  const [currentVidInfo, setCurrentVidInfo] = useState<DBVideo>()
   const playerRef = useRef<YouTubePlayer>(null)
 
   const nextVideo = queue[0]
 
   function playNext() {
-    if (nextVideo?.videoId) {
-      setNowPlaying(nextVideo.videoId)
+    if (nextVideo?.node.videoId) {
+      setNowPlaying(nextVideo.node.videoId)
     } else {
       setNowPlaying('')
     }
   }
 
-  useEffect(() => {
-    setQueue((prev) => {
-      const newQueue = [...prev]
-      const shiftedVideo = newQueue.shift()
+  // !do for grafbase
+  // useEffect(() => {
+  //   setQueue((prev) => {
+  //     const newQueue = [...prev]
+  //     const shiftedVideo = newQueue.shift()
 
-      if (shiftedVideo) {
-        setCurrentVidInfo(shiftedVideo)
-      }
-      return newQueue
-    })
-  }, [nowPlaying, setQueue])
+  //     if (shiftedVideo) {
+  //       setCurrentVidInfo(shiftedVideo)
+  //     }
+  //     return newQueue
+  //   })
+  // }, [nowPlaying, setQueue])
 
   return (
     <Box h={PLAYER_HEIGHT}>
@@ -66,24 +64,26 @@ export default function Player(props: Props) {
                   <Image
                     src={
                       isProduction
-                        ? currentVidInfo.thumbnails[0].url
+                        ? currentVidInfo?.node.thumbnails[0].url
+                          ? currentVidInfo?.node.thumbnails[0].url
+                          : '/avatar.jpg'
                         : '/avatar.jpg'
                     }
                     fill
                     style={{ objectFit: 'cover', flex: 1 }}
-                    alt='currentVidInfo'
+                    alt='currentVidInfo?.node'
                   />
                 </Avatar>
 
                 <Box>
                   <Text size='sm' lineClamp={1}>
-                    {currentVidInfo.title}
+                    {currentVidInfo?.node.title}
                   </Text>
                   <Text size='xs' color='dimmed'>
-                    {abbreviateNumber(currentVidInfo.stats.views)} views
+                    {abbreviateNumber(currentVidInfo?.node.stats.views)} views
                   </Text>
                   <Text size='xs' color='dimmed'>
-                    {currentVidInfo.author.title}
+                    {currentVidInfo?.node.author.title}
                   </Text>
                 </Box>
               </Flex>
