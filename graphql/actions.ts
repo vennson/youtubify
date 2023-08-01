@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request'
-import { getQueueQuery } from '~/graphql/queries'
+import { getQueueQuery, getUserQuery } from '~/graphql/queries'
 import {
   createQueueMutation,
   createUserMutation,
@@ -145,5 +145,17 @@ export async function refreshQueue() {
     return dbQueue
   } catch (error) {
     console.log('refreshQueue error', error)
+  }
+}
+
+export async function getUser(userId: string) {
+  try {
+    const res = makeGraphQLRequest(getUserQuery, {
+      id: userId,
+    }) as Promise<UserQueryResponse>
+
+    return res
+  } catch (error) {
+    console.log('getUser error', error)
   }
 }

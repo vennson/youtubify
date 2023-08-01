@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import { getQueue } from '~/graphql/actions'
+import { getQueue, getUser } from '~/graphql/actions'
 
 interface AppState {
   user?: User
-  initUser: () => boolean
+  initUser: () => Promise<boolean>
   setUser: (user: User) => void
   joinedRoom?: string
   setJoinedRoom: (queueId: string) => Promise<void>
@@ -21,12 +21,21 @@ interface AppState {
 
 export const useAppStore = create<AppState>((set, get) => ({
   user: undefined,
-  initUser: () => {
+  initUser: async () => {
     const user = localStorage.getItem('user')
+    let hasSession = false
+
     if (user) {
-      set({ user: JSON.parse(user) })
+      const userId = JSON.parse(user).id
+      const res = await getUser(userId)
+      console.log('res', res)
+
+      if (res?.user?.id) {
+        hasSession = true
+        set({ user: JSON.parse(user) })
+      }
     }
-    return !!user
+    return hasSession
   },
   setUser: (user: User) => {
     set({ user })

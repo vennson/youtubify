@@ -55,15 +55,20 @@ export default function SearchPage({ roomId }: Props) {
     [router, setJoinedRoom],
   )
 
+  const _initUser = useCallback(async () => {
+    const hasSession = await initUser()
+    console.log('hasSession', hasSession)
+    if (!hasSession) {
+      setPendingRoom(roomId)
+      router.push('/')
+    }
+  }, [initUser, roomId, router, setPendingRoom])
+
   useEffect(() => {
     if (!user?.id) {
-      const hasSession = initUser()
-      if (!hasSession) {
-        setPendingRoom(roomId)
-        router.push('/')
-      }
+      _initUser()
     }
-  }, [initUser, roomId, router, setPendingRoom, user?.id])
+  }, [_initUser, initUser, roomId, router, setPendingRoom, user?.id])
 
   useEffect(() => {
     if (!joinedRoom && user?.id) {
@@ -79,7 +84,7 @@ export default function SearchPage({ roomId }: Props) {
 
     const firstPollLoading = setTimeout(
       () => setFirstQueueRefreshed(true),
-      POLL_QUEUE_INTERVAL + 1000,
+      POLL_QUEUE_INTERVAL + 5000,
     )
 
     return () => {

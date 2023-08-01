@@ -109,3 +109,10 @@ type VideoUpdateResponse = {
     }
   }
 }
+
+type UserQueryResponse = {
+  user: {
+    id: string
+    name: string
+  }
+}

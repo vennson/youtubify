@@ -20,8 +20,8 @@ export default function usePollQueue() {
 
     const foo = async () => {
       // Your logic for the "foo" function goes here
-      // console.log('refreshQueue is executed')
-      // await refreshQueue()
+      console.log('refreshQueue is executed')
+      await refreshQueue()
     }
 
     // Initial setup

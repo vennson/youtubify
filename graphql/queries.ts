@@ -33,3 +33,12 @@ export const getQueueQuery = `
     }
   }
 `
+
+export const getUserQuery = `
+  query User($id: ID!) {
+    user(by: {id: $id}) {
+      id
+      name
+    }
+  }
+`
