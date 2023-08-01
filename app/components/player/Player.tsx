@@ -7,6 +7,7 @@ import {
   Flex,
   Stack,
   Text,
+  Tooltip,
 } from '@mantine/core'
 import { IconBrandYoutubeFilled } from '@tabler/icons-react'
 import Image from 'next/image'
@@ -28,6 +29,7 @@ export default function Player(props: Props) {
   const { setNowPlaying, nowPlaying } = props
   const queue = useAppStore((state) => state.queue)
   const queueOwner = useAppStore((state) => state.queueOwner)
+  const ownsQueue = useAppStore((state) => state.ownsQueue)
 
   const [playing, setPlaying] = useState(true)
   const [currentVidInfo, setCurrentVidInfo] = useState<DBVideo>()
@@ -65,9 +67,17 @@ export default function Player(props: Props) {
               <b>{queueOwner?.name}&apos;s</b> room
             </Text>
             {nextVideo ? (
-              <Button onClick={playNext} leftIcon={<IconBrandYoutubeFilled />}>
-                let&apos;s get rolin!
-              </Button>
+              <Tooltip label='only the room owner can start' hidden={ownsQueue}>
+                <Box>
+                  <Button
+                    onClick={playNext}
+                    leftIcon={<IconBrandYoutubeFilled />}
+                    disabled={!ownsQueue}
+                  >
+                    let&apos;s get rolin!
+                  </Button>
+                </Box>
+              </Tooltip>
             ) : (
               <Text fs='italic' fz='sm' color='dimmed'>
                 plz add songs

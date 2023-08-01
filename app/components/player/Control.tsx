@@ -58,16 +58,18 @@ export default function Control(props: Props) {
           play
         </Button>
       )}
-      <Tooltip label='only the room admin can skip' hidden={ownsQueue}>
-        <Button
-          color='gray'
-          variant='outline'
-          leftIcon={<IconPlayerTrackNextFilled size={16} />}
-          onClick={playNext}
-          disabled={!ownsQueue}
-        >
-          skip
-        </Button>
+      <Tooltip label='only the room owner can skip' hidden={ownsQueue}>
+        <Box>
+          <Button
+            color='gray'
+            variant='outline'
+            leftIcon={<IconPlayerTrackNextFilled size={16} />}
+            onClick={playNext}
+            disabled={!ownsQueue}
+          >
+            skip
+          </Button>
+        </Box>
       </Tooltip>
       <Box w='100%'>
         {currentPlayTime && playDuration && playDuration > 0 ? (
