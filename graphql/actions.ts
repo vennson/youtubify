@@ -69,6 +69,8 @@ export async function createVideo(
   return makeGraphQLRequest(createVideoMutation, variables) as Promise<unknown>
 }
 
-export async function getLiveQueue(queueId: string) {
-  return makeGraphQLRequest(getQueueQuery, { id: queueId })
+export async function getQueue(queueId: string) {
+  return makeGraphQLRequest(getQueueQuery, {
+    id: queueId,
+  }) as Promise<QueueQueryResponse>
 }
