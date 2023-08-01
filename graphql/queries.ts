@@ -24,6 +24,7 @@ export const getQueueQuery = `
               }
             }
             createdAt
+            id
           }
         }
       }

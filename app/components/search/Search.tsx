@@ -123,7 +123,6 @@ export default function SearchPage({ roomId }: Props) {
                 <ResultItem
                   key={`${searchedVideo.videoId}-${i}`}
                   searchedVideo={searchedVideo}
-                  setQueue={setQueue}
                   queue={queue}
                 />
               ))}

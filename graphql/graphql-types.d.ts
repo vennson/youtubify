@@ -18,16 +18,16 @@ type QueueCreateResponse = {
   }
 }
 
-type VideoCreateResponse = {
-  videoCreate: {
-    video: {
-      title: string
-      videoId: string
-    }
-  }
-}
+// type VideoCreateResponse = {
+//   videoCreate: {
+//     video: {
+//       title: string
+//       videoId: string
+//     }
+//   }
+// }
 
-type GQLVideo = {
+type DBVideo = {
   node: {
     author: {
       avatar: [
@@ -66,21 +66,49 @@ type GQLVideo = {
     title: string
     videoId: string
     votes: {
-      edges: []
+      edges: [
+        {
+          node: {
+            name: string
+            id: string
+          }
+        },
+      ]
     }
     createdAt: string
+    id: string
+  }
+}
+
+type DBQueue = {
+  id: string
+  owner: {
+    name: string
+    id: string
+  }
+  videos: {
+    edges: DBVideo[]
   }
 }
 
 type QueueQueryResponse = {
-  queue: {
-    id: string
-    owner: {
-      name: string
+  queue: DBQueue
+}
+
+type VideoCreateResponse = {
+  videoCreate: {
+    video: {
       id: string
+      title: string
     }
-    videos: {
-      edges: GQLVideo[]
+  }
+}
+
+type VideoUpdateResponse = {
+  videoUpdate: {
+    video: {
+      id: string
+      title: string
     }
   }
 }

@@ -27,7 +27,18 @@ export const createVideoMutation = `
     videoCreate(input: $input) {
       video {
         title
-        videoId
+        id
+      }
+    }
+  }
+`
+
+export const updateVideoMutation = `
+  mutation VideoUpdate($by: VideoByInput!, $input: VideoUpdateInput!) {
+    videoUpdate(by: $by, input: $input) {
+      video {
+        title
+        id
       }
     }
   }

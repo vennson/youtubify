@@ -13,12 +13,12 @@ export function abbreviateNumber(number: number, decimalPlaces = 2) {
   decimalPlaces = Math.pow(10, decimalPlaces)
 
   // Enumerate number abbreviations
-  var abbrev = ['K', 'M', 'B', 'T']
+  const abbrev = ['K', 'M', 'B', 'T']
 
   // Go through the array backwards, so we do the largest first
-  for (var i = abbrev.length - 1; i >= 0; i--) {
+  for (let i = abbrev.length - 1; i >= 0; i--) {
     // Convert array index to "1000", "1000000", etc
-    var size = Math.pow(10, (i + 1) * 3)
+    const size = Math.pow(10, (i + 1) * 3)
 
     // If the number is bigger or equal do the abbreviation
     if (size <= number) {

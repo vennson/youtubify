@@ -1,9 +1,8 @@
 import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
 import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
-import { Dispatch, SetStateAction, useEffect } from 'react'
 import { RED } from '~/constants/colors'
-import { createVideo } from '~/graphql/actions'
+import { createVideo, getQueue, updateVideo } from '~/graphql/actions'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from './utils'
 import { useAppStore } from '~/store/store'
@@ -11,78 +10,50 @@ import { useAppStore } from '~/store/store'
 type Props = {
   searchedVideo: Video
   queue: QueueVideo[]
-  setQueue: Dispatch<SetStateAction<QueueVideo[]>>
 }
 
 export default function ResultItem(props: Props) {
-  const { searchedVideo, setQueue, queue } = props
+  const { searchedVideo } = props
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
-  const userId = useAppStore((state) => state.userId) //! to be removed
+  const queue = useAppStore((state) => state.queue)
+  const setQueue = useAppStore((state) => state.setQueue)
 
   const queuedVideo = queue.find(
-    (queuedVideo) => queuedVideo.videoId === searchedVideo.videoId,
+    (queuedVideo) => queuedVideo.node.videoId === searchedVideo.videoId,
   )
 
   let userInVotes = false
-  if (queuedVideo?.votes) {
-    userInVotes = !!queuedVideo?.votes?.find((vote) => vote.userId === userId)
+  if (
+    queuedVideo?.node.votes.edges.length &&
+    queuedVideo?.node.votes.edges.length > 0
+  ) {
+    userInVotes = !!queuedVideo?.node.votes.edges.find(
+      (edge) => edge.node.id === user?.id,
+    )
   }
 
-  /**
-   * toggles vote by appending or removing the user from Votes array of a queued video
-   */
-  function toggleVote(_queue: QueueVideo[]) {
-    let newVotes: Vote[] = [{ userId }]
-    if (queuedVideo?.votes) {
-      if (userInVotes) {
-        newVotes = queuedVideo.votes.filter((vote) => {
-          return vote.userId !== userId
-        })
-      } else {
-        newVotes = [...queuedVideo.votes, { userId }]
-      }
-    }
+  //! move somewhere
+  async function refreshQueue() {
+    if (!joinedRoom) return
 
-    let newQueue = [..._queue]
-    if (queuedVideo) {
-      newQueue = _queue.map((queryVid) => {
-        if (queryVid.videoId === searchedVideo.videoId) {
-          return { ...queryVid, votes: newVotes }
-        }
-        return queryVid
-      })
-    } else {
-      newQueue.push({ ...searchedVideo, votes: newVotes })
-    }
-
-    return newQueue
+    const { queue: dbQueue } = await getQueue(joinedRoom)
+    console.log('dbQueue.owner', dbQueue.owner)
+    setQueue(dbQueue.videos.edges)
   }
 
   async function onClickResultItem() {
-    // if (joinedRoom && user?.id) { //!
-    //   const res = await createVideo(searchedVideo, joinedRoom, user?.id)
-    //   console.log('res', res)
-    // }
-    setQueue((prev) => toggleVote(prev))
-  }
+    if (!joinedRoom || !user?.id) return
 
-  /**
-   * if queuedVideo has no more votes, remove it from queue
-   */
-  useEffect(() => {
-    if (queuedVideo?.votes && queuedVideo.votes.length === 0) {
-      setQueue((prev) => {
-        const newQueue = [...prev]
-        const index = newQueue.findIndex(
-          (queueVid) => queueVid.videoId === queuedVideo.videoId,
-        )
-        newQueue.splice(index, 1)
-
-        return newQueue
-      })
+    if (queuedVideo) {
+      const linkStatus = userInVotes ? 'unlink' : 'link'
+      await updateVideo(queuedVideo.node.id, user.id, linkStatus)
+    } else {
+      await createVideo(searchedVideo, joinedRoom, user.id)
     }
-  }, [queuedVideo, setQueue])
+
+    await refreshQueue()
+  }
 
   return (
     <UnstyledButton onClick={onClickResultItem}>
@@ -114,10 +85,11 @@ export default function ResultItem(props: Props) {
             </Box>
           </Flex>
 
-          {queuedVideo?.votes && queuedVideo.votes.length > 0 ? (
+          {queuedVideo?.node.votes &&
+          queuedVideo.node.votes.edges.length > 0 ? (
             <Flex align='center'>
               <IconHeartFilled size={24} style={{ color: RED }} />
-              {queuedVideo.votes.length}
+              {queuedVideo.node.votes.edges.length}
             </Flex>
           ) : (
             <Box miw={24}>

@@ -4,6 +4,7 @@ import {
   createQueueMutation,
   createUserMutation,
   createVideoMutation,
+  updateVideoMutation,
 } from '~/graphql/mutations'
 import { isProduction } from '~/lib/actions'
 import { useAppStore } from '~/store/store'
@@ -67,7 +68,10 @@ export async function createVideo(
     },
   }
 
-  return makeGraphQLRequest(createVideoMutation, variables) as Promise<unknown>
+  return makeGraphQLRequest(
+    createVideoMutation,
+    variables,
+  ) as Promise<VideoCreateResponse>
 }
 
 export async function getQueue(queueId: string) {
@@ -82,4 +86,24 @@ export async function joinRoomIfExists(roomId: string) {
     useAppStore.getState().setJoinedRoom(roomId)
     return queue.id
   }
+}
+
+export async function updateVideo(
+  videoDBId: string,
+  userId: string,
+  linkStatus: 'link' | 'unlink',
+) {
+  const variables = {
+    by: { id: videoDBId },
+    input: {
+      votes: {
+        [linkStatus]: userId,
+      },
+    },
+  }
+
+  return makeGraphQLRequest(
+    updateVideoMutation,
+    variables,
+  ) as Promise<VideoUpdateResponse>
 }

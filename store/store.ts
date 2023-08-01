@@ -11,6 +11,8 @@ interface AppState {
   setUser: (user: User) => void
   joinedRoom?: string
   setJoinedRoom: (queueId: string) => void
+  queue: DBVideo[]
+  setQueue: (queue: DBVideo[]) => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -41,4 +43,7 @@ export const useAppStore = create<AppState>((set) => ({
   },
   joinedRoom: undefined,
   setJoinedRoom: (joinedRoom) => set({ joinedRoom }),
+
+  queue: [],
+  setQueue: (queue) => set({ queue }),
 }))

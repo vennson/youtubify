@@ -1,71 +1,36 @@
 import { g, config } from '@grafbase/sdk'
 
-// // @ts-ignore
-// const video = g
-//   .model('Video', {
-//     author: g.json(),
-//     lengthSeconds: g.int(),
-//     stats: g.json(),
-//     thumbnails: g.json().list(),
-//     title: g.string(),
-//     videoId: g.string().unique(),
-//     votes: g
-//       .relation(() => user)
-//       .list()
-//       .optional(),
-//     queue: g.relation(() => queue).optional(),
-//   })
-//   .auth((rules) => {
-//     rules.public().create().read().update()
-//     rules.private().delete()
-//   })
+const user = g.model('User', {
+  name: g.string(),
+  queue: g.relation(() => queue).optional(),
+})
 
-// @ts-ignore
-// !for testing only
-const video = g
-  .model('Video', {
-    author: g.json().optional(),
-    lengthSeconds: g.int().optional(),
-    stats: g.json().optional(),
-    thumbnails: g.json().list().optional(),
-    title: g.string().optional(),
-    videoId: g.string().unique(),
-    votes: g
-      .relation(() => user)
-      .list()
-      .optional(),
-    queue: g.relation(() => queue).optional(),
-  })
-  .auth((rules) => {
-    rules.public().create().read().update()
-    rules.private().delete()
-  })
+const queue = g.model('Queue', {
+  videos: g
+    .relation(() => video)
+    .optional()
+    .list()
+    .optional(),
+  owner: g.relation(user).optional(), // !temporary
+})
 
-// @ts-ignore
-const queue = g
-  .model('Queue', {
-    videos: g
-      .relation(() => video)
-      .list()
-      .optional(),
-    owner: g.relation(() => user),
-  })
-  .auth((rules) => {
-    rules.public().create().read().update()
-    rules.private().delete()
-  })
-
-// @ts-ignore
-const user = g
-  .model('User', {
-    name: g.string(),
-    queue: g.relation(() => queue).optional(),
-  })
-  .auth((rules) => {
-    rules.public().create().read().update()
-    rules.private().delete()
-  })
+const video = g.model('Video', {
+  author: g.json(),
+  lengthSeconds: g.int(),
+  stats: g.json(),
+  thumbnails: g.json().list(),
+  title: g.string(),
+  videoId: g.string(),
+  votes: g.relation(user).list().optional(),
+  queue: g.relation(queue).optional(),
+})
 
 export default config({
   schema: g,
+  auth: {
+    rules: (rules) => {
+      rules.public().create().read().update()
+      rules.private().delete()
+    },
+  },
 })
