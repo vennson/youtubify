@@ -2,7 +2,7 @@
 
 import { Modal } from '@mantine/core'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppStore } from '~/store/store'
 import NicknameForm from './NicknameForm'
 import JoinRoomForm from './JoinRoomForm'
@@ -31,7 +31,8 @@ export default function WelcomeModal() {
 
   return (
     <Modal
-      opened={!joinedRoom}
+      // opened={!joinedRoom}
+      opened={true}
       onClose={onClose}
       centered
       withCloseButton={false}

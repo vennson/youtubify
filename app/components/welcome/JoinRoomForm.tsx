@@ -2,7 +2,7 @@ import { Button, Loader, Text, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useState } from 'react'
 import { z } from 'zod'
-import { createQueue, getQueue, joinRoomIfExists } from '~/graphql/actions'
+import { createQueue, joinRoomIfExists } from '~/graphql/actions'
 import { useAppStore } from '~/store/store'
 
 const validSchema = z.object({
@@ -12,7 +12,7 @@ const validSchema = z.object({
 export default function JoinRoomForm() {
   const user = useAppStore((state) => state.user)
   const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState({ creating: false, joining: false })
   const form = useForm({
     validate: zodResolver(validSchema),
     initialValues: {
@@ -21,6 +21,7 @@ export default function JoinRoomForm() {
   })
 
   async function onJoinRoom(roomId: string) {
+    setLoading((prev) => ({ ...prev, joining: true }))
     const queueId = await joinRoomIfExists(roomId)
     if (!queueId) {
       form.setFieldError('roomId', "room doesn't exist")
@@ -28,50 +29,48 @@ export default function JoinRoomForm() {
   }
 
   async function onCreateRoom() {
-    setLoading(true)
+    setLoading((prev) => ({ ...prev, creating: true }))
     if (user?.id) {
       const { queueCreate } = await createQueue(user?.id)
       setJoinedRoom(queueCreate.queue.id)
     }
-    setLoading(false)
+    // setLoading(false)
   }
 
   return (
-    <>
-      {user?.id && (
-        <>
-          <Text mt='md' ta='center' fz='sm'>
-            hello <b>{user.name}</b>
-          </Text>
+    user?.id && (
+      <>
+        <Text mt='md' ta='center' fz='sm'>
+          hello <b>{user.name}</b>
+        </Text>
 
-          <form onSubmit={form.onSubmit((values) => onJoinRoom(values.roomId))}>
-            <TextInput
-              id='room-id'
-              label='room id'
-              placeholder='paste the room id'
-              {...form.getInputProps('roomId')}
-            />
-            <Button type='submit' disabled={loading} fullWidth mt='md'>
-              {loading ? <Loader size={16} /> : 'join room'}
-            </Button>
-          </form>
-
-          <Text mt='md' ta='center' color='dimmed' fz='sm'>
-            or
-          </Text>
-
-          <Button
-            disabled={loading}
-            fullWidth
-            mt='md'
-            onClick={onCreateRoom}
-            variant='outline'
-            color='gray'
-          >
-            {loading ? <Loader size={16} /> : 'create room'}
+        <form onSubmit={form.onSubmit((values) => onJoinRoom(values.roomId))}>
+          <TextInput
+            id='room-id'
+            label='room id'
+            placeholder='paste the room id'
+            {...form.getInputProps('roomId')}
+          />
+          <Button type='submit' disabled={loading.joining} fullWidth mt='md'>
+            {loading.joining ? <Loader size={16} /> : 'join room'}
           </Button>
-        </>
-      )}
-    </>
+        </form>
+
+        <Text mt='md' ta='center' color='dimmed' fz='sm'>
+          or
+        </Text>
+
+        <Button
+          disabled={loading.creating}
+          fullWidth
+          mt='md'
+          onClick={onCreateRoom}
+          variant='outline'
+          color='gray'
+        >
+          {loading.creating ? <Loader size={16} /> : 'create room'}
+        </Button>
+      </>
+    )
   )
 }
