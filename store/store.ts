@@ -41,7 +41,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   setPendingRoom: (pendingRoom) => set({ pendingRoom }),
 
   queue: [],
-  setQueue: (queue) => set({ queue }),
+  setQueue: (queue) => {
+    const sortedQueue = queue.sort(
+      (a, b) => b.node.votes.edges.length - a.node.votes.edges.length,
+    )
+    set({ queue: sortedQueue })
+  },
   ownsQueue: false,
   setOwnsQueue: (ownsQueue) => set({ ownsQueue }),
   queueOwner: undefined,

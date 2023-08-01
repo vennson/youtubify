@@ -6,7 +6,7 @@ export const getQueueQuery = `
         name
         id
       }
-      videos(first: 50) {
+      videos(orderBy: { createdAt:ASC }, first: 50) {
         edges {
           node {
             author

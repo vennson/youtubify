@@ -37,8 +37,8 @@ export default function SearchPage({ roomId }: Props) {
       query: '',
     },
   })
-  const hasQuery = form.values.query.length > 0
   const router = useRouter()
+  const hasQuery = form.values.query.length > 0
 
   const joinRoomOrRedirect = useCallback(
     async (roomId: string) => {

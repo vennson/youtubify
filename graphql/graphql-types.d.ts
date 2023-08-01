@@ -19,15 +19,6 @@ type QueueCreateResponse = {
   }
 }
 
-// type VideoCreateResponse = {
-//   videoCreate: {
-//     video: {
-//       title: string
-//       videoId: string
-//     }
-//   }
-// }
-
 type DBVideo = {
   node: {
     author: {
