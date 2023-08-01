@@ -24,7 +24,6 @@ export default function NicknameForm() {
   })
 
   async function onCreateUser(name: string) {
-    console.log('onCreateUser')
     setLoading(true)
     const { userCreate } = await createUser(name)
     setUser(userCreate.user)

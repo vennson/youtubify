@@ -1,9 +1,9 @@
 'use client'
 
 import { Modal } from '@mantine/core'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAppStore } from '~/store/store'
-import { useRouter } from 'next/navigation'
 import NicknameForm from './NicknameForm'
 import JoinRoomForm from './JoinRoomForm'
 

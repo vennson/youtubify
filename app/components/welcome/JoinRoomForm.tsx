@@ -28,7 +28,6 @@ export default function JoinRoomForm() {
     setLoading(true)
     if (user?.id) {
       const { queueCreate } = await createQueue(user?.id)
-      console.log('queueCreate.queue.roomId', queueCreate.queue.id)
       setJoinedRoom(queueCreate.queue.id)
     }
     setLoading(false)

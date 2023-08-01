@@ -32,7 +32,6 @@ export default function SearchBar(props: Props) {
     const vidsOnly = filterVids(data.contents)
     const videos = vidsOnly.map((content) => content.video)
     setResults(videos)
-    console.log('data', data)
   }
 
   function clearQuery() {

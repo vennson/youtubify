@@ -28,8 +28,6 @@ type Props = {
 const UPPER_BODY_HEIGHT = PLAYER_HEIGHT + 130
 
 export default function SearchPage({ roomId }: Props) {
-  console.log('roomId', roomId)
-  // const initUserId = useAppStore((state) => state.initUserId)
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
@@ -38,7 +36,6 @@ export default function SearchPage({ roomId }: Props) {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
   const [queue, setQueue] = useState<QueueVideo[]>([])
-  // const [welcomeModalOpened, setWelcomeModalOpened] = useState(true)
   const [nowPlaying, setNowPlaying] = useState<string>()
   const form = useForm({
     initialValues: {
@@ -47,7 +44,7 @@ export default function SearchPage({ roomId }: Props) {
   })
   const hasQuery = form.values.query.length > 0
 
-  async function test() {
+  async function test() { // ! remove when grafbase is fully implemented
     // await createQueue(userId)
     // const res = await getQueueByOwner(userId)
     const res = await createUser('meme')
@@ -72,6 +69,7 @@ export default function SearchPage({ roomId }: Props) {
 
   return (
     <Box maw={600} mx='auto' mt={UPPER_BODY_HEIGHT} px='sm'>
+      {/* ! remove when grafbase done */}
       {/* <Button onClick={test}>test</Button> */}
 
       <Box

@@ -59,8 +59,6 @@ export default function ResultItem(props: Props) {
   }
 
   async function onClickResultItem() {
-    console.log('joinedRoom', joinedRoom)
-    console.log('user?.id', user?.id)
     // if (joinedRoom && user?.id) { //!
     //   const res = await createVideo(searchedVideo, joinedRoom, user?.id)
     //   console.log('res', res)
