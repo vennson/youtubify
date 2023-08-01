@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { refreshQueue } from '~/graphql/actions'
 
 export default function usePollQueue() {
   const [isActive, setIsActive] = useState(false)
@@ -17,9 +18,10 @@ export default function usePollQueue() {
       }, 3000)
     }
 
-    const foo = () => {
+    const foo = async () => {
       // Your logic for the "foo" function goes here
-      console.log('foo is executed')
+      // console.log('refreshQueue is executed')
+      // await refreshQueue()
     }
 
     // Initial setup

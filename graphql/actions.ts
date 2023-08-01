@@ -48,6 +48,7 @@ export async function createVideo(
   video: Video,
   queueId: string,
   userId: string,
+  username: string,
 ) {
   const { author, lengthSeconds, stats, thumbnails, title, videoId } = video
 
@@ -66,7 +67,8 @@ export async function createVideo(
         link: userId,
       },
       addedBy: {
-        link: userId,
+        id: userId,
+        name: username,
       },
     },
   }
@@ -140,7 +142,7 @@ export async function refreshQueue() {
       setQueueOwner(dbQueue.owner)
     }
 
-    return dbQueue?.id
+    return dbQueue
   } catch (error) {
     console.log('refreshQueue error', error)
   }

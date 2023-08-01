@@ -44,9 +44,18 @@ export default function ResultItem(props: Props) {
 
     if (queuedVideo) {
       const linkStatus = userInVotes ? 'unlink' : 'link'
-      await updateVideo(queuedVideo.node.id, user.id, linkStatus)
+      console.log('updateVideo linkStatus:', linkStatus)
+      const res = await updateVideo(queuedVideo.node.id, user.id, linkStatus)
+      console.log('res', res)
     } else {
-      await createVideo(searchedVideo, joinedRoom, user.id)
+      console.log('createVideo:', createVideo)
+      const res = await createVideo(
+        searchedVideo,
+        joinedRoom,
+        user.id,
+        user.name,
+      )
+      console.log('res', res)
     }
 
     const res = await refreshQueue()

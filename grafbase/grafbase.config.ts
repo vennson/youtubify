@@ -21,9 +21,9 @@ const video = g.model('Video', {
   thumbnails: g.json().list(),
   title: g.string(),
   videoId: g.string(),
-  votes: g.relation(user).name('votes').list().optional(),
+  votes: g.relation(user).optional().list().optional(),
   queue: g.relation(queue).optional(),
-  addedBy: g.relation(user).name('addedBy'),
+  addedBy: g.json(),
   isPlaying: g.boolean().default(false),
 })
 
@@ -36,3 +36,5 @@ export default config({
     },
   },
 })
+
+

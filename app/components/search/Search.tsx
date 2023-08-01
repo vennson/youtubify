@@ -72,10 +72,10 @@ export default function SearchPage({ roomId }: Props) {
   }, [joinRoomOrRedirect, joinedRoom, roomId, user?.id])
 
   useEffect(() => {
-    const pollQueue = setInterval(() => {
-      console.log('refreshing queue...')
-      refreshQueue()
-    }, POLL_QUEUE_INTERVAL)
+    // const pollQueue = setInterval(() => {
+    //   console.log('refreshing queue...')
+    //   refreshQueue()
+    // }, POLL_QUEUE_INTERVAL)
 
     const firstPollLoading = setTimeout(
       () => setFirstQueueRefreshed(true),
@@ -83,13 +83,13 @@ export default function SearchPage({ roomId }: Props) {
     )
 
     return () => {
-      clearInterval(pollQueue)
+      // clearInterval(pollQueue)
       clearTimeout(firstPollLoading)
     }
   }, [])
 
-  // const isPolling = usePollQueue()
-  // console.log('isPolling', isPolling)
+  const refreshPaused = usePollQueue()
+  // console.log('refreshPaused', refreshPaused)
 
   useEffect(() => {
     refreshQueue()
