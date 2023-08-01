@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Center, Divider, Kbd, Stack, Text } from '@mantine/core'
+import { Box, Center, Divider, Kbd, Skeleton, Stack, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useCallback, useEffect, useState } from 'react'
 import ResultItem from './ResultItem'
@@ -17,6 +17,7 @@ type Props = {
 }
 
 const UPPER_BODY_HEIGHT = PLAYER_HEIGHT + 130
+const POLL_QUEUE_INTERVAL = 1000
 
 export default function SearchPage({ roomId }: Props) {
   const user = useAppStore((state) => state.user)
@@ -30,6 +31,7 @@ export default function SearchPage({ roomId }: Props) {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
   const [nowPlaying, setNowPlaying] = useState<string>()
+  const [firstQueueRefreshed, setFirstQueueRefreshed] = useState(false)
   const form = useForm({
     initialValues: {
       query: '',
@@ -67,16 +69,20 @@ export default function SearchPage({ roomId }: Props) {
   }, [joinRoomOrRedirect, joinedRoom, roomId, user?.id])
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const pollQueue = setInterval(() => {
       refreshQueue()
-    }, 1000)
+    }, POLL_QUEUE_INTERVAL)
+
+    const firstPollLoading = setTimeout(
+      () => setFirstQueueRefreshed(true),
+      POLL_QUEUE_INTERVAL + 1000,
+    )
 
     return () => {
-      clearInterval(interval)
+      clearInterval(pollQueue)
+      clearTimeout(firstPollLoading)
     }
   }, [])
-
-  console.log('ownsQueue', ownsQueue)
 
   return (
     joinedRoom && (
@@ -138,7 +144,11 @@ export default function SearchPage({ roomId }: Props) {
               ))}
             </Stack>
 
-            {queue.length === 0 && nowPlaying && (
+            {!firstQueueRefreshed && queue.length === 0 && (
+              <Skeleton mt='md' height={82} radius='sm' />
+            )}
+
+            {queue.length === 0 && firstQueueRefreshed && (
               <Center>
                 <Text color='dimmed' fs='italic' fz='sm'>
                   bruh... no queue?
