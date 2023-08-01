@@ -1,4 +1,4 @@
-import SearchPage from '~/app/components/search'
+import SearchPage from '~/app/components/search/Search'
 
 type Props = {
   params: {

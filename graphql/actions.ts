@@ -6,6 +6,7 @@ import {
   createVideoMutation,
 } from '~/graphql/mutations'
 import { isProduction } from '~/lib/actions'
+import { useAppStore } from '~/store/store'
 
 const apiUrl = isProduction
   ? process.env.NEXT_PUBLIC_GRAFBASE_API_URL || ''
@@ -73,4 +74,12 @@ export async function getQueue(queueId: string) {
   return makeGraphQLRequest(getQueueQuery, {
     id: queueId,
   }) as Promise<QueueQueryResponse>
+}
+
+export async function joinRoomIfExists(roomId: string) {
+  const { queue } = await getQueue(roomId)
+  if (queue?.id) {
+    useAppStore.getState().setJoinedRoom(roomId)
+    return queue.id
+  }
 }

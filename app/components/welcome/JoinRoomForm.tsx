@@ -2,7 +2,7 @@ import { Button, Loader, Text, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useState } from 'react'
 import { z } from 'zod'
-import { createQueue, getQueue } from '~/graphql/actions'
+import { createQueue, getQueue, joinRoomIfExists } from '~/graphql/actions'
 import { useAppStore } from '~/store/store'
 
 const validSchema = z.object({
@@ -21,11 +21,9 @@ export default function JoinRoomForm() {
   })
 
   async function onJoinRoom(roomId: string) {
-    const { queue } = await getQueue(roomId)
-    if (queue?.id) {
-      setJoinedRoom(roomId)
-    } else {
-      form.setFieldError('roomId', "room does't exist")
+    const queueId = await joinRoomIfExists(roomId)
+    if (!queueId) {
+      form.setFieldError('roomId', "room doesn't exist")
     }
   }
 
