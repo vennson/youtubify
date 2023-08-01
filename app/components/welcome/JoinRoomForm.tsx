@@ -12,6 +12,8 @@ const validSchema = z.object({
 export default function JoinRoomForm() {
   const user = useAppStore((state) => state.user)
   const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
+  const pendingRoom = useAppStore((state) => state.pendingRoom)
+
   const [loading, setLoading] = useState({ creating: false, joining: false })
   const form = useForm({
     validate: zodResolver(validSchema),
@@ -25,6 +27,7 @@ export default function JoinRoomForm() {
     const queueId = await joinRoomIfExists(roomId)
     if (!queueId) {
       form.setFieldError('roomId', "room doesn't exist")
+      setLoading((prev) => ({ ...prev, joining: false }))
     }
   }
 
@@ -32,12 +35,13 @@ export default function JoinRoomForm() {
     setLoading((prev) => ({ ...prev, creating: true }))
     if (user?.id) {
       const { queueCreate } = await createQueue(user?.id)
-      setJoinedRoom(queueCreate.queue.id)
+      await setJoinedRoom(queueCreate.queue.id)
     }
   }
 
   return (
-    user?.id && (
+    user?.id &&
+    !pendingRoom && (
       <>
         <Text mt='md' ta='center' fz='sm'>
           hello <b>{user.name}</b>

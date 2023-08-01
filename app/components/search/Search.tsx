@@ -1,15 +1,6 @@
 'use client'
 
-import {
-  Box,
-  Button,
-  Center,
-  Divider,
-  Kbd,
-  Modal,
-  Stack,
-  Text,
-} from '@mantine/core'
+import { Box, Center, Divider, Kbd, Stack, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useCallback, useEffect, useState } from 'react'
 import ResultItem from './ResultItem'
@@ -18,7 +9,7 @@ import QueueItem from '../queue/QueueItem'
 import { useAppStore } from '~/store/store'
 import Player from '../player/Player'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
-import { createUser, joinRoomIfExists } from '~/graphql/actions'
+import { joinRoomIfExists, refreshQueue } from '~/graphql/actions'
 import { useRouter } from 'next/navigation'
 
 type Props = {
@@ -33,6 +24,8 @@ export default function SearchPage({ roomId }: Props) {
   const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
   const initUser = useAppStore((state) => state.initUser)
   const queue = useAppStore((state) => state.queue)
+  const ownsQueue = useAppStore((state) => state.ownsQueue)
+  const setPendingRoom = useAppStore((state) => state.setPendingRoom)
 
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
@@ -49,7 +42,7 @@ export default function SearchPage({ roomId }: Props) {
     async (roomId: string) => {
       const queueId = await joinRoomIfExists(roomId)
       if (queueId) {
-        setJoinedRoom(roomId)
+        await setJoinedRoom(roomId)
       } else {
         router.push(`/`)
       }
@@ -57,36 +50,37 @@ export default function SearchPage({ roomId }: Props) {
     [router, setJoinedRoom],
   )
 
-  async function test() {
-    // ! remove when grafbase is fully implemented
-    // await createQueue(userId)
-    // const res = await getQueueByOwner(userId)
-    const res = await createUser('meme')
-    console.log('res', res)
-  }
-
   useEffect(() => {
     if (!user?.id) {
-      initUser()
+      const hasSession = initUser()
+      if (!hasSession) {
+        setPendingRoom(roomId)
+        router.push('/')
+      }
     }
-  }, [initUser, user?.id])
+  }, [initUser, roomId, router, setPendingRoom, user?.id])
 
   useEffect(() => {
-    // get queue from db using roomId
-  })
-
-  useEffect(() => {
-    if (!joinedRoom) {
+    if (!joinedRoom && user?.id) {
       joinRoomOrRedirect(roomId)
     }
-  }, [joinRoomOrRedirect, joinedRoom, roomId])
+  }, [joinRoomOrRedirect, joinedRoom, roomId, user?.id])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshQueue()
+    }, 10000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
+
+  console.log('ownsQueue', ownsQueue)
 
   return (
     joinedRoom && (
       <Box maw={600} mx='auto' mt={UPPER_BODY_HEIGHT} px='sm'>
-        {/* ! remove when grafbase done */}
-        {/* <Button onClick={test}>test</Button> */}
-
         <Box
           pos='fixed'
           maw={600}

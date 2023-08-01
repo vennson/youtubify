@@ -1,5 +1,6 @@
 import { Button, Loader, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { z } from 'zod'
 import { createUser } from '~/graphql/actions'
@@ -15,6 +16,8 @@ const validSchema = z.object({
 export default function NicknameForm() {
   const user = useAppStore((state) => state.user)
   const setUser = useAppStore((state) => state.setUser)
+  const pendingRoom = useAppStore((state) => state.pendingRoom)
+
   const [loading, setLoading] = useState(false)
   const form = useForm({
     validate: zodResolver(validSchema),
@@ -22,12 +25,18 @@ export default function NicknameForm() {
       name: '',
     },
   })
+  const router = useRouter()
 
   async function onCreateUser(name: string) {
     setLoading(true)
     const { userCreate } = await createUser(name)
     setUser(userCreate.user)
-    setLoading(false)
+
+    if (pendingRoom) {
+      router.push(`/room/${pendingRoom}/`)
+    } else {
+      setLoading(false)
+    }
   }
 
   return (

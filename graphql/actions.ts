@@ -83,7 +83,7 @@ export async function getQueue(queueId: string) {
 export async function joinRoomIfExists(roomId: string) {
   const { queue } = await getQueue(roomId)
   if (queue?.id) {
-    useAppStore.getState().setJoinedRoom(roomId)
+    await useAppStore.getState().setJoinedRoom(roomId)
     return queue.id
   }
 }
