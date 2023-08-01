@@ -14,6 +14,8 @@ type Props = {
 export default function QueueItem({ queuedVideo }: Props) {
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
+  const disabledAction = useAppStore((state) => state.disabledAction)
+  const setDisabledAction = useAppStore((state) => state.setDisabledAction)
 
   let userInVotes = false
   if (queuedVideo?.node.votes) {
@@ -26,14 +28,21 @@ export default function QueueItem({ queuedVideo }: Props) {
     queuedVideo.node.votes.edges.length > 0
 
   async function toggleVote() {
+    setDisabledAction()
     if (!joinedRoom || !user?.id) return
     const linkStatus = userInVotes ? 'unlink' : 'link'
     await updateVideo(queuedVideo.node.id, user.id, linkStatus)
     await refreshQueue()
   }
 
+  // console.log('disabledAction', disabledAction)
+
   return (
-    <UnstyledButton onClick={toggleVote} hidden={!hasVotes}>
+    <UnstyledButton
+      onClick={toggleVote}
+      hidden={!hasVotes}
+      disabled={disabledAction}
+    >
       <Card withBorder p='xs'>
         <Flex gap='sm' justify='space-between' align='center'>
           <Flex gap='sm'>
@@ -64,15 +73,20 @@ export default function QueueItem({ queuedVideo }: Props) {
             </Box>
           </Flex>
 
-          <Flex align='center'>
-            {userInVotes ? (
-              <IconHeartFilled size={24} style={{ color: RED }} />
-            ) : (
-              <IconHeart size={24} />
-            )}
-            {queuedVideo.node.votes &&
-              queuedVideo.node.votes.edges.length > 0 &&
-              queuedVideo.node.votes.edges.length}
+          <Flex align='end' direction='column'>
+            <Flex align='center'>
+              {userInVotes ? (
+                <IconHeartFilled size={24} style={{ color: RED }} />
+              ) : (
+                <IconHeart size={24} />
+              )}
+              {queuedVideo.node.votes &&
+                queuedVideo.node.votes.edges.length > 0 &&
+                queuedVideo.node.votes.edges.length}
+            </Flex>
+            <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
+              {queuedVideo.node.addedBy.name}
+            </Text>
           </Flex>
         </Flex>
       </Card>

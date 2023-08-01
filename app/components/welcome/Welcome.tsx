@@ -13,10 +13,6 @@ export default function WelcomeModal() {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const router = useRouter()
 
-  function onClose() {
-    console.log('close')
-  }
-
   useEffect(() => {
     if (joinedRoom) {
       router.push(`/room/${joinedRoom}/`)
@@ -30,7 +26,7 @@ export default function WelcomeModal() {
   }, [initUser, user?.id])
 
   return (
-    <Modal opened={true} onClose={onClose} centered withCloseButton={false}>
+    <Modal opened={true} onClose={() => {}} centered withCloseButton={false}>
       <NicknameForm />
       <JoinRoomForm />
     </Modal>

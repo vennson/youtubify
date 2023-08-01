@@ -24,6 +24,7 @@ const video = g.model('Video', {
   votes: g.relation(user).name('votes').list().optional(),
   queue: g.relation(queue).optional(),
   addedBy: g.relation(user).name('addedBy'),
+  isPlaying: g.boolean().default(false),
 })
 
 export default config({

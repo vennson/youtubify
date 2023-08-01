@@ -68,6 +68,11 @@ type DBVideo = {
       ]
     }
     createdAt: string
+    addedBy: {
+      name: string
+      id: string
+    }
+    isPlaying: boolean
     id: string
   }
 }

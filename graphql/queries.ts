@@ -24,6 +24,11 @@ export const getQueueQuery = `
               }
             }
             createdAt
+            addedBy {
+              name
+              id
+            }
+            isPlaying
             id
           }
         }

@@ -6,6 +6,7 @@ import { createVideo, refreshQueue, updateVideo } from '~/graphql/actions'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from './utils'
 import { useAppStore } from '~/store/store'
+import { useState } from 'react'
 
 type Props = {
   searchedVideo: Video
@@ -17,6 +18,9 @@ export default function ResultItem(props: Props) {
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const queue = useAppStore((state) => state.queue)
+  const disabledAction = useAppStore((state) => state.disabledAction)
+  const setDisabledAction = useAppStore((state) => state.setDisabledAction)
+  const [loading, setLoading] = useState(false)
 
   const queuedVideo = queue.find(
     (queuedVideo) => queuedVideo.node.videoId === searchedVideo.videoId,
@@ -33,6 +37,9 @@ export default function ResultItem(props: Props) {
   }
 
   async function onClickResultItem() {
+    console.count('onClickResultItem')
+    setLoading(true)
+    setDisabledAction()
     if (!joinedRoom || !user?.id) return
 
     if (queuedVideo) {
@@ -42,11 +49,17 @@ export default function ResultItem(props: Props) {
       await createVideo(searchedVideo, joinedRoom, user.id)
     }
 
-    await refreshQueue()
+    const res = await refreshQueue()
+    if (res) {
+      console.log('res', res)
+      setLoading(false)
+    }
   }
 
+  // console.log('disabledAction', disabledAction)
+
   return (
-    <UnstyledButton onClick={onClickResultItem}>
+    <UnstyledButton onClick={onClickResultItem} disabled={loading}>
       <Card withBorder p='xs'>
         <Flex gap='sm' justify='space-between' align='center'>
           <Flex gap='sm'>
@@ -77,9 +90,14 @@ export default function ResultItem(props: Props) {
 
           {queuedVideo?.node.votes &&
           queuedVideo.node.votes.edges.length > 0 ? (
-            <Flex align='center'>
-              <IconHeartFilled size={24} style={{ color: RED }} />
-              {queuedVideo.node.votes.edges.length}
+            <Flex direction='column' align='end'>
+              <Flex align='center'>
+                <IconHeartFilled size={24} style={{ color: RED }} />
+                {queuedVideo.node.votes.edges.length}
+              </Flex>
+              <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
+                {queuedVideo.node.addedBy.name}
+              </Text>
             </Flex>
           ) : (
             <Box miw={24}>

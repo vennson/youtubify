@@ -11,6 +11,7 @@ import Player from '../player/Player'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
 import { joinRoomIfExists, refreshQueue } from '~/graphql/actions'
 import { useRouter } from 'next/navigation'
+import usePollQueue from '~/app/hooks/usePollQueue'
 
 type Props = {
   roomId: string
@@ -27,6 +28,8 @@ export default function SearchPage({ roomId }: Props) {
   const queue = useAppStore((state) => state.queue)
   const ownsQueue = useAppStore((state) => state.ownsQueue)
   const setPendingRoom = useAppStore((state) => state.setPendingRoom)
+  const disabledAction = useAppStore((state) => state.disabledAction)
+  const setDisabledAction = useAppStore((state) => state.setDisabledAction)
 
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
@@ -70,6 +73,7 @@ export default function SearchPage({ roomId }: Props) {
 
   useEffect(() => {
     const pollQueue = setInterval(() => {
+      console.log('refreshing queue...')
       refreshQueue()
     }, POLL_QUEUE_INTERVAL)
 
@@ -82,6 +86,13 @@ export default function SearchPage({ roomId }: Props) {
       clearInterval(pollQueue)
       clearTimeout(firstPollLoading)
     }
+  }, [])
+
+  // const isPolling = usePollQueue()
+  // console.log('isPolling', isPolling)
+
+  useEffect(() => {
+    refreshQueue()
   }, [])
 
   return (

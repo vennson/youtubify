@@ -78,19 +78,29 @@ export async function createVideo(
 }
 
 export async function getQueue(queueId: string) {
-  return makeGraphQLRequest(getQueueQuery, {
-    id: queueId,
-  }) as Promise<QueueQueryResponse>
+  try {
+    const res = makeGraphQLRequest(getQueueQuery, {
+      id: queueId,
+    }) as Promise<QueueQueryResponse>
+
+    return res
+  } catch (error) {
+    console.log('getQueue error', error)
+  }
 }
 
 export async function joinRoomIfExists(roomId: string) {
   const { setQueueOwner } = useAppStore.getState()
 
-  const { queue } = await getQueue(roomId)
-  if (queue?.id) {
-    await useAppStore.getState().setJoinedRoom(roomId)
-    setQueueOwner(queue.owner)
-    return queue.id
+  try {
+    const { queue } = (await getQueue(roomId)) || {}
+    if (queue?.id) {
+      await useAppStore.getState().setJoinedRoom(roomId)
+      setQueueOwner(queue.owner)
+      return queue.id
+    }
+  } catch (error) {
+    console.log('joinRoomIfExists error', error)
   }
 }
 
@@ -108,16 +118,30 @@ export async function updateVideo(
     },
   }
 
-  return makeGraphQLRequest(
-    updateVideoMutation,
-    variables,
-  ) as Promise<VideoUpdateResponse>
+  try {
+    return makeGraphQLRequest(
+      updateVideoMutation,
+      variables,
+    ) as Promise<VideoUpdateResponse>
+  } catch (error) {
+    console.log('updateVideo error', error)
+  }
 }
 
 export async function refreshQueue() {
   const { joinedRoom, setQueue, setQueueOwner } = useAppStore.getState()
   if (!joinedRoom) return
-  const { queue: dbQueue } = await getQueue(joinedRoom)
-  setQueue(dbQueue.videos.edges)
-  setQueueOwner(dbQueue.owner)
+
+  try {
+    const { queue: dbQueue } = (await getQueue(joinedRoom)) || {}
+
+    if (dbQueue) {
+      setQueue(dbQueue.videos.edges)
+      setQueueOwner(dbQueue.owner)
+    }
+
+    return dbQueue?.id
+  } catch (error) {
+    console.log('refreshQueue error', error)
+  }
 }

@@ -27,11 +27,16 @@ export default function SearchBar(props: Props) {
     setLoading(true)
     setResults([])
 
-    const { data } = await search(query)
+    try {
+      const { data } = await search(query)
+      const vidsOnly = filterVids(data.contents)
+      const videos = vidsOnly.map((content) => content.video)
+      setResults(videos)
+    } catch (error) {
+      console.log('onSearch error', error)
+    }
+
     setLoading(false)
-    const vidsOnly = filterVids(data.contents)
-    const videos = vidsOnly.map((content) => content.video)
-    setResults(videos)
   }
 
   function clearQuery() {

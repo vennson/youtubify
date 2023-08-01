@@ -8,13 +8,15 @@ interface AppState {
   joinedRoom?: string
   setJoinedRoom: (queueId: string) => Promise<void>
   pendingRoom?: string
-  setPendingRoom: (queueId: string) => void
+  setPendingRoom: (queueId: string) => Promise<void>
   queue: DBVideo[]
   setQueue: (queue: DBVideo[]) => void
   ownsQueue: boolean
   setOwnsQueue: (ownsQueue: boolean) => void
   queueOwner?: { id: string; name: string }
   setQueueOwner: (queueOwner: { id: string; name: string }) => void
+  disabledAction: boolean
+  setDisabledAction: () => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -34,11 +36,22 @@ export const useAppStore = create<AppState>((set, get) => ({
   setJoinedRoom: async (joinedRoom) => {
     set({ joinedRoom })
     const res = await getQueue(joinedRoom)
-    const isOwner = res.queue.owner.id === get().user?.id
-    set({ ownsQueue: isOwner })
+    if (res) {
+      const isOwner = res.queue.owner.id === get().user?.id
+      set({ ownsQueue: isOwner })
+    }
   },
   pendingRoom: undefined,
-  setPendingRoom: (pendingRoom) => set({ pendingRoom }),
+  setPendingRoom: async (pendingRoom) => {
+    try {
+      const { queue } = (await getQueue(pendingRoom)) || {}
+      if (queue?.id) {
+        set({ pendingRoom })
+      }
+    } catch (error) {
+      console.log('setPendingRoom error', error)
+    }
+  },
 
   queue: [],
   setQueue: (queue) => {
@@ -51,4 +64,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   setOwnsQueue: (ownsQueue) => set({ ownsQueue }),
   queueOwner: undefined,
   setQueueOwner: (queueOwner) => set({ queueOwner }),
+  disabledAction: false,
+  setDisabledAction: () => {
+    // set({ disabledAction: true })
+    // setTimeout(() => {
+    //   set({ disabledAction: false })
+    // }, 3000)
+  },
 }))
