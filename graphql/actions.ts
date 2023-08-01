@@ -65,6 +65,9 @@ export async function createVideo(
       votes: {
         link: userId,
       },
+      addedBy: {
+        link: userId,
+      },
     },
   }
 
@@ -81,9 +84,12 @@ export async function getQueue(queueId: string) {
 }
 
 export async function joinRoomIfExists(roomId: string) {
+  const { setQueueOwner } = useAppStore.getState()
+
   const { queue } = await getQueue(roomId)
   if (queue?.id) {
     await useAppStore.getState().setJoinedRoom(roomId)
+    setQueueOwner(queue.owner)
     return queue.id
   }
 }
@@ -109,8 +115,9 @@ export async function updateVideo(
 }
 
 export async function refreshQueue() {
-  const { joinedRoom, setQueue } = useAppStore.getState()
+  const { joinedRoom, setQueue, setQueueOwner } = useAppStore.getState()
   if (!joinedRoom) return
   const { queue: dbQueue } = await getQueue(joinedRoom)
   setQueue(dbQueue.videos.edges)
+  setQueueOwner(dbQueue.owner)
 }

@@ -30,13 +30,7 @@ export default function WelcomeModal() {
   }, [initUser, user?.id])
 
   return (
-    <Modal
-      // opened={!joinedRoom}
-      opened={true}
-      onClose={onClose}
-      centered
-      withCloseButton={false}
-    >
+    <Modal opened={true} onClose={onClose} centered withCloseButton={false}>
       <NicknameForm />
       <JoinRoomForm />
     </Modal>

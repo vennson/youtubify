@@ -1,4 +1,13 @@
-import { Avatar, Box, Button, Card, Center, Flex, Text } from '@mantine/core'
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Center,
+  Flex,
+  Stack,
+  Text,
+} from '@mantine/core'
 import { IconBrandYoutubeFilled } from '@tabler/icons-react'
 import Image from 'next/image'
 import { Dispatch, SetStateAction, useRef, useState } from 'react'
@@ -18,6 +27,8 @@ type Props = {
 export default function Player(props: Props) {
   const { setNowPlaying, nowPlaying } = props
   const queue = useAppStore((state) => state.queue)
+  const queueOwner = useAppStore((state) => state.queueOwner)
+
   const [playing, setPlaying] = useState(true)
   const [currentVidInfo, setCurrentVidInfo] = useState<DBVideo>()
   const playerRef = useRef<YouTubePlayer>(null)
@@ -47,6 +58,25 @@ export default function Player(props: Props) {
 
   return (
     <Box h={PLAYER_HEIGHT}>
+      {!nowPlaying && (
+        <Center h='100%'>
+          <Flex direction='column' align='center' gap='sm'>
+            <Text>
+              <b>{queueOwner?.name}&apos;s</b> room
+            </Text>
+            {nextVideo ? (
+              <Button onClick={playNext} leftIcon={<IconBrandYoutubeFilled />}>
+                let&apos;s get rolin!
+              </Button>
+            ) : (
+              <Text fs='italic' fz='sm' color='dimmed'>
+                plz add songs
+              </Text>
+            )}
+          </Flex>
+        </Center>
+      )}
+
       {nowPlaying && (
         <>
           <ReactPlayer
@@ -97,20 +127,6 @@ export default function Player(props: Props) {
             </Card>
           </Box>
         </>
-      )}
-
-      {!nowPlaying && (
-        <Center h='100%'>
-          {nextVideo ? (
-            <Button onClick={playNext} leftIcon={<IconBrandYoutubeFilled />}>
-              let&apos;s get rolin!
-            </Button>
-          ) : (
-            <Text fs='italic' fz='sm' color='dimmed'>
-              plz add songs
-            </Text>
-          )}
-        </Center>
       )}
     </Box>
   )

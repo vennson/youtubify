@@ -13,6 +13,7 @@ export default function JoinRoomForm() {
   const user = useAppStore((state) => state.user)
   const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
   const pendingRoom = useAppStore((state) => state.pendingRoom)
+  const setQueueOwner = useAppStore((state) => state.setQueueOwner)
 
   const [loading, setLoading] = useState({ creating: false, joining: false })
   const form = useForm({
@@ -35,6 +36,7 @@ export default function JoinRoomForm() {
     setLoading((prev) => ({ ...prev, creating: true }))
     if (user?.id) {
       const { queueCreate } = await createQueue(user?.id)
+      setQueueOwner(queueCreate.queue.owner)
       await setJoinedRoom(queueCreate.queue.id)
     }
   }

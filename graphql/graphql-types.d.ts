@@ -12,6 +12,7 @@ type QueueCreateResponse = {
     queue: {
       owner: {
         id: string
+        name: string
       }
       id: string
     }

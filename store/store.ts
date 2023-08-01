@@ -1,4 +1,3 @@
-import shortUUID from 'short-uuid'
 import { create } from 'zustand'
 import { getQueue } from '~/graphql/actions'
 
@@ -14,6 +13,8 @@ interface AppState {
   setQueue: (queue: DBVideo[]) => void
   ownsQueue: boolean
   setOwnsQueue: (ownsQueue: boolean) => void
+  queueOwner?: { id: string; name: string }
+  setQueueOwner: (queueOwner: { id: string; name: string }) => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -43,4 +44,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   setQueue: (queue) => set({ queue }),
   ownsQueue: false,
   setOwnsQueue: (ownsQueue) => set({ ownsQueue }),
+  queueOwner: undefined,
+  setQueueOwner: (queueOwner) => set({ queueOwner }),
 }))

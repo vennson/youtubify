@@ -1,4 +1,12 @@
-import { Box, Button, Flex, Progress, Skeleton, Text } from '@mantine/core'
+import {
+  Box,
+  Button,
+  Flex,
+  Progress,
+  Skeleton,
+  Text,
+  Tooltip,
+} from '@mantine/core'
 import { formatSeconds } from '../search/utils'
 import {
   IconPlayerPauseFilled,
@@ -7,6 +15,7 @@ import {
 } from '@tabler/icons-react'
 import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react'
 import YouTubePlayer from 'react-player/youtube'
+import { useAppStore } from '~/store/store'
 
 type Props = {
   playing: boolean
@@ -17,6 +26,8 @@ type Props = {
 
 export default function Control(props: Props) {
   const { playing, setPlaying, playNext, playerRef } = props
+  const ownsQueue = useAppStore((state) => state.ownsQueue)
+
   const [currentPlayTime, setCurrentPlayTime] = useState(0)
   const playDuration = playerRef.current?.getDuration()
 
@@ -47,14 +58,17 @@ export default function Control(props: Props) {
           play
         </Button>
       )}
-      <Button
-        color='gray'
-        variant='outline'
-        leftIcon={<IconPlayerTrackNextFilled size={16} />}
-        onClick={playNext}
-      >
-        skip
-      </Button>
+      <Tooltip label='only the room admin can skip' hidden={ownsQueue}>
+        <Button
+          color='gray'
+          variant='outline'
+          leftIcon={<IconPlayerTrackNextFilled size={16} />}
+          onClick={playNext}
+          disabled={!ownsQueue}
+        >
+          skip
+        </Button>
+      </Tooltip>
       <Box w='100%'>
         {currentPlayTime && playDuration && playDuration > 0 ? (
           <Progress value={(currentPlayTime / playDuration) * 100} />

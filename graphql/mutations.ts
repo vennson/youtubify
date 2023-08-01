@@ -15,6 +15,7 @@ export const createQueueMutation = `
       queue {
         owner {
           id
+          name
         }
         id
       }
