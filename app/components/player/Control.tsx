@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Progress, Text } from '@mantine/core'
+import { Box, Button, Flex, Progress, Skeleton, Text } from '@mantine/core'
 import { formatSeconds } from '../search/utils'
 import {
   IconPlayerPauseFilled,
@@ -59,7 +59,7 @@ export default function Control(props: Props) {
         {currentPlayTime && playDuration && playDuration > 0 ? (
           <Progress value={(currentPlayTime / playDuration) * 100} />
         ) : (
-          <Progress value={0} />
+          <Skeleton height={8} radius='xl' />
         )}
 
         <Flex justify='space-between'>

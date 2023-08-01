@@ -1,5 +1,5 @@
-import SearchPage from './search'
-import WelcomeModal from './welcome'
+import SearchPage from './components/search'
+import WelcomeModal from './components/welcome'
 
 export default function Home() {
   return (

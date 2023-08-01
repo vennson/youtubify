@@ -1,4 +1,4 @@
-import { filterVids } from '~/app/search/utils'
+import { filterVids } from '~/app/components/search/utils'
 
 const dummy: SearchResultData = {
   contents: [
