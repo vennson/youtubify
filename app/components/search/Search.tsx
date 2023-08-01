@@ -69,7 +69,7 @@ export default function SearchPage({ roomId }: Props) {
   useEffect(() => {
     const interval = setInterval(() => {
       refreshQueue()
-    }, 10000)
+    }, 1000)
 
     return () => {
       clearInterval(interval)
