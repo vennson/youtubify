@@ -2,7 +2,7 @@ import { Button, Loader, Text, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useState } from 'react'
 import { z } from 'zod'
-import { createQueue } from '~/lib/actions'
+import { createQueue } from '~/graphql/actions'
 import { useAppStore } from '~/store/store'
 
 const validSchema = z.object({
@@ -21,6 +21,7 @@ export default function JoinRoomForm() {
   })
 
   function onJoinRoom(roomId: string) {
+    // check if room exists
     setJoinedRoom(roomId)
   }
 

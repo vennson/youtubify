@@ -2,7 +2,7 @@ import { Button, Loader, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useState } from 'react'
 import { z } from 'zod'
-import { createUser } from '~/lib/actions'
+import { createUser } from '~/graphql/actions'
 import { useAppStore } from '~/store/store'
 
 const validSchema = z.object({

@@ -18,7 +18,7 @@ import QueueItem from '../queue/QueueItem'
 import { useAppStore } from '~/store/store'
 import Player from '../player'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
-import { createQueue, createUser } from '~/lib/actions'
+import { createQueue, createUser } from '~/graphql/actions'
 import WelcomeModal from '../welcome'
 
 type Props = {
@@ -44,7 +44,8 @@ export default function SearchPage({ roomId }: Props) {
   })
   const hasQuery = form.values.query.length > 0
 
-  async function test() { // ! remove when grafbase is fully implemented
+  async function test() {
+    // ! remove when grafbase is fully implemented
     // await createQueue(userId)
     // const res = await getQueueByOwner(userId)
     const res = await createUser('meme')

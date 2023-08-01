@@ -14,6 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
+      <title>youtubify</title>
       <body>
         <RootStyleRegistry>{children}</RootStyleRegistry>
       </body>
