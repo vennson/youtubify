@@ -4,6 +4,8 @@ import {
   createQueueMutation,
   createUserMutation,
   createVideoMutation,
+  deleteVideoMutation,
+  updateQueueMutation,
   updateVideoMutation,
 } from '~/graphql/mutations'
 import { isProduction } from '~/lib/actions'
@@ -108,15 +110,17 @@ export async function joinRoomIfExists(roomId: string) {
 
 export async function updateVideo(
   videoDBId: string,
-  userId: string,
-  linkStatus: 'link' | 'unlink',
+  userId?: string,
+  linkStatus?: 'link' | 'unlink',
+  isPlaying?: boolean,
+  isDone?: boolean,
 ) {
   const variables = {
     by: { id: videoDBId },
     input: {
-      votes: {
-        [linkStatus]: userId,
-      },
+      ...(linkStatus && { votes: { [linkStatus]: userId } }),
+      ...(isPlaying && { isPlaying }),
+      ...(isDone && { isDone }),
     },
   }
 
@@ -131,15 +135,23 @@ export async function updateVideo(
 }
 
 export async function refreshQueue() {
-  const { joinedRoom, setQueue, setQueueOwner } = useAppStore.getState()
+  const { joinedRoom, setQueue, setQueueOwner, setNowPlaying, ownsQueue } =
+    useAppStore.getState()
   if (!joinedRoom) return
 
   try {
     const { queue: dbQueue } = (await getQueue(joinedRoom)) || {}
 
     if (dbQueue) {
-      setQueue(dbQueue.videos.edges)
+      const freshVideos = dbQueue.videos.edges.filter((vid) => {
+        return !vid.node.isDone || !vid.node.isPlaying
+      })
+      setQueue(freshVideos)
       setQueueOwner(dbQueue.owner)
+
+      if (!ownsQueue) {
+        setNowPlaying(dbQueue.nowPlaying)
+      }
     }
 
     return dbQueue
@@ -157,5 +169,30 @@ export async function getUser(userId: string) {
     return res
   } catch (error) {
     console.log('getUser error', error)
+  }
+}
+
+export async function deleteVideo(videoDBId: string) {
+  try {
+    const res = makeGraphQLRequest(deleteVideoMutation, {
+      by: { id: videoDBId },
+    }) as Promise<UserQueryResponse>
+
+    return res
+  } catch (error) {
+    console.log('deleteVideo error', error)
+  }
+}
+
+export async function updateQueue(queueId: string, nowPlaying: DBVideo) {
+  try {
+    const res = makeGraphQLRequest(updateQueueMutation, {
+      by: { id: queueId },
+      input: { nowPlaying },
+    }) as Promise<QueueUpdateResponse>
+
+    return res
+  } catch (error) {
+    console.log('updateQueue error', error)
   }
 }

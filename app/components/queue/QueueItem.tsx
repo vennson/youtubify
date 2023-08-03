@@ -26,6 +26,8 @@ export default function QueueItem({ queuedVideo }: Props) {
   const hasVotes =
     queuedVideo?.node.votes?.edges.length &&
     queuedVideo.node.votes.edges.length > 0
+  const isPlaying = queuedVideo?.node.isPlaying
+  const isDone = queuedVideo?.node.isDone
 
   async function toggleVote() {
     setDisabledAction()
@@ -40,7 +42,7 @@ export default function QueueItem({ queuedVideo }: Props) {
   return (
     <UnstyledButton
       onClick={toggleVote}
-      hidden={!hasVotes}
+      hidden={!hasVotes || isPlaying || isDone}
       disabled={disabledAction}
     >
       <Card withBorder p='xs'>

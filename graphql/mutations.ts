@@ -40,6 +40,57 @@ export const updateVideoMutation = `
       video {
         title
         id
+        videoId
+        isPlaying
+        isDone
+      }
+    }
+  }
+`
+
+export const deleteVideoMutation = `
+  mutation VideoDelete($by: VideoByInput!) {
+    videoDelete(by: $by) {
+      deletedId
+    }
+  }
+`
+
+export const updateQueueMutation = `
+  mutation QueueUpdate($by: QueueByInput!, $input: QueueUpdateInput!) {
+    queueUpdate(by: $by, input: $input) {
+      queue {
+        id
+        nowPlaying
+        owner {
+          name
+          id
+        }
+        videos(orderBy: { createdAt:ASC }, first: 50) {
+          edges {
+            node {
+              author
+              lengthSeconds
+              stats
+              thumbnails
+              title
+              videoId
+              votes(first: 50) {
+                edges {
+                  node {
+                    name
+                    id
+                  }
+                }
+              }
+              createdAt
+              addedBy
+              isPlaying
+              isDone
+              id
+            }
+          }
+        }
       }
     }
   }

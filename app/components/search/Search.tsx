@@ -33,7 +33,6 @@ export default function SearchPage({ roomId }: Props) {
 
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
-  const [nowPlaying, setNowPlaying] = useState<string>()
   const [firstQueueRefreshed, setFirstQueueRefreshed] = useState(false)
   const form = useForm({
     initialValues: {
@@ -114,7 +113,7 @@ export default function SearchPage({ roomId }: Props) {
           sx={{ zIndex: 100 }}
         >
           <Box mx='sm' mt='md'>
-            <Player nowPlaying={nowPlaying} setNowPlaying={setNowPlaying} />
+            <Player />
           </Box>
           <Box mt='md' mx='sm'>
             <SearchBar

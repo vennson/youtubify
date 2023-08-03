@@ -5,13 +5,19 @@ import {
   Card,
   Center,
   Flex,
-  Stack,
   Text,
   Tooltip,
 } from '@mantine/core'
 import { IconBrandYoutubeFilled } from '@tabler/icons-react'
 import Image from 'next/image'
-import { Dispatch, SetStateAction, useRef, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import ReactPlayer from 'react-player/youtube'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber } from '../search/utils'
@@ -19,54 +25,107 @@ import { PLAYER_HEIGHT } from '~/constants/numbers'
 import YouTubePlayer from 'react-player/youtube'
 import Control from './Control'
 import { useAppStore } from '~/store/store'
+import {
+  deleteVideo,
+  refreshQueue,
+  updateQueue,
+  updateVideo,
+} from '~/graphql/actions'
 
-type Props = {
-  nowPlaying?: string
-  setNowPlaying: Dispatch<SetStateAction<string | undefined>>
-}
-
-export default function Player(props: Props) {
-  const { setNowPlaying, nowPlaying } = props
+export default function Player() {
   const queue = useAppStore((state) => state.queue)
   const queueOwner = useAppStore((state) => state.queueOwner)
   const ownsQueue = useAppStore((state) => state.ownsQueue)
+  const user = useAppStore((state) => state.user)
+  const joinedRoom = useAppStore((state) => state.joinedRoom)
+  const nowPlaying = useAppStore((state) => state.nowPlaying)
+  const setNowPlaying = useAppStore((state) => state.setNowPlaying)
 
   const [playing, setPlaying] = useState(true)
-  const [currentVidInfo, setCurrentVidInfo] = useState<DBVideo>()
   const playerRef = useRef<YouTubePlayer>(null)
 
-  const nextVideo = queue[0]
+  const pendingVideo = queue[nowPlaying ? 1 : 0]
 
-  function playNext() {
-    if (nextVideo?.node.videoId) {
-      setNowPlaying(nextVideo.node.videoId)
+  // *only queue owner can trigger this
+  async function playNext() {
+    if (!ownsQueue) return
+    console.log('playNext')
+
+    // *delete old video
+    if (nowPlaying?.node.videoId) {
+      // console.log('🚀marking prev vid as done or deleting it, if theres any')
+      // const resUpdate = await updateVideo(
+      //   nowPlaying.node.id,
+      //   undefined,
+      //   undefined,
+      //   undefined,
+      //   true,
+      // )
+      // console.log('updateVideo isDone', resUpdate)
+
+      const resDelete = await deleteVideo(nowPlaying.node.id)
+      console.log('deleteVideo resDelete', resDelete)
+    }
+
+    if (pendingVideo?.node.videoId && user?.id && joinedRoom) {
+      console.log('🚀playing the next video')
+
+      // *set the nowPlaying of the Queue
+      const resNewQueue = await updateQueue(joinedRoom, pendingVideo)
+      console.log('updateQueue', resNewQueue)
+
+      // *mark the video as isPlaying true
+      const resVid = await updateVideo(
+        pendingVideo.node.id,
+        undefined,
+        undefined,
+        true,
+      )
+      console.log('updateVideo isPlaying', resVid)
+
+      // *refresh the queue that actually reflects the db
+      const refreshedQueue = await refreshQueue()
+      console.log('refreshQueue', refreshedQueue)
+
+      if (refreshedQueue?.id) {
+        if (refreshedQueue.nowPlaying) {
+          setNowPlaying(refreshedQueue.nowPlaying)
+        }
+      }
     } else {
-      setNowPlaying('')
+      console.log('🚀clearing the nowPlaying')
+      setNowPlaying(undefined)
     }
   }
 
-  // !do for grafbase
-  // useEffect(() => {
-  //   setQueue((prev) => {
-  //     const newQueue = [...prev]
-  //     const shiftedVideo = newQueue.shift()
+  // *double check to make sure now playing is marked as isPlaying true
+  const makeSureNowPlayingIsPlayingTrue = useCallback(async () => {
+    if (nowPlaying?.node.videoId && user?.id && joinedRoom) {
+      console.log('🚀marking nowPlaying as isPlaying true')
+      const res = await updateVideo(
+        nowPlaying.node.id,
+        undefined,
+        undefined,
+        true,
+      )
+      console.log('updateVideo 2', res)
+    }
+  }, [joinedRoom, nowPlaying?.node.id, nowPlaying?.node.videoId, user?.id])
 
-  //     if (shiftedVideo) {
-  //       setCurrentVidInfo(shiftedVideo)
-  //     }
-  //     return newQueue
-  //   })
-  // }, [nowPlaying, setQueue])
+  useEffect(() => {
+    if (!ownsQueue || !nowPlaying) return
+    makeSureNowPlayingIsPlayingTrue()
+  }, [makeSureNowPlayingIsPlayingTrue, nowPlaying, ownsQueue])
 
   return (
     <Box h={PLAYER_HEIGHT}>
-      {!nowPlaying && (
+      {!nowPlaying?.node.videoId && (
         <Center h='100%'>
           <Flex direction='column' align='center' gap='sm'>
             <Text>
               <b>{queueOwner?.name}&apos;s</b> room
             </Text>
-            {nextVideo ? (
+            {pendingVideo?.node.videoId ? (
               <Tooltip label='only the room owner can start' hidden={ownsQueue}>
                 <Box>
                   <Button
@@ -87,15 +146,16 @@ export default function Player(props: Props) {
         </Center>
       )}
 
-      {nowPlaying && (
+      {nowPlaying?.node.videoId && (
         <>
           <ReactPlayer
             ref={playerRef}
-            url={`https://www.youtube.com/watch?v=${nowPlaying}`}
+            url={`https://www.youtube.com/watch?v=${nowPlaying.node.videoId}`}
             width='100%'
             height={0}
             onEnded={playNext}
             playing={playing}
+            muted={!ownsQueue}
           />
           <Box>
             <Card withBorder p='xs' shadow='sm'>
@@ -104,26 +164,26 @@ export default function Player(props: Props) {
                   <Image
                     src={
                       isProduction
-                        ? currentVidInfo?.node.thumbnails[0].url
-                          ? currentVidInfo?.node.thumbnails[0].url
+                        ? nowPlaying.node.thumbnails[0].url
+                          ? nowPlaying.node.thumbnails[0].url
                           : '/avatar.jpg'
                         : '/avatar.jpg'
                     }
                     fill
                     style={{ objectFit: 'cover', flex: 1 }}
-                    alt='currentVidInfo?.node'
+                    alt='now playing'
                   />
                 </Avatar>
 
                 <Box>
                   <Text size='sm' lineClamp={1}>
-                    {currentVidInfo?.node.title}
+                    {nowPlaying.node.title}
                   </Text>
                   <Text size='xs' color='dimmed'>
-                    {abbreviateNumber(currentVidInfo?.node.stats.views)} views
+                    {abbreviateNumber(nowPlaying.node.stats.views)} views
                   </Text>
                   <Text size='xs' color='dimmed'>
-                    {currentVidInfo?.node.author.title}
+                    {nowPlaying.node.author.title}
                   </Text>
                 </Box>
               </Flex>

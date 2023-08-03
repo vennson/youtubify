@@ -25,6 +25,7 @@ export default function ResultItem(props: Props) {
   const queuedVideo = queue.find(
     (queuedVideo) => queuedVideo.node.videoId === searchedVideo.videoId,
   )
+  const alreadyPlayed = queuedVideo?.node.isPlaying
 
   let userInVotes = false
   if (
@@ -84,7 +85,11 @@ export default function ResultItem(props: Props) {
             </Avatar>
 
             <Box>
-              <Text size='sm' lineClamp={1}>
+              <Text
+                size='sm'
+                lineClamp={1}
+                color={alreadyPlayed ? 'dimmed' : undefined}
+              >
                 {searchedVideo.title}
               </Text>
               <Text size='xs' color='dimmed'>

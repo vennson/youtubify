@@ -2,6 +2,7 @@ export const getQueueQuery = `
   query Queue($id: ID!) {
     queue(by: {id: $id}) {
       id
+      nowPlaying
       owner {
         name
         id
@@ -26,6 +27,7 @@ export const getQueueQuery = `
             createdAt
             addedBy
             isPlaying
+            isDone
             id
           }
         }

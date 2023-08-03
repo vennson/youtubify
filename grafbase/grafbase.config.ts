@@ -12,6 +12,7 @@ const queue = g.model('Queue', {
     .list()
     .optional(),
   owner: g.relation(user).optional(), // !temporary
+  nowPlaying: g.json().optional(),
 })
 
 const video = g.model('Video', {
@@ -25,16 +26,14 @@ const video = g.model('Video', {
   queue: g.relation(queue).optional(),
   addedBy: g.json(),
   isPlaying: g.boolean().default(false),
+  isDone: g.boolean().default(false),
 })
 
 export default config({
   schema: g,
   auth: {
     rules: (rules) => {
-      rules.public().create().read().update()
-      rules.private().delete()
+      rules.public()
     },
   },
 })
-
-

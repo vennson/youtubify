@@ -11,6 +11,8 @@ interface AppState {
   setPendingRoom: (queueId: string) => Promise<void>
   queue: DBVideo[]
   setQueue: (queue: DBVideo[]) => void
+  nowPlaying?: DBVideo
+  setNowPlaying: (video?: DBVideo) => void
   ownsQueue: boolean
   setOwnsQueue: (ownsQueue: boolean) => void
   queueOwner?: { id: string; name: string }
@@ -69,6 +71,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     )
     set({ queue: sortedQueue })
   },
+  nowPlaying: undefined,
+  setNowPlaying: (nowPlaying) => set({ nowPlaying }),
   ownsQueue: false,
   setOwnsQueue: (ownsQueue) => set({ ownsQueue }),
   queueOwner: undefined,

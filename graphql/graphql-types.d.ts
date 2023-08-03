@@ -73,6 +73,7 @@ type DBVideo = {
       id: string
     }
     isPlaying: boolean
+    isDone: boolean
     id: string
   }
 }
@@ -86,6 +87,7 @@ type DBQueue = {
   videos: {
     edges: DBVideo[]
   }
+  nowPlaying: DBVideo
 }
 
 type QueueQueryResponse = {
@@ -106,6 +108,7 @@ type VideoUpdateResponse = {
     video: {
       id: string
       title: string
+      videoId: string
     }
   }
 }
@@ -114,5 +117,11 @@ type UserQueryResponse = {
   user: {
     id: string
     name: string
+  }
+}
+
+type QueueUpdateResponse = {
+  queueUpdate: {
+    queue: DBQueue
   }
 }

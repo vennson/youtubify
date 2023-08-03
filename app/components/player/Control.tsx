@@ -40,24 +40,30 @@ export default function Control(props: Props) {
 
   return (
     <Flex gap='xs' mt='xs'>
-      {playing ? (
-        <Button
-          color='gray'
-          variant='outline'
-          leftIcon={<IconPlayerPauseFilled size={16} />}
-          onClick={() => setPlaying(false)}
-        >
-          pause
-        </Button>
-      ) : (
-        <Button
-          leftIcon={<IconPlayerPlayFilled size={16} />}
-          onClick={() => setPlaying(true)}
-          miw={96}
-        >
-          play
-        </Button>
-      )}
+      <Tooltip label='only the room owner can play/pause' hidden={ownsQueue}>
+        <Box>
+          {playing ? (
+            <Button
+              color='gray'
+              variant='outline'
+              leftIcon={<IconPlayerPauseFilled size={16} />}
+              onClick={() => setPlaying(false)}
+              disabled={!ownsQueue}
+            >
+              pause
+            </Button>
+          ) : (
+            <Button
+              leftIcon={<IconPlayerPlayFilled size={16} />}
+              onClick={() => setPlaying(true)}
+              disabled={!ownsQueue}
+              miw={96}
+            >
+              play
+            </Button>
+          )}
+        </Box>
+      </Tooltip>
       <Tooltip label='only the room owner can skip' hidden={ownsQueue}>
         <Box>
           <Button
