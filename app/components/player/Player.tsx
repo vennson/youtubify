@@ -44,12 +44,15 @@ export default function Player() {
   const [playing, setPlaying] = useState(true)
   const playerRef = useRef<YouTubePlayer>(null)
 
-  const pendingVideo = queue[nowPlaying ? 1 : 0]
+  const notYetPlayedVideos = queue.filter((v) => !v.node.isPlaying)
+  const pendingVideo = notYetPlayedVideos[0]
 
   // *only queue owner can trigger this
   async function playNext() {
     if (!ownsQueue) return
     console.log('playNext')
+    console.log('queue', queue)
+    console.log('pendingVideo', pendingVideo)
 
     // *delete old video
     if (nowPlaying?.node.videoId) {
