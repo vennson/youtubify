@@ -63,8 +63,8 @@ export default function Player() {
       // )
       // console.log('updateVideo isDone', resUpdate)
 
-      const resDelete = await deleteVideo(nowPlaying.node.id)
-      console.log('deleteVideo resDelete', resDelete)
+      // const resDelete = await deleteVideo(nowPlaying.node.id)
+      // console.log('deleteVideo resDelete', resDelete)
     }
 
     if (pendingVideo?.node.videoId && user?.id && joinedRoom) {

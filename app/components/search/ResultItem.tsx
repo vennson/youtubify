@@ -26,6 +26,9 @@ export default function ResultItem(props: Props) {
     (queuedVideo) => queuedVideo.node.videoId === searchedVideo.videoId,
   )
   const alreadyPlayed = queuedVideo?.node.isPlaying
+  const hasVotes =
+    queuedVideo?.node.votes.edges.length &&
+    queuedVideo.node.votes.edges.length > 0
 
   let userInVotes = false
   if (
@@ -38,6 +41,8 @@ export default function ResultItem(props: Props) {
   }
 
   async function onClickResultItem() {
+    if (hasVotes && !userInVotes) return
+
     console.count('onClickResultItem')
     setLoading(true)
     setDisabledAction()
@@ -107,7 +112,7 @@ export default function ResultItem(props: Props) {
             <Flex direction='column' align='end'>
               <Flex align='center'>
                 <IconHeartFilled size={24} style={{ color: RED }} />
-                {queuedVideo.node.votes.edges.length}
+                {/* {queuedVideo.node.votes.edges.length} */}
               </Flex>
               <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
                 {queuedVideo.node.addedBy.name}

@@ -30,6 +30,8 @@ export default function QueueItem({ queuedVideo }: Props) {
   const isDone = queuedVideo?.node.isDone
 
   async function toggleVote() {
+    if (hasVotes && !userInVotes) return
+
     setDisabledAction()
     if (!joinedRoom || !user?.id) return
     const linkStatus = userInVotes ? 'unlink' : 'link'
@@ -80,11 +82,12 @@ export default function QueueItem({ queuedVideo }: Props) {
               {userInVotes ? (
                 <IconHeartFilled size={24} style={{ color: RED }} />
               ) : (
-                <IconHeart size={24} />
+                // <IconHeart size={24} />
+                <IconHeartFilled size={24} style={{ color: RED }} />
               )}
-              {queuedVideo.node.votes &&
+              {/* {queuedVideo.node.votes &&
                 queuedVideo.node.votes.edges.length > 0 &&
-                queuedVideo.node.votes.edges.length}
+                queuedVideo.node.votes.edges.length} */}
             </Flex>
             <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
               {queuedVideo.node.addedBy.name}
