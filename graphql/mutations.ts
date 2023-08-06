@@ -1,4 +1,6 @@
-export const createUserMutation = `
+import { gql } from '@apollo/client'
+
+export const CREATE_USER = gql`
   mutation UserCreate($input: UserCreateInput!) {
     userCreate(input: $input) {
       user {
@@ -9,7 +11,7 @@ export const createUserMutation = `
   }
 `
 
-export const createQueueMutation = `
+export const CREATE_QUEUE = gql`
   mutation QueueCreate($input: QueueCreateInput!) {
     queueCreate(input: $input) {
       queue {
@@ -23,7 +25,7 @@ export const createQueueMutation = `
   }
 `
 
-export const createVideoMutation = `
+export const CREATE_VIDEO = gql`
   mutation VideoCreate($input: VideoCreateInput!) {
     videoCreate(input: $input) {
       video {
@@ -34,7 +36,7 @@ export const createVideoMutation = `
   }
 `
 
-export const updateVideoMutation = `
+export const UPDATE_VIDEO = gql`
   mutation VideoUpdate($by: VideoByInput!, $input: VideoUpdateInput!) {
     videoUpdate(by: $by, input: $input) {
       video {
@@ -48,7 +50,7 @@ export const updateVideoMutation = `
   }
 `
 
-export const deleteVideoMutation = `
+export const DELETE_VIDEO = gql`
   mutation VideoDelete($by: VideoByInput!) {
     videoDelete(by: $by) {
       deletedId
@@ -56,7 +58,7 @@ export const deleteVideoMutation = `
   }
 `
 
-export const updateQueueMutation = `
+export const UPDATE_QUEUE = gql`
   mutation QueueUpdate($by: QueueByInput!, $input: QueueUpdateInput!) {
     queueUpdate(by: $by, input: $input) {
       queue {
@@ -66,7 +68,7 @@ export const updateQueueMutation = `
           name
           id
         }
-        videos(orderBy: { createdAt:ASC }, first: 50) {
+        videos(orderBy: { createdAt: ASC }, first: 50) {
           edges {
             node {
               author

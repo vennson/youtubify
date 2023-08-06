@@ -5,7 +5,8 @@ import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from '../search/utils'
 import { useAppStore } from '~/store/store'
-import { refreshQueue, updateVideo } from '~/graphql/actions'
+import { UPDATE_VIDEO } from '~/graphql/mutations'
+import { useMutation } from '@apollo/client'
 
 type Props = {
   queuedVideo: DBVideo
@@ -16,6 +17,8 @@ export default function QueueItem({ queuedVideo }: Props) {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const disabledAction = useAppStore((state) => state.disabledAction)
   const setDisabledAction = useAppStore((state) => state.setDisabledAction)
+
+  const [updateVideo] = useMutation<VideoUpdateResponse>(UPDATE_VIDEO)
 
   let userInVotes = false
   if (queuedVideo?.node.votes) {
@@ -35,8 +38,16 @@ export default function QueueItem({ queuedVideo }: Props) {
     setDisabledAction()
     if (!joinedRoom || !user?.id) return
     const linkStatus = userInVotes ? 'unlink' : 'link'
-    await updateVideo(queuedVideo.node.id, user.id, linkStatus)
-    await refreshQueue()
+    // await updateVideo(queuedVideo.node.id, user.id, linkStatus)
+    await updateVideo({
+      variables: {
+        by: { id: queuedVideo.node.id },
+        input: {
+          votes: { [linkStatus]: user.id },
+        },
+      },
+    })
+    // await refreshQueue()
   }
 
   // console.log('disabledAction', disabledAction)

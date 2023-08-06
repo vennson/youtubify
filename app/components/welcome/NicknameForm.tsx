@@ -1,9 +1,10 @@
+import { useMutation } from '@apollo/client'
 import { Button, Loader, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { z } from 'zod'
-import { createUser } from '~/graphql/actions'
+import { CREATE_USER } from '~/graphql/mutations'
 import { useAppStore } from '~/store/store'
 
 const validSchema = z.object({
@@ -19,18 +20,23 @@ export default function NicknameForm() {
   const pendingRoom = useAppStore((state) => state.pendingRoom)
 
   const [loading, setLoading] = useState(false)
+  const [createUser] = useMutation<UserCreateResponse>(CREATE_USER)
+
   const form = useForm({
     validate: zodResolver(validSchema),
-    initialValues: {
-      name: '',
-    },
+    initialValues: { name: '' },
   })
+
   const router = useRouter()
 
   async function onCreateUser(name: string) {
     setLoading(true)
-    const { userCreate } = await createUser(name)
-    setUser(userCreate.user)
+
+    const res = await createUser({ variables: { input: { name } } })
+    const newUser = res.data?.userCreate.user
+    if (newUser) {
+      setUser(newUser)
+    }
 
     if (pendingRoom) {
       router.push(`/room/${pendingRoom}/`)

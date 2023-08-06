@@ -1,13 +1,15 @@
-export const getQueueQuery = `
+import { gql } from '@apollo/client'
+
+export const GET_QUEUE = gql`
   query Queue($id: ID!) {
-    queue(by: {id: $id}) {
+    queue(by: { id: $id }) {
       id
       nowPlaying
       owner {
         name
         id
       }
-      videos(orderBy: { createdAt:ASC }, first: 50) {
+      videos(orderBy: { createdAt: ASC }, first: 50) {
         edges {
           node {
             author
@@ -36,9 +38,9 @@ export const getQueueQuery = `
   }
 `
 
-export const getUserQuery = `
+export const GET_USER = gql`
   query User($id: ID!) {
-    user(by: {id: $id}) {
+    user(by: { id: $id }) {
       id
       name
     }
