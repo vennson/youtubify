@@ -66,7 +66,7 @@ export const updateQueueMutation = `
           name
           id
         }
-        videos(orderBy: { createdAt:ASC }, first: 50) {
+        videos(orderBy: { createdAt:ASC }, first: 500) {
           edges {
             node {
               author
