@@ -2,11 +2,12 @@ import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
 import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED } from '~/constants/colors'
-import { createVideo, refreshQueue, updateVideo } from '~/graphql/actions'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from './utils'
 import { useAppStore } from '~/store/store'
 import { useState } from 'react'
+import { CREATE_VIDEO, UPDATE_VIDEO } from '~/graphql/mutations'
+import { useMutation } from '@apollo/client'
 
 type Props = {
   searchedVideo: Video
@@ -20,21 +21,22 @@ export default function ResultItem(props: Props) {
   const queue = useAppStore((state) => state.queue)
   const disabledAction = useAppStore((state) => state.disabledAction)
   const setDisabledAction = useAppStore((state) => state.setDisabledAction)
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
+
+  const [createVideo, { loading }] =
+    useMutation<VideoCreateResponse>(CREATE_VIDEO)
+
+  const [updateVideo] = useMutation<VideoUpdateResponse>(UPDATE_VIDEO)
 
   const queuedVideo = queue.find(
     (queuedVideo) => queuedVideo.node.videoId === searchedVideo.videoId,
   )
   const alreadyPlayed = queuedVideo?.node.isPlaying
-  const hasVotes =
-    queuedVideo?.node.votes.edges.length &&
-    queuedVideo.node.votes.edges.length > 0
+  const voteCount = queuedVideo?.node.votes.edges.length
+  const hasVotes = voteCount && voteCount > 0
 
   let userInVotes = false
-  if (
-    queuedVideo?.node.votes.edges.length &&
-    queuedVideo?.node.votes.edges.length > 0
-  ) {
+  if (hasVotes) {
     userInVotes = !!queuedVideo?.node.votes.edges.find(
       (edge) => edge.node.id === user?.id,
     )
@@ -44,31 +46,54 @@ export default function ResultItem(props: Props) {
     if (hasVotes && !userInVotes) return
 
     console.count('onClickResultItem')
-    setLoading(true)
     setDisabledAction()
     if (!joinedRoom || !user?.id) return
 
     if (queuedVideo) {
       const linkStatus = userInVotes ? 'unlink' : 'link'
       console.log('updateVideo linkStatus:', linkStatus)
-      const res = await updateVideo(queuedVideo.node.id, user.id, linkStatus)
+      // const res = await updateVideo(queuedVideo.node.id, user.id, linkStatus)
+      const res = await updateVideo({
+        variables: {
+          by: { id: queuedVideo.node.id },
+          input: {
+            votes: { [linkStatus]: user.id },
+          },
+        },
+      })
+
       console.log('res', res)
     } else {
-      console.log('createVideo:', createVideo)
-      const res = await createVideo(
-        searchedVideo,
-        joinedRoom,
-        user.id,
-        user.name,
-      )
+      const res = await createVideo({
+        variables: {
+          input: {
+            author: searchedVideo.author,
+            lengthSeconds: searchedVideo.lengthSeconds,
+            stats: searchedVideo.stats,
+            thumbnails: searchedVideo.thumbnails,
+            title: searchedVideo.title,
+            videoId: searchedVideo.videoId,
+            queue: {
+              link: joinedRoom,
+            },
+            votes: {
+              link: user.id,
+            },
+            addedBy: {
+              id: user.id,
+              name: user.name,
+            },
+          },
+        },
+      })
+
       console.log('res', res)
     }
 
-    const res = await refreshQueue()
-    if (res) {
-      console.log('res', res)
-      setLoading(false)
-    }
+    // const res = await refreshQueue()
+    // if (res) {
+    //   console.log('res', res)
+    // }
   }
 
   // console.log('disabledAction', disabledAction)

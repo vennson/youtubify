@@ -1,6 +1,8 @@
-export const getQueueQuery = `
-  query Queue($id: ID!) {
-    queue(by: {id: $id}) {
+import { gql } from '@apollo/client'
+
+export const LIVE_GET_QUEUE = gql`
+  query Queue($id: ID!) @live {
+    queue(by: { id: $id }) {
       id
       nowPlaying
       owner {
@@ -36,9 +38,9 @@ export const getQueueQuery = `
   }
 `
 
-export const getUserQuery = `
+export const GET_USER = gql`
   query User($id: ID!) {
-    user(by: {id: $id}) {
+    user(by: { id: $id }) {
       id
       name
     }

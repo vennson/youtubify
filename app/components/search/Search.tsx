@@ -12,6 +12,8 @@ import { PLAYER_HEIGHT } from '~/constants/numbers'
 import { joinRoomIfExists, refreshQueue } from '~/graphql/actions'
 import { useRouter } from 'next/navigation'
 import usePollQueue from '~/app/hooks/usePollQueue'
+import { useQuery } from '@apollo/client'
+import { LIVE_GET_QUEUE } from '~/graphql/queries'
 
 type Props = {
   roomId: string
@@ -25,11 +27,21 @@ export default function SearchPage({ roomId }: Props) {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
   const initUser = useAppStore((state) => state.initUser)
-  const queue = useAppStore((state) => state.queue)
+  // const queue = useAppStore((state) => state.queue)
   const ownsQueue = useAppStore((state) => state.ownsQueue)
   const setPendingRoom = useAppStore((state) => state.setPendingRoom)
   const disabledAction = useAppStore((state) => state.disabledAction)
   const setDisabledAction = useAppStore((state) => state.setDisabledAction)
+
+  const { data, loading: liveLoading } = useQuery<QueueQueryResponse>(
+    LIVE_GET_QUEUE,
+    {
+      variables: { id: roomId },
+    },
+  )
+  console.log('data', data)
+  console.log('liveLoading', liveLoading)
+  const queue = data?.queue.videos.edges || []
 
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
@@ -92,12 +104,12 @@ export default function SearchPage({ roomId }: Props) {
     }
   }, [])
 
-  const refreshPaused = usePollQueue()
+  // const refreshPaused = usePollQueue()
   // console.log('refreshPaused', refreshPaused)
 
-  useEffect(() => {
-    refreshQueue()
-  }, [])
+  // useEffect(() => {
+  //   refreshQueue()
+  // }, [])
 
   return (
     joinedRoom && (

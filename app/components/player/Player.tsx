@@ -10,14 +10,7 @@ import {
 } from '@mantine/core'
 import { IconBrandYoutubeFilled } from '@tabler/icons-react'
 import Image from 'next/image'
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { useRef, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber } from '../search/utils'
@@ -25,12 +18,8 @@ import { PLAYER_HEIGHT } from '~/constants/numbers'
 import YouTubePlayer from 'react-player/youtube'
 import Control from './Control'
 import { useAppStore } from '~/store/store'
-import {
-  deleteVideo,
-  refreshQueue,
-  updateQueue,
-  updateVideo,
-} from '~/graphql/actions'
+import { UPDATE_QUEUE, UPDATE_VIDEO } from '~/graphql/mutations'
+import { useMutation } from '@apollo/client'
 
 export default function Player() {
   const queue = useAppStore((state) => state.queue)
@@ -40,6 +29,9 @@ export default function Player() {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const nowPlaying = useAppStore((state) => state.nowPlaying)
   const setNowPlaying = useAppStore((state) => state.setNowPlaying)
+
+  const [updateVideo] = useMutation<VideoUpdateResponse>(UPDATE_VIDEO)
+  const [updateQueue] = useMutation<QueueUpdateResponse>(UPDATE_QUEUE)
 
   const [playing, setPlaying] = useState(true)
   const playerRef = useRef<YouTubePlayer>(null)
@@ -65,7 +57,6 @@ export default function Player() {
       //   true,
       // )
       // console.log('updateVideo isDone', resUpdate)
-
       // const resDelete = await deleteVideo(nowPlaying.node.id)
       // console.log('deleteVideo resDelete', resDelete)
     }
@@ -74,51 +65,66 @@ export default function Player() {
       console.log('🚀playing the next video')
 
       // *set the nowPlaying of the Queue
-      const resNewQueue = await updateQueue(joinedRoom, pendingVideo)
+      // const resNewQueue = await updateQueue(joinedRoom, pendingVideo)
+      const resNewQueue = await updateQueue({
+        variables: {
+          by: { id: joinedRoom },
+          input: { nowPlaying: pendingVideo },
+        },
+      })
       console.log('updateQueue', resNewQueue)
 
       // *mark the video as isPlaying true
-      const resVid = await updateVideo(
-        pendingVideo.node.id,
-        undefined,
-        undefined,
-        true,
-      )
+      // const resVid = await updateVideo(
+      //   pendingVideo.node.id,
+      //   undefined,
+      //   undefined,
+      //   true,
+      // )
+      const resVid = await updateVideo({
+        variables: {
+          by: { id: pendingVideo.node.id },
+          input: {
+            isPlaying: true,
+          },
+        },
+      })
       console.log('updateVideo isPlaying', resVid)
 
       // *refresh the queue that actually reflects the db
-      const refreshedQueue = await refreshQueue()
-      console.log('refreshQueue', refreshedQueue)
+      // !put in useEffect cause live update
+      // const refreshedQueue = await refreshQueue()
+      // console.log('refreshQueue', refreshedQueue)
 
-      if (refreshedQueue?.id) {
-        if (refreshedQueue.nowPlaying) {
-          setNowPlaying(refreshedQueue.nowPlaying)
-        }
-      }
+      // if (refreshedQueue?.id) {
+      //   if (refreshedQueue.nowPlaying) {
+      //     setNowPlaying(refreshedQueue.nowPlaying)
+      //   }
+      // }
     } else {
-      console.log('🚀clearing the nowPlaying')
-      setNowPlaying(undefined)
+      // console.log('🚀clearing the nowPlaying')
+      // setNowPlaying(undefined)
     }
   }
 
-  // *double check to make sure now playing is marked as isPlaying true
-  const makeSureNowPlayingIsPlayingTrue = useCallback(async () => {
-    if (nowPlaying?.node.videoId && user?.id && joinedRoom) {
-      console.log('🚀marking nowPlaying as isPlaying true')
-      const res = await updateVideo(
-        nowPlaying.node.id,
-        undefined,
-        undefined,
-        true,
-      )
-      console.log('updateVideo 2', res)
-    }
-  }, [joinedRoom, nowPlaying?.node.id, nowPlaying?.node.videoId, user?.id])
+  // // *double check to make sure now playing is marked as isPlaying true
+  // const makeSureNowPlayingIsPlayingTrue = useCallback(async () => {
+  //   if (nowPlaying?.node.videoId && user?.id && joinedRoom) {
+  //     console.log('🚀marking nowPlaying as isPlaying true')
+  //     const res = await updateVideo(
+  //       nowPlaying.node.id,
+  //       undefined,
+  //       undefined,
+  //       true,
+  //     )
+  //     console.log('updateVideo 2', res)
+  //   }
+  // }, [joinedRoom, nowPlaying?.node.id, nowPlaying?.node.videoId, user?.id])
 
-  useEffect(() => {
-    if (!ownsQueue || !nowPlaying) return
-    makeSureNowPlayingIsPlayingTrue()
-  }, [makeSureNowPlayingIsPlayingTrue, nowPlaying, ownsQueue])
+  // useEffect(() => {
+  //   if (!ownsQueue || !nowPlaying) return
+  //   makeSureNowPlayingIsPlayingTrue()
+  // }, [makeSureNowPlayingIsPlayingTrue, nowPlaying, ownsQueue])
 
   return (
     <Box h={PLAYER_HEIGHT}>
