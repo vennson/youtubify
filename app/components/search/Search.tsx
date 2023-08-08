@@ -33,7 +33,7 @@ export default function SearchPage({ roomId }: Props) {
   const disabledAction = useAppStore((state) => state.disabledAction)
   const setDisabledAction = useAppStore((state) => state.setDisabledAction)
 
-  const { data, loading: liveLoading } = useQuery<QueueQueryResponse>(
+  const { data, loading: queueLoading } = useQuery<QueueQueryResponse>(
     LIVE_GET_QUEUE,
     {
       variables: { id: roomId },
@@ -88,22 +88,22 @@ export default function SearchPage({ roomId }: Props) {
     }
   }, [joinRoomOrRedirect, joinedRoom, roomId, user?.id])
 
-  useEffect(() => {
-    // const pollQueue = setInterval(() => {
-    //   console.log('refreshing queue...')
-    //   refreshQueue()
-    // }, POLL_QUEUE_INTERVAL)
+  // useEffect(() => {
+  //   // const pollQueue = setInterval(() => {
+  //   //   console.log('refreshing queue...')
+  //   //   refreshQueue()
+  //   // }, POLL_QUEUE_INTERVAL)
 
-    const firstPollLoading = setTimeout(
-      () => setFirstQueueRefreshed(true),
-      POLL_QUEUE_INTERVAL + 5000,
-    )
+  //   const firstPollLoading = setTimeout(
+  //     () => setFirstQueueRefreshed(true),
+  //     POLL_QUEUE_INTERVAL + 5000,
+  //   )
 
-    return () => {
-      // clearInterval(pollQueue)
-      clearTimeout(firstPollLoading)
-    }
-  }, [])
+  //   return () => {
+  //     // clearInterval(pollQueue)
+  //     clearTimeout(firstPollLoading)
+  //   }
+  // }, [])
 
   // const refreshPaused = usePollQueue()
   // console.log('refreshPaused', refreshPaused)
@@ -111,6 +111,8 @@ export default function SearchPage({ roomId }: Props) {
   // useEffect(() => {
   //   refreshQueue()
   // }, [])
+
+  console.log('queueLoading', queueLoading)
 
   return (
     joinedRoom && (
@@ -172,7 +174,7 @@ export default function SearchPage({ roomId }: Props) {
               ))}
             </Stack>
 
-            {!firstQueueRefreshed && queue.length === 0 && (
+            {queueLoading && queue.length === 0 && (
               <Skeleton mt='md' height={82} radius='sm' />
             )}
 
