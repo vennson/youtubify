@@ -30,6 +30,7 @@ export default function JoinRoomForm() {
   async function onJoinRoom(roomId: string) {
     setLoading((prev) => ({ ...prev, joining: true }))
     const queueId = await joinRoomIfExists(roomId)
+    console.log('queueId', queueId)
     if (!queueId) {
       form.setFieldError('roomId', "room doesn't exist")
       setLoading((prev) => ({ ...prev, joining: false }))

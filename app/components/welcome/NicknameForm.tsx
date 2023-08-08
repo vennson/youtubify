@@ -4,10 +4,11 @@ import { useForm, zodResolver } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { z } from 'zod'
+
 import { CREATE_USER } from '~/graphql/mutations'
 import { useAppStore } from '~/store/store'
 
-const validSchema = z.object({
+const zSchema = z.object({
   name: z
     .string()
     .min(1, { message: 'nickname is required' })
@@ -23,13 +24,13 @@ export default function NicknameForm() {
   const [createUser] = useMutation<UserCreateResponse>(CREATE_USER)
 
   const form = useForm({
-    validate: zodResolver(validSchema),
+    validate: zodResolver(zSchema),
     initialValues: { name: '' },
   })
 
   const router = useRouter()
 
-  async function onCreateUser(name: string) {
+  async function onSubmit(name: string) {
     setLoading(true)
 
     const res = await createUser({ variables: { input: { name } } })
@@ -48,7 +49,7 @@ export default function NicknameForm() {
   return (
     <>
       {!user?.id && (
-        <form onSubmit={form.onSubmit((values) => onCreateUser(values.name))}>
+        <form onSubmit={form.onSubmit((values) => onSubmit(values.name))}>
           <TextInput
             id='name'
             placeholder='type your nickname'

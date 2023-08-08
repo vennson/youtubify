@@ -15,7 +15,7 @@ import { getOperationAST } from 'graphql'
 
 const uri = 'http://127.0.0.1:4000/graphql'
 
-export const initializeApolloClient = (link: ApolloLink) => {
+const initializeApolloClient = (link: ApolloLink) => {
   return new ApolloClient({
     cache: new InMemoryCache(),
     link: link,
@@ -24,7 +24,7 @@ export const initializeApolloClient = (link: ApolloLink) => {
 
 const token = '...'
 
-export const createApolloLink = () => {
+const createApolloLink = () => {
   const sseLink = new SSELink({
     uri,
     // headers: {
@@ -46,3 +46,5 @@ export const createApolloLink = () => {
     httpLink,
   )
 }
+
+export const apolloClient = initializeApolloClient(createApolloLink())

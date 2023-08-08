@@ -9,6 +9,8 @@ import // createQueueMutation,
 '~/graphql/mutations'
 import { isProduction } from '~/lib/actions'
 import { useAppStore } from '~/store/store'
+import { apolloClient } from './client'
+import { GET_QUEUE, GET_USER, LIVE_GET_QUEUE } from './queries'
 
 const apiUrl = isProduction
   ? process.env.NEXT_PUBLIC_GRAFBASE_API_URL || ''
@@ -37,16 +39,17 @@ export async function getQueue(queueId: string) {
 export async function joinRoomIfExists(roomId: string) {
   const { setQueueOwner } = useAppStore.getState()
 
-  // try {
-  //   const { queue } = (await getQueue(roomId)) || {}
-  //   if (queue?.id) {
-  //     await useAppStore.getState().setJoinedRoom(roomId)
-  //     setQueueOwner(queue.owner)
-  //     return queue.id
-  //   }
-  // } catch (error) {
-  //   console.log('joinRoomIfExists error', error)
-  // }
+  const res = await apolloClient.query<QueueQueryResponse>({
+    query: GET_QUEUE,
+    variables: { id: roomId },
+  })
+
+  const queue = res.data.queue
+  if (queue.id) {
+    useAppStore.getState().setJoinedRoom(queue.id)
+    setQueueOwner(queue.owner)
+    return queue.id
+  }
 }
 
 export async function refreshQueue() {
@@ -76,12 +79,9 @@ export async function refreshQueue() {
 }
 
 export async function getUser(userId: string) {
-  // try {
-  //   const res = makeGraphQLRequest(getUserQuery, {
-  //     id: userId,
-  //   }) as Promise<UserQueryResponse>
-  //   return res
-  // } catch (error) {
-  //   console.log('getUser error', error)
-  // }
+  const res = await apolloClient.query<UserQueryResponse>({
+    query: GET_USER,
+    variables: { id: userId },
+  })
+  return res.data.user
 }

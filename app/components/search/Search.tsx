@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation'
 import usePollQueue from '~/app/hooks/usePollQueue'
 import { useQuery } from '@apollo/client'
 import { LIVE_GET_QUEUE } from '~/graphql/queries'
+import { join } from 'path'
 
 type Props = {
   roomId: string
@@ -39,8 +40,7 @@ export default function SearchPage({ roomId }: Props) {
       variables: { id: roomId },
     },
   )
-  console.log('data', data)
-  console.log('liveLoading', liveLoading)
+  console.log('room data', data)
   const queue = data?.queue.videos.edges || []
 
   const [loading, setLoading] = useState(false)
@@ -56,6 +56,7 @@ export default function SearchPage({ roomId }: Props) {
 
   const joinRoomOrRedirect = useCallback(
     async (roomId: string) => {
+      console.log('joinRoomOrRedirect')
       const queueId = await joinRoomIfExists(roomId)
       if (queueId) {
         await setJoinedRoom(roomId)
@@ -76,9 +77,8 @@ export default function SearchPage({ roomId }: Props) {
   }, [initUser, roomId, router, setPendingRoom])
 
   useEffect(() => {
-    if (!user?.id) {
-      _initUser()
-    }
+    if (user?.id) return
+    _initUser()
   }, [_initUser, initUser, roomId, router, setPendingRoom, user?.id])
 
   useEffect(() => {

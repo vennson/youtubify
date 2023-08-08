@@ -11,26 +11,29 @@ import JoinRoomForm from './JoinRoomForm'
 import NicknameForm from './NicknameForm'
 
 export default function WelcomeModal() {
-  const setUser = useAppStore((state) => state.setUser)
+  const user = useAppStore((state) => state.user)
+  const initUser = useAppStore((state) => state.initUser)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
 
   const router = useRouter()
 
-  const userLocal = localStorage.getItem('user') || '{}'
-  const userLocalId = JSON.parse(userLocal).id
-  const { data } = useQuery<UserQueryResponse>(GET_USER, {
-    variables: { id: userLocalId },
-  })
+  // const userLocal = localStorage.getItem('user') || '{}'
+  // const userLocalId = JSON.parse(userLocal).id
+  // const { data } = useQuery<UserQueryResponse>(GET_USER, {
+  //   variables: { id: userLocalId },
+  // })
 
   useEffect(() => {
-    if (!joinedRoom) return
-    router.push(`/room/${joinedRoom}/`)
+    if (joinedRoom) {
+      router.push(`/room/${joinedRoom}/`)
+    }
   }, [joinedRoom, router])
 
   useEffect(() => {
-    if (!data?.user.id) return
-    setUser(data.user)
-  }, [data, setUser])
+    if (!user?.id) {
+      initUser()
+    }
+  }, [initUser, user?.id])
 
   return (
     <Modal opened={true} onClose={() => {}} centered withCloseButton={false}>

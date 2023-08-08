@@ -4,15 +4,13 @@ import { ApolloProvider } from '@apollo/client'
 import { CacheProvider } from '@emotion/react'
 import { useEmotionCache, MantineProvider } from '@mantine/core'
 import { useServerInsertedHTML } from 'next/navigation'
-import { createApolloLink, initializeApolloClient } from '~/graphql/client'
+import { apolloClient } from '~/graphql/client'
 
-const apolloClient = initializeApolloClient(createApolloLink())
-
-export default function RootStyleRegistry({
-  children,
-}: {
+type Props = {
   children: React.ReactNode
-}) {
+}
+
+export default function RootStyleRegistry({ children }: Props) {
   const cache = useEmotionCache()
   cache.compat = true
 
