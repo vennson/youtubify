@@ -39,10 +39,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     return hasSession
   },
-  setUser: (user: User) => {
-    set({ user })
-    localStorage.setItem('user', JSON.stringify(user))
-  },
+  setUser: (user: User) => set({ user }),
   joinedRoom: undefined,
   setJoinedRoom: async (joinedRoom) => {
     set({ joinedRoom })

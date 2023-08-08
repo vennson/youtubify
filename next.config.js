@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     domains: ['i.ytimg.com'],
+    unoptimized: true,
   },
   experimental: {
     serverComponentsExternalPackages: ['graphql-request'],
