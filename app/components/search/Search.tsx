@@ -51,6 +51,7 @@ export default function SearchPage({ roomId }: Props) {
       query: '',
     },
   })
+
   const router = useRouter()
   const hasQuery = form.values.query.length > 0
 
@@ -77,8 +78,9 @@ export default function SearchPage({ roomId }: Props) {
   }, [initUser, roomId, router, setPendingRoom])
 
   useEffect(() => {
-    if (user?.id) return
-    _initUser()
+    if (!user?.id) {
+      _initUser()
+    }
   }, [_initUser, initUser, roomId, router, setPendingRoom, user?.id])
 
   useEffect(() => {

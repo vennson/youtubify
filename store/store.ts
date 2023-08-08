@@ -53,13 +53,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   pendingRoom: undefined,
   setPendingRoom: async (pendingRoom) => {
-    try {
-      const { queue } = (await getQueue(pendingRoom)) || {}
-      if (queue?.id) {
-        set({ pendingRoom })
-      }
-    } catch (error) {
-      console.log('setPendingRoom error', error)
+    const queriedQueue = await getQueue(pendingRoom)
+    if (queriedQueue?.id) {
+      set({ pendingRoom })
     }
   },
 

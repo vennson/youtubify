@@ -46,6 +46,8 @@ export default function NicknameForm() {
     }
   }
 
+  console.log('pendingRoom', pendingRoom)
+
   return (
     <>
       {!user?.id && (

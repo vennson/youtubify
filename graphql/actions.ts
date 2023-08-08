@@ -26,6 +26,11 @@ const makeGraphQLRequest = async (query: string, variables = {}) => {
 }
 
 export async function getQueue(queueId: string) {
+  const res = await apolloClient.query<QueueQueryResponse>({
+    query: GET_QUEUE,
+    variables: { id: queueId },
+  })
+  return res.data.queue
   // try {
   //   const res = makeGraphQLRequest(getQueueQuery, {
   //     id: queueId,
@@ -39,12 +44,8 @@ export async function getQueue(queueId: string) {
 export async function joinRoomIfExists(roomId: string) {
   const { setQueueOwner } = useAppStore.getState()
 
-  const res = await apolloClient.query<QueueQueryResponse>({
-    query: GET_QUEUE,
-    variables: { id: roomId },
-  })
+  const queue = await getQueue(roomId)
 
-  const queue = res.data.queue
   if (queue.id) {
     useAppStore.getState().setJoinedRoom(queue.id)
     setQueueOwner(queue.owner)
