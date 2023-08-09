@@ -1,6 +1,9 @@
+'use client'
+
 import { useAppStore } from '~/store/store'
 import { apolloClient } from './client'
 import { GET_QUEUE, GET_USER } from './queries'
+import { Queue } from '~/gql/gql'
 
 export async function getQueue(queueId: string) {
   const res = await apolloClient.query<QueueQueryResponse>({
@@ -27,4 +30,39 @@ export async function getUser(userId: string) {
     variables: { id: userId },
   })
   return res.data.user
+}
+
+export async function refreshQueue(newQueue: DBQueue) {
+  const {
+    joinedRoom,
+    setQueue,
+    setQueueOwner,
+    setNowPlaying,
+    ownsQueue,
+    setOwnsQueue,
+    setQueueLoading,
+    user,
+  } = useAppStore.getState()
+
+  if (!joinedRoom) return
+
+  setQueueLoading(true)
+
+  const freshVideos = newQueue.videos.edges.filter((vid) => {
+    return !vid.node.isDone || !vid.node.isPlaying
+  })
+
+  setQueue(freshVideos)
+  setQueueOwner(newQueue.owner)
+
+  if (newQueue.owner.id === user?.id) {
+    setOwnsQueue(true)
+  }
+
+  if (!ownsQueue) {
+    setNowPlaying(newQueue.nowPlaying)
+  }
+  setQueueLoading(false)
+
+  return newQueue
 }

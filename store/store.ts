@@ -5,12 +5,14 @@ interface AppState {
   user?: User
   initUser: () => Promise<boolean>
   setUser: (user: User) => void
-  joinedRoom?: string
+  joinedRoom: string
   setJoinedRoom: (queueId: string) => Promise<void>
   pendingRoom?: string
   setPendingRoom: (queueId: string) => Promise<void>
   queue: DBVideo[]
   setQueue: (queue: DBVideo[]) => void
+  queueLoading: boolean
+  setQueueLoading: (loading: boolean) => void
   nowPlaying?: DBVideo
   setNowPlaying: (video?: DBVideo) => void
   ownsQueue: boolean
@@ -42,7 +44,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     localStorage.setItem('user', JSON.stringify(user))
     set({ user })
   },
-  joinedRoom: undefined,
+  joinedRoom: '',
   setJoinedRoom: async (joinedRoom) => {
     set({ joinedRoom })
     // const res = await getQueue(joinedRoom)
@@ -51,7 +53,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     //   set({ ownsQueue: isOwner })
     // }
   },
-  pendingRoom: undefined,
+  pendingRoom: '',
   setPendingRoom: async (pendingRoom) => {
     const queriedQueue = await getQueue(pendingRoom)
     if (queriedQueue?.id) {
@@ -61,11 +63,20 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   queue: [],
   setQueue: (queue) => {
-    const sortedQueue = queue.sort(
-      (a, b) => b.node.votes.edges.length - a.node.votes.edges.length,
-    )
+    const sortedQueue = queue.sort((a, b) => {
+      const bVoteCount = b.node.votes?.edges.length
+      const aVoteCount = a.node.votes?.edges.length
+
+      if (bVoteCount && aVoteCount) {
+        return bVoteCount - aVoteCount
+      } else {
+        return 0
+      }
+    })
     set({ queue: sortedQueue })
   },
+  queueLoading: false,
+  setQueueLoading: (loading) => set({ queueLoading: loading }),
   nowPlaying: undefined,
   setNowPlaying: (nowPlaying) => set({ nowPlaying }),
   ownsQueue: false,

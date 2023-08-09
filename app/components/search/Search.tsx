@@ -7,13 +7,14 @@ import { useRouter } from 'next/navigation'
 
 import { useAppStore } from '~/store/store'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
-import { joinRoomIfExists } from '~/graphql/actions'
-import { useLiveQueueQuery } from '~/gql/gql'
+import { joinRoomIfExists, refreshQueue } from '~/graphql/actions'
+import { useLiveQueueQuery, useQueueQuery } from '~/gql/gql'
 
 import QueueItem from '../queue/QueueItem'
 import Player from '../player/Player'
 import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
+import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 
 type Props = {
   roomId: string
@@ -29,12 +30,19 @@ export default function SearchPage({ roomId }: Props) {
   // const queue = useAppStore((state) => state.queue)
   const ownsQueue = useAppStore((state) => state.ownsQueue)
   const setPendingRoom = useAppStore((state) => state.setPendingRoom)
+  const queue = useAppStore((state) => state.queue)
+  const queueLoading = useAppStore((state) => state.queueLoading)
 
-  const { data, loading: queueLoading } = useLiveQueueQuery({
-    variables: { id: roomId },
-  })
-  console.log('room data', data)
-  const queue = data?.queue?.videos?.edges || []
+  const onRefreshQueue = useRefreshQueue()
+
+  // const {
+  //   data,
+  //   loading: queueLoading,
+  //   refetch: refetchQueue,
+  // } = useQueueQuery({
+  //   variables: { id: roomId },
+  // })
+  // const queue = data?.queue?.videos?.edges || []
 
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
@@ -50,7 +58,6 @@ export default function SearchPage({ roomId }: Props) {
 
   const joinRoomOrRedirect = useCallback(
     async (roomId: string) => {
-      console.log('joinRoomOrRedirect')
       const queueId = await joinRoomIfExists(roomId)
       if (queueId) {
         await setJoinedRoom(roomId)
@@ -63,7 +70,6 @@ export default function SearchPage({ roomId }: Props) {
 
   const _initUser = useCallback(async () => {
     const hasSession = await initUser()
-    console.log('hasSession', hasSession)
     if (!hasSession) {
       setPendingRoom(roomId)
       router.push('/')
@@ -84,7 +90,6 @@ export default function SearchPage({ roomId }: Props) {
 
   // useEffect(() => {
   //   // const pollQueue = setInterval(() => {
-  //   //   console.log('refreshing queue...')
   //   //   refreshQueue()
   //   // }, POLL_QUEUE_INTERVAL)
 
@@ -100,13 +105,10 @@ export default function SearchPage({ roomId }: Props) {
   // }, [])
 
   // const refreshPaused = usePollQueue()
-  // console.log('refreshPaused', refreshPaused)
 
-  // useEffect(() => {
-  //   refreshQueue()
-  // }, [])
-
-  console.log('queueLoading', queueLoading)
+  useEffect(() => {
+    onRefreshQueue()
+  }, [onRefreshQueue, joinedRoom])
 
   return (
     joinedRoom && (
@@ -142,7 +144,6 @@ export default function SearchPage({ roomId }: Props) {
                 <ResultItem
                   key={`${searchedVideo.videoId}-${i}`}
                   searchedVideo={searchedVideo}
-                  // @ts-ignore
                   queue={queue}
                 />
               ))}
@@ -177,7 +178,7 @@ export default function SearchPage({ roomId }: Props) {
               <Skeleton mt='md' height={82} radius='sm' />
             )}
 
-            {queue.length === 0 && firstQueueRefreshed && (
+            {queue.length === 0 && (
               <Center>
                 <Text color='dimmed' fs='italic' fz='sm'>
                   bruh... no queue?

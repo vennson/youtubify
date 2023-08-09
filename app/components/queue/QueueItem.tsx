@@ -48,8 +48,6 @@ export default function QueueItem({ queuedVideo }: Props) {
     // await refreshQueue()
   }
 
-  // console.log('disabledAction', disabledAction)
-
   return (
     <UnstyledButton
       onClick={toggleVote}

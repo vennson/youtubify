@@ -5,7 +5,7 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    serverComponentsExternalPackages: ['graphql-request'],
+    serverComponentsExternalPackages: ['graphql-request', ''],
   },
 }
 

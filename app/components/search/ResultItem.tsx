@@ -3,13 +3,15 @@ import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
-import { abbreviateNumber, formatSeconds } from './utils'
 import { useAppStore } from '~/store/store'
 import {
-  Video,
+  useQueueQuery,
   useVideoCreateMutation,
   useVideoUpdateMutation,
 } from '~/gql/gql'
+import { abbreviateNumber, formatSeconds } from './utils'
+import { refreshQueue } from '~/graphql/actions'
+import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 
 type Props = {
   searchedVideo: Video
@@ -21,21 +23,26 @@ export default function ResultItem(props: Props) {
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const queue = useAppStore((state) => state.queue)
-  const setDisabledAction = useAppStore((state) => state.setDisabledAction)
+  // const setDisabledAction = useAppStore((state) => state.setDisabledAction)
 
   const [createVideo, { loading }] = useVideoCreateMutation()
   const [updateVideo] = useVideoUpdateMutation()
+  // const { refetch: refetchQueue } = useQueueQuery({
+  //   variables: { id: joinedRoom },
+  // })
+
+  const onRefreshQueue = useRefreshQueue()
 
   const queuedVideo = queue.find(
     (queueVid) => queueVid.node.videoId === searchedVideo.videoId,
   )
-  const alreadyPlayed = queuedVideo?.node.isPlaying
-  const voteCount = queuedVideo?.node.votes.edges.length
+  const alreadyPlayed = queuedVideo?.node?.isPlaying
+  const voteCount = queuedVideo?.node.votes?.edges.length
   const hasVotes = voteCount && voteCount > 0
 
   let userInVotes = false
   if (hasVotes) {
-    userInVotes = !!queuedVideo?.node.votes.edges.find(
+    userInVotes = !!queuedVideo?.node.votes?.edges.find(
       (edge) => edge.node.id === user?.id,
     )
   }
@@ -43,7 +50,7 @@ export default function ResultItem(props: Props) {
   async function onClickResultItem() {
     if (hasVotes && !userInVotes) return
 
-    setDisabledAction()
+    // setDisabledAction()
     if (!joinedRoom || !user?.id) return
 
     if (queuedVideo) {
@@ -54,8 +61,6 @@ export default function ResultItem(props: Props) {
           input: { votes: [{ [linkStatus]: user.id }] },
         },
       })
-
-      console.log('updateVideo res', res)
     } else {
       const res = await createVideo({
         variables: {
@@ -66,12 +71,8 @@ export default function ResultItem(props: Props) {
             thumbnails: searchedVideo.thumbnails,
             title: searchedVideo.title,
             videoId: searchedVideo.videoId,
-            queue: {
-              link: joinedRoom,
-            },
-            votes: {
-              link: user.id,
-            },
+            queue: { link: joinedRoom },
+            votes: [{ link: user.id }],
             addedBy: {
               id: user.id,
               name: user.name,
@@ -79,9 +80,15 @@ export default function ResultItem(props: Props) {
           },
         },
       })
-
-      console.log('res', res)
     }
+
+    // const res = await refetchQueue()
+    // const newQueue = res.data.queue
+    // if (newQueue) {
+    //   // @ts-ignore
+    //   await refreshQueue(newQueue)
+    // }
+    await onRefreshQueue()
   }
 
   return (

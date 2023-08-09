@@ -18,7 +18,12 @@ import { PLAYER_HEIGHT } from '~/constants/numbers'
 import YouTubePlayer from 'react-player/youtube'
 import Control from './Control'
 import { useAppStore } from '~/store/store'
-import { useQueueUpdateMutation, useVideoUpdateMutation } from '~/gql/gql'
+import {
+  useQueueUpdateMutation,
+  useVideoDeleteMutation,
+  useVideoUpdateMutation,
+} from '~/gql/gql'
+import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 
 export default function Player() {
   const queue = useAppStore((state) => state.queue)
@@ -29,8 +34,11 @@ export default function Player() {
   const nowPlaying = useAppStore((state) => state.nowPlaying)
   const setNowPlaying = useAppStore((state) => state.setNowPlaying)
 
+  const onRefreshQueue = useRefreshQueue()
+
   const [updateVideo] = useVideoUpdateMutation()
   const [updateQueue] = useQueueUpdateMutation()
+  const [deleteVideo] = useVideoDeleteMutation()
 
   const [playing, setPlaying] = useState(true)
   const playerRef = useRef<YouTubePlayer>(null)
@@ -41,13 +49,23 @@ export default function Player() {
   // *only queue owner can trigger this
   async function playNext() {
     if (!ownsQueue) return
-    console.log('playNext')
-    console.log('queue', queue)
-    console.log('pendingVideo', pendingVideo)
 
-    // *delete old video
+    const newQueue = await onRefreshQueue()
+    const newVideos = newQueue?.videos?.edges
+
+    if (!newVideos) return
+
+    const _notYetPlayedVideos = newVideos.filter((v) => !v?.node.isPlaying)
+    const _pendingVideo = _notYetPlayedVideos[0]
+    console.log('_pendingVideo', _pendingVideo)
+
     if (nowPlaying?.node.videoId) {
-      // console.log('🚀marking prev vid as done or deleting it, if theres any')
+      // *delete old video
+      const resVid = await deleteVideo({
+        variables: {
+          by: { id: nowPlaying.node.id },
+        },
+      })
       // const resUpdate = await updateVideo(
       //   nowPlaying.node.id,
       //   undefined,
@@ -55,68 +73,65 @@ export default function Player() {
       //   undefined,
       //   true,
       // )
-      // console.log('updateVideo isDone', resUpdate)
       // const resDelete = await deleteVideo(nowPlaying.node.id)
-      // console.log('deleteVideo resDelete', resDelete)
     }
 
-    if (pendingVideo?.node.videoId && user?.id && joinedRoom) {
-      console.log('🚀playing the next video')
-
+    if (_pendingVideo?.node.videoId && user?.id && joinedRoom) {
       // *set the nowPlaying of the Queue
-      // const resNewQueue = await updateQueue(joinedRoom, pendingVideo)
+      // const resNewQueue = await updateQueue(joinedRoom, _pendingVideo)
       const resNewQueue = await updateQueue({
         variables: {
           by: { id: joinedRoom },
-          input: { nowPlaying: pendingVideo },
+          input: { nowPlaying: _pendingVideo },
         },
       })
-      console.log('updateQueue', resNewQueue)
 
       // *mark the video as isPlaying true
       // const resVid = await updateVideo(
-      //   pendingVideo.node.id,
+      //   _pendingVideo.node.id,
       //   undefined,
       //   undefined,
       //   true,
       // )
       const resVid = await updateVideo({
         variables: {
-          by: { id: pendingVideo.node.id },
+          by: { id: _pendingVideo.node.id },
           input: {
             isPlaying: true,
           },
         },
       })
-      console.log('updateVideo isPlaying', resVid)
 
       // *refresh the queue that actually reflects the db
       // !put in useEffect cause live update
       // const refreshedQueue = await refreshQueue()
-      // console.log('refreshQueue', refreshedQueue)
+      const newerQueue = await onRefreshQueue()
 
-      // if (refreshedQueue?.id) {
-      //   if (refreshedQueue.nowPlaying) {
-      //     setNowPlaying(refreshedQueue.nowPlaying)
-      //   }
-      // }
+      if (newerQueue?.id && newerQueue.nowPlaying) {
+        setNowPlaying(newerQueue.nowPlaying)
+      }
     } else {
-      // console.log('🚀clearing the nowPlaying')
-      // setNowPlaying(undefined)
+      // *clear nowPlaying in db
+      const resNewQueue = await updateQueue({
+        variables: {
+          by: { id: joinedRoom },
+          input: { nowPlaying: null },
+        },
+      })
+      setNowPlaying(undefined)
+      await onRefreshQueue()
     }
   }
 
   // // *double check to make sure now playing is marked as isPlaying true
   // const makeSureNowPlayingIsPlayingTrue = useCallback(async () => {
   //   if (nowPlaying?.node.videoId && user?.id && joinedRoom) {
-  //     console.log('🚀marking nowPlaying as isPlaying true')
   //     const res = await updateVideo(
   //       nowPlaying.node.id,
   //       undefined,
   //       undefined,
   //       true,
   //     )
-  //     console.log('updateVideo 2', res)
   //   }
   // }, [joinedRoom, nowPlaying?.node.id, nowPlaying?.node.videoId, user?.id])
 

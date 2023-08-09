@@ -6,7 +6,6 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { useUserCreateMutation } from '~/gql/gql'
 
-import { CREATE_USER } from '~/graphql/mutations'
 import { useAppStore } from '~/store/store'
 
 const zSchema = z.object({
@@ -46,8 +45,6 @@ export default function NicknameForm() {
       setLoading(false)
     }
   }
-
-  console.log('pendingRoom', pendingRoom)
 
   return (
     <>
