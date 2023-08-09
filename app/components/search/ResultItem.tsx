@@ -5,9 +5,11 @@ import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from './utils'
 import { useAppStore } from '~/store/store'
-import { useState } from 'react'
-import { CREATE_VIDEO, UPDATE_VIDEO } from '~/graphql/mutations'
-import { useMutation } from '@apollo/client'
+import {
+  Video,
+  useVideoCreateMutation,
+  useVideoUpdateMutation,
+} from '~/gql/gql'
 
 type Props = {
   searchedVideo: Video
@@ -19,17 +21,13 @@ export default function ResultItem(props: Props) {
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const queue = useAppStore((state) => state.queue)
-  const disabledAction = useAppStore((state) => state.disabledAction)
   const setDisabledAction = useAppStore((state) => state.setDisabledAction)
-  // const [loading, setLoading] = useState(false)
 
-  const [createVideo, { loading }] =
-    useMutation<VideoCreateResponse>(CREATE_VIDEO)
-
-  const [updateVideo] = useMutation<VideoUpdateResponse>(UPDATE_VIDEO)
+  const [createVideo, { loading }] = useVideoCreateMutation()
+  const [updateVideo] = useVideoUpdateMutation()
 
   const queuedVideo = queue.find(
-    (queuedVideo) => queuedVideo.node.videoId === searchedVideo.videoId,
+    (queueVid) => queueVid.node.videoId === searchedVideo.videoId,
   )
   const alreadyPlayed = queuedVideo?.node.isPlaying
   const voteCount = queuedVideo?.node.votes.edges.length
@@ -45,24 +43,19 @@ export default function ResultItem(props: Props) {
   async function onClickResultItem() {
     if (hasVotes && !userInVotes) return
 
-    console.count('onClickResultItem')
     setDisabledAction()
     if (!joinedRoom || !user?.id) return
 
     if (queuedVideo) {
       const linkStatus = userInVotes ? 'unlink' : 'link'
-      console.log('updateVideo linkStatus:', linkStatus)
-      // const res = await updateVideo(queuedVideo.node.id, user.id, linkStatus)
       const res = await updateVideo({
         variables: {
           by: { id: queuedVideo.node.id },
-          input: {
-            votes: { [linkStatus]: user.id },
-          },
+          input: { votes: [{ [linkStatus]: user.id }] },
         },
       })
 
-      console.log('res', res)
+      console.log('updateVideo res', res)
     } else {
       const res = await createVideo({
         variables: {
@@ -89,14 +82,7 @@ export default function ResultItem(props: Props) {
 
       console.log('res', res)
     }
-
-    // const res = await refreshQueue()
-    // if (res) {
-    //   console.log('res', res)
-    // }
   }
-
-  // console.log('disabledAction', disabledAction)
 
   return (
     <UnstyledButton onClick={onClickResultItem} disabled={loading}>

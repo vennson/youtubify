@@ -3,9 +3,7 @@
 import { useEffect } from 'react'
 import { Modal } from '@mantine/core'
 import { useRouter } from 'next/navigation'
-import { useQuery } from '@apollo/client'
 
-import { GET_USER } from '~/graphql/queries'
 import { useAppStore } from '~/store/store'
 import JoinRoomForm from './JoinRoomForm'
 import NicknameForm from './NicknameForm'
@@ -16,12 +14,6 @@ export default function WelcomeModal() {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
 
   const router = useRouter()
-
-  // const userLocal = localStorage.getItem('user') || '{}'
-  // const userLocalId = JSON.parse(userLocal).id
-  // const { data } = useQuery<UserQueryResponse>(GET_USER, {
-  //   variables: { id: userLocalId },
-  // })
 
   useEffect(() => {
     if (joinedRoom) {

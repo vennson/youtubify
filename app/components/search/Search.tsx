@@ -3,24 +3,23 @@
 import { Box, Center, Divider, Kbd, Skeleton, Stack, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useCallback, useEffect, useState } from 'react'
-import ResultItem from './ResultItem'
-import SearchBar from './SearchBar'
-import QueueItem from '../queue/QueueItem'
+import { useRouter } from 'next/navigation'
+
 import { useAppStore } from '~/store/store'
-import Player from '../player/Player'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
 import { joinRoomIfExists } from '~/graphql/actions'
-import { useRouter } from 'next/navigation'
-import { useQuery } from '@apollo/client'
-import { LIVE_GET_QUEUE } from '~/graphql/queries'
-import { join } from 'path'
+import { useLiveQueueQuery } from '~/gql/gql'
+
+import QueueItem from '../queue/QueueItem'
+import Player from '../player/Player'
+import ResultItem from './ResultItem'
+import SearchBar from './SearchBar'
 
 type Props = {
   roomId: string
 }
 
 const UPPER_BODY_HEIGHT = PLAYER_HEIGHT + 130
-const POLL_QUEUE_INTERVAL = 1000
 
 export default function SearchPage({ roomId }: Props) {
   const user = useAppStore((state) => state.user)
@@ -30,17 +29,12 @@ export default function SearchPage({ roomId }: Props) {
   // const queue = useAppStore((state) => state.queue)
   const ownsQueue = useAppStore((state) => state.ownsQueue)
   const setPendingRoom = useAppStore((state) => state.setPendingRoom)
-  const disabledAction = useAppStore((state) => state.disabledAction)
-  const setDisabledAction = useAppStore((state) => state.setDisabledAction)
 
-  const { data, loading: queueLoading } = useQuery<QueueQueryResponse>(
-    LIVE_GET_QUEUE,
-    {
-      variables: { id: roomId },
-    },
-  )
+  const { data, loading: queueLoading } = useLiveQueueQuery({
+    variables: { id: roomId },
+  })
   console.log('room data', data)
-  const queue = data?.queue.videos.edges || []
+  const queue = data?.queue?.videos?.edges || []
 
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
@@ -148,6 +142,7 @@ export default function SearchPage({ roomId }: Props) {
                 <ResultItem
                   key={`${searchedVideo.videoId}-${i}`}
                   searchedVideo={searchedVideo}
+                  // @ts-ignore
                   queue={queue}
                 />
               ))}
@@ -166,12 +161,16 @@ export default function SearchPage({ roomId }: Props) {
         {!hasQuery && (
           <>
             <Stack spacing='xs' mt='xs' mb='lg'>
-              {queue?.map((queuedVideo, i) => (
-                <QueueItem
-                  key={`${queuedVideo.node.videoId}-${i}`}
-                  queuedVideo={queuedVideo}
-                />
-              ))}
+              {queue?.map(
+                (queuedVideo, i) =>
+                  queuedVideo && (
+                    <QueueItem
+                      key={`${queuedVideo.node.videoId}-${i}`}
+                      // @ts-ignore
+                      queuedVideo={queuedVideo.node}
+                    />
+                  ),
+              )}
             </Stack>
 
             {queueLoading && queue.length === 0 && (

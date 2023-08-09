@@ -1,10 +1,9 @@
-import { useMutation } from '@apollo/client'
 import { Button, Loader, Text, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useState } from 'react'
 import { z } from 'zod'
+import { useQueueCreateMutation } from '~/gql/gql'
 import { joinRoomIfExists } from '~/graphql/actions'
-import { CREATE_QUEUE } from '~/graphql/mutations'
 import { useAppStore } from '~/store/store'
 
 const validSchema = z.object({
@@ -17,7 +16,7 @@ export default function JoinRoomForm() {
   const pendingRoom = useAppStore((state) => state.pendingRoom)
   const setQueueOwner = useAppStore((state) => state.setQueueOwner)
 
-  const [createQueue] = useMutation<QueueCreateResponse>(CREATE_QUEUE)
+  const [createQueue] = useQueueCreateMutation()
   const [loading, setLoading] = useState({ creating: false, joining: false })
 
   const form = useForm({

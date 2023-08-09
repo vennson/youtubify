@@ -43,21 +43,18 @@ type DBVideo = {
     stats: {
       views: number
     }
-    thumbnails: [
-      {
-        height: number
-        url: string
-        width: number
-      },
-      {
-        height: number
-        url: string
-        width: number
-      },
-    ]
+    thumbnails:
+      | [
+          {
+            height: number
+            url: string
+            width: number
+          },
+        ]
+      | any[] // temporary fix
     title: string
     videoId: string
-    votes: {
+    votes?: {
       edges: [
         {
           node: {
@@ -66,7 +63,7 @@ type DBVideo = {
           }
         },
       ]
-    }
+    } | null
     createdAt: string
     addedBy: {
       name: string

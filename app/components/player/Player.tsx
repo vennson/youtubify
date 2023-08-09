@@ -18,8 +18,7 @@ import { PLAYER_HEIGHT } from '~/constants/numbers'
 import YouTubePlayer from 'react-player/youtube'
 import Control from './Control'
 import { useAppStore } from '~/store/store'
-import { UPDATE_QUEUE, UPDATE_VIDEO } from '~/graphql/mutations'
-import { useMutation } from '@apollo/client'
+import { useQueueUpdateMutation, useVideoUpdateMutation } from '~/gql/gql'
 
 export default function Player() {
   const queue = useAppStore((state) => state.queue)
@@ -30,8 +29,8 @@ export default function Player() {
   const nowPlaying = useAppStore((state) => state.nowPlaying)
   const setNowPlaying = useAppStore((state) => state.setNowPlaying)
 
-  const [updateVideo] = useMutation<VideoUpdateResponse>(UPDATE_VIDEO)
-  const [updateQueue] = useMutation<QueueUpdateResponse>(UPDATE_QUEUE)
+  const [updateVideo] = useVideoUpdateMutation()
+  const [updateQueue] = useQueueUpdateMutation()
 
   const [playing, setPlaying] = useState(true)
   const playerRef = useRef<YouTubePlayer>(null)

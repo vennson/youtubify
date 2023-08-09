@@ -1,15 +1,14 @@
 import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
-import { IconHeart, IconHeartFilled } from '@tabler/icons-react'
+import { IconHeartFilled } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from '../search/utils'
 import { useAppStore } from '~/store/store'
-import { UPDATE_VIDEO } from '~/graphql/mutations'
-import { useMutation } from '@apollo/client'
+import { Video, useVideoUpdateMutation } from '~/gql/gql'
 
 type Props = {
-  queuedVideo: DBVideo
+  queuedVideo: Video
 }
 
 export default function QueueItem({ queuedVideo }: Props) {
@@ -18,19 +17,18 @@ export default function QueueItem({ queuedVideo }: Props) {
   const disabledAction = useAppStore((state) => state.disabledAction)
   const setDisabledAction = useAppStore((state) => state.setDisabledAction)
 
-  const [updateVideo] = useMutation<VideoUpdateResponse>(UPDATE_VIDEO)
+  const [updateVideo] = useVideoUpdateMutation()
 
   let userInVotes = false
-  if (queuedVideo?.node.votes) {
-    userInVotes = !!queuedVideo?.node.votes?.edges.find(
-      (edge) => edge.node.id === user?.id,
+  if (queuedVideo?.votes) {
+    userInVotes = !!queuedVideo?.votes?.edges?.find(
+      (edge) => edge?.node.id === user?.id,
     )
   }
   const hasVotes =
-    queuedVideo?.node.votes?.edges.length &&
-    queuedVideo.node.votes.edges.length > 0
-  const isPlaying = queuedVideo?.node.isPlaying
-  const isDone = queuedVideo?.node.isDone
+    queuedVideo?.votes?.edges?.length && queuedVideo.votes.edges.length > 0
+  const isPlaying = queuedVideo?.isPlaying
+  const isDone = queuedVideo?.isDone
 
   async function toggleVote() {
     if (hasVotes && !userInVotes) return
@@ -38,12 +36,12 @@ export default function QueueItem({ queuedVideo }: Props) {
     setDisabledAction()
     if (!joinedRoom || !user?.id) return
     const linkStatus = userInVotes ? 'unlink' : 'link'
-    // await updateVideo(queuedVideo.node.id, user.id, linkStatus)
+    // await updateVideo(queuedVideo.id, user.id, linkStatus)
     await updateVideo({
       variables: {
-        by: { id: queuedVideo.node.id },
+        by: { id: queuedVideo.id },
         input: {
-          votes: { [linkStatus]: user.id },
+          votes: [{ [linkStatus]: user.id }],
         },
       },
     })
@@ -64,9 +62,7 @@ export default function QueueItem({ queuedVideo }: Props) {
             <Avatar miw={60} mih={60}>
               <Image
                 src={
-                  isProduction
-                    ? queuedVideo.node.thumbnails[0].url
-                    : '/avatar.jpg'
+                  isProduction ? queuedVideo.thumbnails[0].url : '/avatar.jpg'
                 }
                 fill
                 style={{ objectFit: 'cover', flex: 1 }}
@@ -76,14 +72,14 @@ export default function QueueItem({ queuedVideo }: Props) {
 
             <Box>
               <Text size='sm' lineClamp={1}>
-                {queuedVideo.node.title}
+                {queuedVideo.title}
               </Text>
               <Text size='xs' color='dimmed'>
-                {abbreviateNumber(queuedVideo.node.stats.views)} views ·{' '}
-                {formatSeconds(queuedVideo.node.lengthSeconds)}
+                {abbreviateNumber(queuedVideo.stats.views)} views ·{' '}
+                {formatSeconds(queuedVideo.lengthSeconds)}
               </Text>
               <Text size='xs' color='dimmed'>
-                {queuedVideo.node.author.title}
+                {queuedVideo.author.title}
               </Text>
             </Box>
           </Flex>
@@ -96,12 +92,12 @@ export default function QueueItem({ queuedVideo }: Props) {
                 // <IconHeart size={24} />
                 <IconHeartFilled size={24} style={{ color: RED }} />
               )}
-              {/* {queuedVideo.node.votes &&
-                queuedVideo.node.votes.edges.length > 0 &&
-                queuedVideo.node.votes.edges.length} */}
+              {/* {queuedVideo.votes &&
+                queuedVideo.votes.edges.length > 0 &&
+                queuedVideo.votes.edges.length} */}
             </Flex>
             <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
-              {queuedVideo.node.addedBy.name}
+              {queuedVideo.addedBy.name}
             </Text>
           </Flex>
         </Flex>

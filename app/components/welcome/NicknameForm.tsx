@@ -4,6 +4,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { z } from 'zod'
+import { useUserCreateMutation } from '~/gql/gql'
 
 import { CREATE_USER } from '~/graphql/mutations'
 import { useAppStore } from '~/store/store'
@@ -21,7 +22,7 @@ export default function NicknameForm() {
   const pendingRoom = useAppStore((state) => state.pendingRoom)
 
   const [loading, setLoading] = useState(false)
-  const [createUser] = useMutation<UserCreateResponse>(CREATE_USER)
+  const [createUser] = useUserCreateMutation()
 
   const form = useForm({
     validate: zodResolver(zSchema),
@@ -34,7 +35,7 @@ export default function NicknameForm() {
     setLoading(true)
 
     const res = await createUser({ variables: { input: { name } } })
-    const newUser = res.data?.userCreate.user
+    const newUser = res.data?.userCreate?.user
     if (newUser) {
       setUser(newUser)
     }
