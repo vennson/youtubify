@@ -49,8 +49,8 @@ export default function JoinRoomForm() {
         },
       })
 
-      const newQueue = res.data?.queueCreate.queue
-      if (newQueue) {
+      const newQueue = res.data?.queueCreate?.queue
+      if (newQueue?.owner) {
         setQueueOwner(newQueue.owner)
         await setJoinedRoom(newQueue.id)
       }
