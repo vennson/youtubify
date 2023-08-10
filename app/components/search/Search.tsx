@@ -54,6 +54,12 @@ export default function SearchPage({ roomId }: Props) {
   })
 
   const router = useRouter()
+
+  const notYetPlayedVideos = queue.filter((v) => {
+    const voteCount = v.node.votes?.edges.length
+    return !v.node.isPlaying && voteCount && voteCount > 0
+  })
+
   const hasQuery = form.values.query.length > 0
 
   const joinRoomOrRedirect = useCallback(
@@ -162,7 +168,7 @@ export default function SearchPage({ roomId }: Props) {
         {!hasQuery && (
           <>
             <Stack spacing='xs' mt='xs' mb='lg'>
-              {queue?.map(
+              {notYetPlayedVideos?.map(
                 (queuedVideo, i) =>
                   queuedVideo && (
                     <QueueItem
@@ -178,7 +184,7 @@ export default function SearchPage({ roomId }: Props) {
               <Skeleton mt='md' height={82} radius='sm' />
             )}
 
-            {queue.length === 0 && (
+            {notYetPlayedVideos.length === 0 && (
               <Center>
                 <Text color='dimmed' fs='italic' fz='sm'>
                   bruh... no queue?

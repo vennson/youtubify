@@ -48,9 +48,8 @@ export default function ResultItem(props: Props) {
   }
 
   async function onClickResultItem() {
-    if (hasVotes && !userInVotes) return
+    // if (hasVotes && !userInVotes) return
 
-    // setDisabledAction()
     if (!joinedRoom || !user?.id) return
 
     if (queuedVideo) {
@@ -82,12 +81,6 @@ export default function ResultItem(props: Props) {
       })
     }
 
-    // const res = await refetchQueue()
-    // const newQueue = res.data.queue
-    // if (newQueue) {
-    //   // @ts-ignore
-    //   await refreshQueue(newQueue)
-    // }
     await onRefreshQueue()
   }
 
@@ -130,7 +123,7 @@ export default function ResultItem(props: Props) {
             <Flex direction='column' align='end'>
               <Flex align='center'>
                 <IconHeartFilled size={24} style={{ color: RED }} />
-                {/* {queuedVideo.node.votes.edges.length} */}
+                {queuedVideo.node.votes.edges.length}
               </Flex>
               <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
                 {queuedVideo.node.addedBy.name}

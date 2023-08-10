@@ -45,7 +45,10 @@ export default function Player() {
   const [loading, setLoading] = useState(false)
   const playerRef = useRef<YouTubePlayer>(null)
 
-  const notYetPlayedVideos = queue.filter((v) => !v.node.isPlaying)
+  const notYetPlayedVideos = queue.filter((v) => {
+    const voteCount = v.node.votes?.edges.length
+    return !v.node.isPlaying && voteCount && voteCount > 0
+  })
   const pendingVideo = notYetPlayedVideos[0]
 
   // *only queue owner can trigger this
