@@ -13,7 +13,11 @@ import { RED, YELLOW } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from '../search/utils'
 import { useAppStore } from '~/store/store'
-import { Video, useVideoUpdateMutation } from '~/gql/gql'
+import {
+  Video,
+  useVideoDeleteMutation,
+  useVideoUpdateMutation,
+} from '~/gql/gql'
 import { useState } from 'react'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 
@@ -26,8 +30,10 @@ export default function QueueItem({ queuedVideo }: Props) {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const disabledAction = useAppStore((state) => state.disabledAction)
 
-  const [loading, setLoading] = useState(false)
+  const [deleteVideo] = useVideoDeleteMutation()
   const [updateVideo] = useVideoUpdateMutation()
+
+  const [loading, setLoading] = useState(false)
   const onRefreshQueue = useRefreshQueue()
 
   let userInVotes = false
@@ -47,14 +53,22 @@ export default function QueueItem({ queuedVideo }: Props) {
 
     setLoading(true)
     const linkStatus = userInVotes ? 'unlink' : 'link'
-    await updateVideo({
-      variables: {
-        by: { id: queuedVideo.id },
-        input: {
-          votes: [{ [linkStatus]: user.id }],
+
+    // *if video has only 1 vote and user is the one who voted, remove video
+    if (linkStatus === 'unlink' && voteCount === 1) {
+      await deleteVideo({
+        variables: {
+          by: { id: queuedVideo.id },
         },
-      },
-    })
+      })
+    } else {
+      await updateVideo({
+        variables: {
+          by: { id: queuedVideo.id },
+          input: { votes: [{ [linkStatus]: user.id }] },
+        },
+      })
+    }
 
     await onRefreshQueue()
     setLoading(false)
