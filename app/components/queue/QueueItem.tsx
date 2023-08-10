@@ -1,4 +1,12 @@
-import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
+import {
+  Avatar,
+  Box,
+  Card,
+  Flex,
+  Loader,
+  Text,
+  UnstyledButton,
+} from '@mantine/core'
 import { IconHeartFilled } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED } from '~/constants/colors'
@@ -6,6 +14,8 @@ import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from '../search/utils'
 import { useAppStore } from '~/store/store'
 import { Video, useVideoUpdateMutation } from '~/gql/gql'
+import { useState } from 'react'
+import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 
 type Props = {
   queuedVideo: Video
@@ -15,9 +25,10 @@ export default function QueueItem({ queuedVideo }: Props) {
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const disabledAction = useAppStore((state) => state.disabledAction)
-  const setDisabledAction = useAppStore((state) => state.setDisabledAction)
 
+  const [loading, setLoading] = useState(false)
   const [updateVideo] = useVideoUpdateMutation()
+  const onRefreshQueue = useRefreshQueue()
 
   let userInVotes = false
   if (queuedVideo?.votes) {
@@ -32,11 +43,10 @@ export default function QueueItem({ queuedVideo }: Props) {
 
   async function toggleVote() {
     if (hasVotes && !userInVotes) return
-
-    setDisabledAction()
     if (!joinedRoom || !user?.id) return
+
+    setLoading(true)
     const linkStatus = userInVotes ? 'unlink' : 'link'
-    // await updateVideo(queuedVideo.id, user.id, linkStatus)
     await updateVideo({
       variables: {
         by: { id: queuedVideo.id },
@@ -45,7 +55,9 @@ export default function QueueItem({ queuedVideo }: Props) {
         },
       },
     })
-    // await refreshQueue()
+
+    await onRefreshQueue()
+    setLoading(false)
   }
 
   return (
@@ -83,20 +95,25 @@ export default function QueueItem({ queuedVideo }: Props) {
           </Flex>
 
           <Flex align='end' direction='column'>
-            <Flex align='center'>
-              {userInVotes ? (
-                <IconHeartFilled size={24} style={{ color: RED }} />
-              ) : (
-                // <IconHeart size={24} />
-                <IconHeartFilled size={24} style={{ color: RED }} />
-              )}
-              {/* {queuedVideo.votes &&
+            {loading && <Loader size={24} />}
+            {!loading && (
+              <>
+                <Flex align='center'>
+                  {userInVotes ? (
+                    <IconHeartFilled size={24} style={{ color: RED }} />
+                  ) : (
+                    // <IconHeart size={24} />
+                    <IconHeartFilled size={24} style={{ color: RED }} />
+                  )}
+                  {/* {queuedVideo.votes &&
                 queuedVideo.votes.edges.length > 0 &&
                 queuedVideo.votes.edges.length} */}
-            </Flex>
-            <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
-              {queuedVideo.addedBy.name}
-            </Text>
+                </Flex>
+                <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
+                  {queuedVideo.addedBy.name}
+                </Text>
+              </>
+            )}
           </Flex>
         </Flex>
       </Card>

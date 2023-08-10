@@ -1,4 +1,12 @@
-import { Avatar, Box, Card, Flex, Text, UnstyledButton } from '@mantine/core'
+import {
+  Avatar,
+  Box,
+  Card,
+  Flex,
+  Loader,
+  Text,
+  UnstyledButton,
+} from '@mantine/core'
 import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED } from '~/constants/colors'
@@ -12,6 +20,7 @@ import {
 import { abbreviateNumber, formatSeconds } from './utils'
 import { refreshQueue } from '~/graphql/actions'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
+import { useState } from 'react'
 
 type Props = {
   searchedVideo: Video
@@ -23,14 +32,12 @@ export default function ResultItem(props: Props) {
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const queue = useAppStore((state) => state.queue)
-  // const setDisabledAction = useAppStore((state) => state.setDisabledAction)
 
-  const [createVideo, { loading }] = useVideoCreateMutation()
+  const [createVideo, { loading: videoCreateLoading }] =
+    useVideoCreateMutation()
   const [updateVideo] = useVideoUpdateMutation()
-  // const { refetch: refetchQueue } = useQueueQuery({
-  //   variables: { id: joinedRoom },
-  // })
 
+  const [loading, setLoading] = useState(false)
   const onRefreshQueue = useRefreshQueue()
 
   const queuedVideo = queue.find(
@@ -51,6 +58,7 @@ export default function ResultItem(props: Props) {
     // if (hasVotes && !userInVotes) return
 
     if (!joinedRoom || !user?.id) return
+    setLoading(true)
 
     if (queuedVideo) {
       const linkStatus = userInVotes ? 'unlink' : 'link'
@@ -82,10 +90,11 @@ export default function ResultItem(props: Props) {
     }
 
     await onRefreshQueue()
+    setLoading(false)
   }
 
   return (
-    <UnstyledButton onClick={onClickResultItem} disabled={loading}>
+    <UnstyledButton onClick={onClickResultItem} disabled={videoCreateLoading}>
       <Card withBorder p='xs'>
         <Flex gap='sm' justify='space-between' align='center'>
           <Flex gap='sm'>
@@ -118,21 +127,30 @@ export default function ResultItem(props: Props) {
             </Box>
           </Flex>
 
-          {queuedVideo?.node.votes &&
-          queuedVideo.node.votes.edges.length > 0 ? (
+          {hasVotes ? (
             <Flex direction='column' align='end'>
-              <Flex align='center'>
-                <IconHeartFilled size={24} style={{ color: RED }} />
-                {queuedVideo.node.votes.edges.length}
-              </Flex>
-              <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
-                {queuedVideo.node.addedBy.name}
-              </Text>
+              {loading && <Loader size={24} />}
+              {!loading && (
+                <>
+                  <Flex align='center'>
+                    <IconHeartFilled size={24} style={{ color: RED }} />
+                    {voteCount}
+                  </Flex>
+                  <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
+                    {queuedVideo.node.addedBy.name}
+                  </Text>
+                </>
+              )}
             </Flex>
           ) : (
-            <Box miw={24}>
-              <IconPlus size={24} />
-            </Box>
+            <>
+              {loading && <Loader size={24} />}
+              {!loading && (
+                <Box miw={24}>
+                  <IconPlus size={24} />
+                </Box>
+              )}
+            </>
           )}
         </Flex>
       </Card>
