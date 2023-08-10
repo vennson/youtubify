@@ -9,7 +9,7 @@ import {
 } from '@mantine/core'
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react'
 import Image from 'next/image'
-import { RED } from '~/constants/colors'
+import { RED, YELLOW } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { abbreviateNumber, formatSeconds } from '../search/utils'
 import { useAppStore } from '~/store/store'
@@ -100,10 +100,10 @@ export default function QueueItem({ queuedVideo }: Props) {
               <>
                 <Flex align='center'>
                   {userInVotes ? (
-                    <IconHeartFilled size={24} style={{ color: RED }} />
+                    <IconHeartFilled size={24} style={{ color: YELLOW }} />
                   ) : (
                     <IconHeart size={24} />
-                    // <IconHeartFilled size={24} style={{ color: RED }} />
+                    // <IconHeartFilled size={24} style={{ color: YELLOW }} />
                   )}
                   {voteCount}
                 </Flex>

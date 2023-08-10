@@ -9,7 +9,7 @@ import {
 } from '@mantine/core'
 import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
-import { RED } from '~/constants/colors'
+import { RED, YELLOW } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { useAppStore } from '~/store/store'
 import {
@@ -141,7 +141,7 @@ export default function ResultItem(props: Props) {
               {!loading && (
                 <>
                   <Flex align='center'>
-                    <IconHeartFilled size={24} style={{ color: RED }} />
+                    <IconHeartFilled size={24} style={{ color: YELLOW }} />
                     {voteCount}
                   </Flex>
                   <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
