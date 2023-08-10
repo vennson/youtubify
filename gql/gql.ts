@@ -64,6 +64,18 @@ export type Mutation = {
   videoDelete?: Maybe<VideoDeletePayload>;
   /** Delete multiple Video */
   videoDeleteMany?: Maybe<VideoDeleteManyPayload>;
+  /** Create a VideoLog */
+  videoLogCreate?: Maybe<VideoLogCreatePayload>;
+  /** Create multiple VideoLog */
+  videoLogCreateMany?: Maybe<VideoLogCreateManyPayload>;
+  /** Delete a VideoLog by ID or unique field */
+  videoLogDelete?: Maybe<VideoLogDeletePayload>;
+  /** Delete multiple VideoLog */
+  videoLogDeleteMany?: Maybe<VideoLogDeleteManyPayload>;
+  /** Update a VideoLog */
+  videoLogUpdate?: Maybe<VideoLogUpdatePayload>;
+  /** Update multiple VideoLog */
+  videoLogUpdateMany?: Maybe<VideoLogUpdateManyPayload>;
   /** Update a Video */
   videoUpdate?: Maybe<VideoUpdatePayload>;
   /** Update multiple Video */
@@ -153,6 +165,37 @@ export type MutationVideoDeleteManyArgs = {
 };
 
 
+export type MutationVideoLogCreateArgs = {
+  input: VideoLogCreateInput;
+};
+
+
+export type MutationVideoLogCreateManyArgs = {
+  input: Array<VideoLogCreateManyInput>;
+};
+
+
+export type MutationVideoLogDeleteArgs = {
+  by: VideoLogByInput;
+};
+
+
+export type MutationVideoLogDeleteManyArgs = {
+  input: Array<VideoLogDeleteManyInput>;
+};
+
+
+export type MutationVideoLogUpdateArgs = {
+  by: VideoLogByInput;
+  input: VideoLogUpdateInput;
+};
+
+
+export type MutationVideoLogUpdateManyArgs = {
+  input: Array<VideoLogUpdateManyInput>;
+};
+
+
 export type MutationVideoUpdateArgs = {
   by: VideoByInput;
   input: VideoUpdateInput;
@@ -190,6 +233,10 @@ export type Query = {
   video?: Maybe<Video>;
   /** Paginated query to fetch the whole list of `Video`. */
   videoCollection?: Maybe<VideoConnection>;
+  /** Query a single VideoLog by an ID or a unique field */
+  videoLog?: Maybe<VideoLog>;
+  /** Paginated query to fetch the whole list of `VideoLog`. */
+  videoLogCollection?: Maybe<VideoLogConnection>;
 };
 
 
@@ -235,6 +282,21 @@ export type QueryVideoCollectionArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<VideoOrderByInput>;
+};
+
+
+export type QueryVideoLogArgs = {
+  by: VideoLogByInput;
+};
+
+
+export type QueryVideoLogCollectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<VideoLogCollectionFilterInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<VideoLogOrderByInput>;
 };
 
 export type Queue = {
@@ -630,6 +692,95 @@ export type VideoEdge = {
   node: Video;
 };
 
+export type VideoLog = {
+  __typename?: 'VideoLog';
+  /** when the model was created */
+  createdAt: Scalars['DateTime']['output'];
+  /** Unique identifier */
+  id: Scalars['ID']['output'];
+  /** when the model was updated */
+  updatedAt: Scalars['DateTime']['output'];
+  video: Scalars['JSON']['output'];
+};
+
+export type VideoLogByInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type VideoLogCollectionFilterInput = {
+  id?: InputMaybe<IdCollectionFilterInput>;
+};
+
+export type VideoLogConnection = {
+  __typename?: 'VideoLogConnection';
+  edges?: Maybe<Array<Maybe<VideoLogEdge>>>;
+  /** Information to aid in pagination */
+  pageInfo: PageInfo;
+};
+
+/** Input to create a VideoLog */
+export type VideoLogCreateInput = {
+  video: Scalars['JSON']['input'];
+};
+
+export type VideoLogCreateManyInput = {
+  input: VideoLogCreateInput;
+};
+
+export type VideoLogCreateManyPayload = {
+  __typename?: 'VideoLogCreateManyPayload';
+  videoLogCollection: Array<VideoLog>;
+};
+
+export type VideoLogCreatePayload = {
+  __typename?: 'VideoLogCreatePayload';
+  videoLog?: Maybe<VideoLog>;
+};
+
+export type VideoLogDeleteManyInput = {
+  by: VideoLogByInput;
+};
+
+export type VideoLogDeleteManyPayload = {
+  __typename?: 'VideoLogDeleteManyPayload';
+  deletedIds: Array<Scalars['ID']['output']>;
+};
+
+export type VideoLogDeletePayload = {
+  __typename?: 'VideoLogDeletePayload';
+  deletedId: Scalars['ID']['output'];
+};
+
+export type VideoLogEdge = {
+  __typename?: 'VideoLogEdge';
+  cursor: Scalars['String']['output'];
+  node: VideoLog;
+};
+
+export type VideoLogOrderByInput = {
+  createdAt?: InputMaybe<OrderByDirection>;
+};
+
+/** Input to update a VideoLog */
+export type VideoLogUpdateInput = {
+  video?: InputMaybe<Scalars['JSON']['input']>;
+};
+
+export type VideoLogUpdateManyInput = {
+  by: VideoLogByInput;
+  input: VideoLogUpdateInput;
+};
+
+export type VideoLogUpdateManyPayload = {
+  __typename?: 'VideoLogUpdateManyPayload';
+  videoLogCollection: Array<VideoLog>;
+};
+
+export type VideoLogUpdatePayload = {
+  __typename?: 'VideoLogUpdatePayload';
+  videoLog?: Maybe<VideoLog>;
+};
+
 export type VideoOrderByInput = {
   createdAt?: InputMaybe<OrderByDirection>;
 };
@@ -707,6 +858,13 @@ export type QueueUpdateMutationVariables = Exact<{
 
 
 export type QueueUpdateMutation = { __typename?: 'Mutation', queueUpdate?: { __typename?: 'QueueUpdatePayload', queue?: { __typename?: 'Queue', id: string, nowPlaying?: any | null, owner?: { __typename?: 'User', name: string, id: string } | null, videos?: { __typename?: 'VideoConnection', edges?: Array<{ __typename?: 'VideoEdge', node: { __typename?: 'Video', author: any, lengthSeconds: number, stats: any, thumbnails: Array<any>, title: string, videoId: string, createdAt: any, addedBy: any, isPlaying: boolean, isDone: boolean, id: string, votes?: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', name: string, id: string } } | null> | null } | null } } | null> | null } | null } | null } | null };
+
+export type VideoLogCreateMutationVariables = Exact<{
+  input: VideoLogCreateInput;
+}>;
+
+
+export type VideoLogCreateMutation = { __typename?: 'Mutation', videoLogCreate?: { __typename?: 'VideoLogCreatePayload', videoLog?: { __typename?: 'VideoLog', id: string } | null } | null };
 
 export type LiveQueueQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -980,6 +1138,41 @@ export function useQueueUpdateMutation(baseOptions?: Apollo.MutationHookOptions<
 export type QueueUpdateMutationHookResult = ReturnType<typeof useQueueUpdateMutation>;
 export type QueueUpdateMutationResult = Apollo.MutationResult<QueueUpdateMutation>;
 export type QueueUpdateMutationOptions = Apollo.BaseMutationOptions<QueueUpdateMutation, QueueUpdateMutationVariables>;
+export const VideoLogCreateDocument = gql`
+    mutation VideoLogCreate($input: VideoLogCreateInput!) {
+  videoLogCreate(input: $input) {
+    videoLog {
+      id
+    }
+  }
+}
+    `;
+export type VideoLogCreateMutationFn = Apollo.MutationFunction<VideoLogCreateMutation, VideoLogCreateMutationVariables>;
+
+/**
+ * __useVideoLogCreateMutation__
+ *
+ * To run a mutation, you first call `useVideoLogCreateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVideoLogCreateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [videoLogCreateMutation, { data, loading, error }] = useVideoLogCreateMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useVideoLogCreateMutation(baseOptions?: Apollo.MutationHookOptions<VideoLogCreateMutation, VideoLogCreateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<VideoLogCreateMutation, VideoLogCreateMutationVariables>(VideoLogCreateDocument, options);
+      }
+export type VideoLogCreateMutationHookResult = ReturnType<typeof useVideoLogCreateMutation>;
+export type VideoLogCreateMutationResult = Apollo.MutationResult<VideoLogCreateMutation>;
+export type VideoLogCreateMutationOptions = Apollo.BaseMutationOptions<VideoLogCreateMutation, VideoLogCreateMutationVariables>;
 export const LiveQueueDocument = gql`
     query LiveQueue($id: ID!) @live {
   queue(by: {id: $id}) {

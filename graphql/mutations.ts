@@ -97,3 +97,13 @@ export const UPDATE_QUEUE = gql`
     }
   }
 `
+
+export const CREATE_VIDEO_LOG = gql`
+  mutation VideoLogCreate($input: VideoLogCreateInput!) {
+    videoLogCreate(input: $input) {
+      videoLog {
+        id
+      }
+    }
+  }
+`

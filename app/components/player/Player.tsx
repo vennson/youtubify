@@ -22,6 +22,7 @@ import { useAppStore } from '~/store/store'
 import {
   useQueueUpdateMutation,
   useVideoDeleteMutation,
+  useVideoLogCreateMutation,
   useVideoUpdateMutation,
 } from '~/gql/gql'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
@@ -41,6 +42,7 @@ export default function Player() {
   const [updateVideo] = useVideoUpdateMutation()
   const [updateQueue] = useQueueUpdateMutation()
   const [deleteVideo] = useVideoDeleteMutation()
+  const [createVideoLog] = useVideoLogCreateMutation()
 
   const [playing, setPlaying] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -69,7 +71,16 @@ export default function Player() {
     const _pendingVideo = _sortedQueue[0]
 
     if (nowPlaying?.node.videoId) {
-      // *delete old video
+      // *log the played video
+      await createVideoLog({
+        variables: {
+          input: {
+            video: nowPlaying.node,
+          },
+        },
+      })
+
+      // *delete played video
       await deleteVideo({
         variables: {
           by: { id: nowPlaying.node.id },
