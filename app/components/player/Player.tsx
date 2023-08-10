@@ -118,6 +118,8 @@ export default function Player() {
     setLoading(false)
   }
 
+  console.log('pendingVideo', pendingVideo)
+
   return (
     <Box h={PLAYER_HEIGHT}>
       {!nowPlaying?.node.videoId && (
