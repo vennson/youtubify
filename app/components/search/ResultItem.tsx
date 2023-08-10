@@ -89,7 +89,7 @@ export default function ResultItem(props: Props) {
       })
     }
 
-    await onRefreshQueue()
+    onRefreshQueue()
     setLoading(false)
   }
 

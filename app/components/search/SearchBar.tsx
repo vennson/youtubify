@@ -59,14 +59,14 @@ export default function SearchBar(props: Props) {
       console.log('onSearch error', error)
     }
 
-    await onRefreshQueue()
+    onRefreshQueue()
     setLoading(false)
   }
 
   async function clearQuery() {
     form.reset()
     setResults([])
-    await onRefreshQueue()
+    onRefreshQueue()
   }
 
   // async function onRefreshQueue() {
