@@ -31,7 +31,7 @@ export default function WelcomeModal() {
     <Modal opened={true} onClose={() => {}} centered withCloseButton={false}>
       {loadingInitUser ? (
         <Center>
-          <Loader />
+          <Loader size={24} />
         </Center>
       ) : (
         <>
