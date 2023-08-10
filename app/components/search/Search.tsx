@@ -14,6 +14,7 @@ import Player from '../player/Player'
 import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
+import { sortQueue } from '~/lib/utils'
 
 type Props = {
   roomId: string
@@ -31,7 +32,6 @@ export default function SearchPage({ roomId }: Props) {
   const queueLoading = useAppStore((state) => state.queueLoading)
 
   const onRefreshQueue = useRefreshQueue()
-
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
   const form = useForm({
@@ -39,15 +39,14 @@ export default function SearchPage({ roomId }: Props) {
       query: '',
     },
   })
-
   const router = useRouter()
 
+  const hasQuery = form.values.query.length > 0
   const notYetPlayedVideos = queue.filter((v) => {
     const voteCount = v.node.votes?.edges.length
     return !v.node.isPlaying && voteCount && voteCount > 0
   })
-
-  const hasQuery = form.values.query.length > 0
+  const sortedQueue = sortQueue(notYetPlayedVideos)
 
   const joinRoomOrRedirect = useCallback(
     async (roomId: string) => {
@@ -84,6 +83,8 @@ export default function SearchPage({ roomId }: Props) {
   useEffect(() => {
     onRefreshQueue()
   }, [onRefreshQueue, joinedRoom])
+
+  console.log('sortedQueue', sortedQueue)
 
   return (
     joinedRoom && (
@@ -137,7 +138,7 @@ export default function SearchPage({ roomId }: Props) {
         {!hasQuery && (
           <>
             <Stack spacing='xs' mt='xs' mb='lg'>
-              {notYetPlayedVideos?.map(
+              {sortedQueue?.map(
                 (queuedVideo, i) =>
                   queuedVideo && (
                     <QueueItem
@@ -153,7 +154,7 @@ export default function SearchPage({ roomId }: Props) {
               <Skeleton mt='md' height={82} radius='sm' />
             )}
 
-            {notYetPlayedVideos.length === 0 && (
+            {sortedQueue.length === 0 && (
               <Center>
                 <Text color='dimmed' fs='italic' fz='sm'>
                   bruh... no queue?

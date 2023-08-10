@@ -25,6 +25,7 @@ import {
   useVideoUpdateMutation,
 } from '~/gql/gql'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
+import { sortQueue } from '~/lib/utils'
 
 export default function Player() {
   const queue = useAppStore((state) => state.queue)
@@ -49,7 +50,8 @@ export default function Player() {
     const voteCount = v.node.votes?.edges.length
     return !v.node.isPlaying && voteCount && voteCount > 0
   })
-  const pendingVideo = notYetPlayedVideos[0]
+  const sortedQueue = sortQueue(notYetPlayedVideos)
+  const pendingVideo = sortedQueue[0]
 
   // *only queue owner can trigger this
   async function playNext() {
@@ -62,12 +64,14 @@ export default function Player() {
     if (!newVideos) return
 
     const _notYetPlayedVideos = newVideos.filter((v) => !v?.node.isPlaying)
-    const _pendingVideo = _notYetPlayedVideos[0]
+    // @ts-ignore
+    const _sortedQueue = sortQueue(_notYetPlayedVideos)
+    const _pendingVideo = _sortedQueue[0]
     console.log('_pendingVideo', _pendingVideo)
 
     if (nowPlaying?.node.videoId) {
       // *delete old video
-      const resVid = await deleteVideo({
+      await deleteVideo({
         variables: {
           by: { id: nowPlaying.node.id },
         },

@@ -7,7 +7,7 @@ import {
   Text,
   UnstyledButton,
 } from '@mantine/core'
-import { IconHeartFilled } from '@tabler/icons-react'
+import { IconHeart, IconHeartFilled } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
@@ -36,13 +36,13 @@ export default function QueueItem({ queuedVideo }: Props) {
       (edge) => edge?.node.id === user?.id,
     )
   }
-  const hasVotes =
-    queuedVideo?.votes?.edges?.length && queuedVideo.votes.edges.length > 0
+  const voteCount = queuedVideo?.votes?.edges?.length
+  const hasVotes = voteCount && voteCount > 0
   const isPlaying = queuedVideo?.isPlaying
   const isDone = queuedVideo?.isDone
 
   async function toggleVote() {
-    if (hasVotes && !userInVotes) return
+    // if (hasVotes && !userInVotes) return
     if (!joinedRoom || !user?.id) return
 
     setLoading(true)
@@ -102,12 +102,10 @@ export default function QueueItem({ queuedVideo }: Props) {
                   {userInVotes ? (
                     <IconHeartFilled size={24} style={{ color: RED }} />
                   ) : (
-                    // <IconHeart size={24} />
-                    <IconHeartFilled size={24} style={{ color: RED }} />
+                    <IconHeart size={24} />
+                    // <IconHeartFilled size={24} style={{ color: RED }} />
                   )}
-                  {/* {queuedVideo.votes &&
-                queuedVideo.votes.edges.length > 0 &&
-                queuedVideo.votes.edges.length} */}
+                  {voteCount}
                 </Flex>
                 <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
                   {queuedVideo.addedBy.name}
