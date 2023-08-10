@@ -29,6 +29,10 @@ const video = g.model('Video', {
   isDone: g.boolean().default(false),
 })
 
+const videoLog = g.model('VideoLog', {
+  video: g.json(),
+})
+
 export default config({
   schema: g,
   auth: {
