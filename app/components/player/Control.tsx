@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Flex,
+  Loader,
   Progress,
   Skeleton,
   Text,
@@ -22,13 +23,15 @@ type Props = {
   setPlaying: Dispatch<SetStateAction<boolean>>
   playNext: () => void
   playerRef: RefObject<YouTubePlayer>
+  loading: boolean
 }
 
 export default function Control(props: Props) {
-  const { playing, setPlaying, playNext, playerRef } = props
+  const { playing, setPlaying, playNext, playerRef, loading } = props
   const ownsQueue = useAppStore((state) => state.ownsQueue)
 
   const [currentPlayTime, setCurrentPlayTime] = useState(0)
+
   const playDuration = playerRef.current?.getDuration()
 
   useEffect(() => {
@@ -66,15 +69,22 @@ export default function Control(props: Props) {
       </Tooltip>
       <Tooltip label='only the room owner can skip' hidden={ownsQueue}>
         <Box>
-          <Button
-            color='gray'
-            variant='outline'
-            leftIcon={<IconPlayerTrackNextFilled size={16} />}
-            onClick={playNext}
-            disabled={!ownsQueue}
-          >
-            skip
-          </Button>
+          {loading ? (
+            <Button disabled w={84}>
+              <Loader size={16} />
+            </Button>
+          ) : (
+            <Button
+              color='gray'
+              variant='outline'
+              leftIcon={<IconPlayerTrackNextFilled size={16} />}
+              onClick={playNext}
+              disabled={!ownsQueue}
+              w={84}
+            >
+              skip
+            </Button>
+          )}
         </Box>
       </Tooltip>
       <Box w='100%'>

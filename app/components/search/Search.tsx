@@ -84,8 +84,6 @@ export default function SearchPage({ roomId }: Props) {
     onRefreshQueue()
   }, [onRefreshQueue, joinedRoom])
 
-  console.log('sortedQueue', sortedQueue)
-
   return (
     joinedRoom && (
       <Box maw={600} mx='auto' mt={UPPER_BODY_HEIGHT} px='sm'>

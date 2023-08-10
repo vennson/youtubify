@@ -67,7 +67,6 @@ export default function Player() {
     // @ts-ignore
     const _sortedQueue = sortQueue(_notYetPlayedVideos)
     const _pendingVideo = _sortedQueue[0]
-    console.log('_pendingVideo', _pendingVideo)
 
     if (nowPlaying?.node.videoId) {
       // *delete old video
@@ -117,8 +116,6 @@ export default function Player() {
 
     setLoading(false)
   }
-
-  console.log('pendingVideo', pendingVideo)
 
   return (
     <Box h={PLAYER_HEIGHT}>
@@ -202,6 +199,7 @@ export default function Player() {
                 setPlaying={setPlaying}
                 playNext={playNext}
                 playerRef={playerRef}
+                loading={loading}
               />
             </Card>
           </Box>
