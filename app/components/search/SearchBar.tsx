@@ -9,7 +9,7 @@ import {
 } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import { IconArrowLeft, IconRefresh, IconSearch } from '@tabler/icons-react'
-import { Dispatch, SetStateAction, useEffect } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { search } from '~/lib/actions'
 import { filterVids } from './utils'
 import { useAppStore } from '~/store/store'
@@ -24,9 +24,8 @@ type Props = {
 
 export default function SearchBar(props: Props) {
   const { loading, setLoading, setResults, form } = props
-  const queueLoading = useAppStore((state) => state.queueLoading)
-
   const onRefreshQueue = useRefreshQueue()
+  const [refreshLoading, setRefreshLoading] = useState(false)
 
   const hasQuery = form.values.query.length > 0
 
@@ -60,6 +59,12 @@ export default function SearchBar(props: Props) {
     await onRefreshQueue()
   }
 
+  async function _onRefreshQueue() {
+    setRefreshLoading(true)
+    await onRefreshQueue()
+    setRefreshLoading(false)
+  }
+
   useEffect(() => {
     if (form.values.query.length === 0) {
       setResults([])
@@ -80,11 +85,11 @@ export default function SearchBar(props: Props) {
           <Button
             variant='outline'
             leftIcon={
-              queueLoading ? <Loader size={16} /> : <IconRefresh size={16} />
+              refreshLoading ? <Loader size={16} /> : <IconRefresh size={16} />
             }
             pr={0}
-            disabled={queueLoading}
-            onClick={() => onRefreshQueue()}
+            disabled={refreshLoading}
+            onClick={() => _onRefreshQueue()}
             color='gray'
           />
         </Tooltip>
