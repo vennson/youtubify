@@ -1,11 +1,9 @@
-import { useMutation } from '@apollo/client'
 import { Button, Loader, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { z } from 'zod'
 import { useUserCreateMutation } from '~/gql/gql'
-
 import { useAppStore } from '~/store/store'
 
 const zSchema = z.object({

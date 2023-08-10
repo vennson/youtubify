@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { Center, Loader, Modal } from '@mantine/core'
 import { useRouter } from 'next/navigation'
-
 import { useAppStore } from '~/store/store'
 import JoinRoomForm from './JoinRoomForm'
 import NicknameForm from './NicknameForm'

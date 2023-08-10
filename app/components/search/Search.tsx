@@ -7,8 +7,7 @@ import { useRouter } from 'next/navigation'
 
 import { useAppStore } from '~/store/store'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
-import { joinRoomIfExists, refreshQueue } from '~/graphql/actions'
-import { useLiveQueueQuery, useQueueQuery } from '~/gql/gql'
+import { joinRoomIfExists } from '~/graphql/actions'
 
 import QueueItem from '../queue/QueueItem'
 import Player from '../player/Player'
@@ -27,26 +26,14 @@ export default function SearchPage({ roomId }: Props) {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const setJoinedRoom = useAppStore((state) => state.setJoinedRoom)
   const initUser = useAppStore((state) => state.initUser)
-  // const queue = useAppStore((state) => state.queue)
-  const ownsQueue = useAppStore((state) => state.ownsQueue)
   const setPendingRoom = useAppStore((state) => state.setPendingRoom)
   const queue = useAppStore((state) => state.queue)
   const queueLoading = useAppStore((state) => state.queueLoading)
 
   const onRefreshQueue = useRefreshQueue()
 
-  // const {
-  //   data,
-  //   loading: queueLoading,
-  //   refetch: refetchQueue,
-  // } = useQueueQuery({
-  //   variables: { id: roomId },
-  // })
-  // const queue = data?.queue?.videos?.edges || []
-
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Video[]>([])
-  const [firstQueueRefreshed, setFirstQueueRefreshed] = useState(false)
   const form = useForm({
     initialValues: {
       query: '',
@@ -93,24 +80,6 @@ export default function SearchPage({ roomId }: Props) {
       joinRoomOrRedirect(roomId)
     }
   }, [joinRoomOrRedirect, joinedRoom, roomId, user?.id])
-
-  // useEffect(() => {
-  //   // const pollQueue = setInterval(() => {
-  //   //   refreshQueue()
-  //   // }, POLL_QUEUE_INTERVAL)
-
-  //   const firstPollLoading = setTimeout(
-  //     () => setFirstQueueRefreshed(true),
-  //     POLL_QUEUE_INTERVAL + 5000,
-  //   )
-
-  //   return () => {
-  //     // clearInterval(pollQueue)
-  //     clearTimeout(firstPollLoading)
-  //   }
-  // }, [])
-
-  // const refreshPaused = usePollQueue()
 
   useEffect(() => {
     onRefreshQueue()

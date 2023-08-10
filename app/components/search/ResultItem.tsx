@@ -12,13 +12,8 @@ import Image from 'next/image'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { useAppStore } from '~/store/store'
-import {
-  useQueueQuery,
-  useVideoCreateMutation,
-  useVideoUpdateMutation,
-} from '~/gql/gql'
+import { useVideoCreateMutation, useVideoUpdateMutation } from '~/gql/gql'
 import { abbreviateNumber, formatSeconds } from './utils'
-import { refreshQueue } from '~/graphql/actions'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 import { useState } from 'react'
 
@@ -55,6 +50,7 @@ export default function ResultItem(props: Props) {
   }
 
   async function onClickResultItem() {
+    // *enable to disable voting on already voted videos
     // if (hasVotes && !userInVotes) return
 
     if (!joinedRoom || !user?.id) return

@@ -72,20 +72,11 @@ export default function Player() {
           by: { id: nowPlaying.node.id },
         },
       })
-      // const resUpdate = await updateVideo(
-      //   nowPlaying.node.id,
-      //   undefined,
-      //   undefined,
-      //   undefined,
-      //   true,
-      // )
-      // const resDelete = await deleteVideo(nowPlaying.node.id)
     }
 
     if (_pendingVideo?.node.videoId && user?.id && joinedRoom) {
       // *set the nowPlaying of the Queue
-      // const resNewQueue = await updateQueue(joinedRoom, _pendingVideo)
-      const resNewQueue = await updateQueue({
+      await updateQueue({
         variables: {
           by: { id: joinedRoom },
           input: { nowPlaying: _pendingVideo },
@@ -93,13 +84,7 @@ export default function Player() {
       })
 
       // *mark the video as isPlaying true
-      // const resVid = await updateVideo(
-      //   _pendingVideo.node.id,
-      //   undefined,
-      //   undefined,
-      //   true,
-      // )
-      const resVid = await updateVideo({
+      await updateVideo({
         variables: {
           by: { id: _pendingVideo.node.id },
           input: {
@@ -108,9 +93,7 @@ export default function Player() {
         },
       })
 
-      // *refresh the queue that actually reflects the db
-      // !put in useEffect cause live update
-      // const refreshedQueue = await refreshQueue()
+      // *refresh the new queue that actually reflects what's in db
       const newerQueue = await onRefreshQueue()
 
       if (newerQueue?.id && newerQueue.nowPlaying) {
@@ -118,7 +101,7 @@ export default function Player() {
       }
     } else {
       // *clear nowPlaying in db
-      const resNewQueue = await updateQueue({
+      await updateQueue({
         variables: {
           by: { id: joinedRoom },
           input: { nowPlaying: null },
@@ -130,23 +113,6 @@ export default function Player() {
 
     setLoading(false)
   }
-
-  // // *double check to make sure now playing is marked as isPlaying true
-  // const makeSureNowPlayingIsPlayingTrue = useCallback(async () => {
-  //   if (nowPlaying?.node.videoId && user?.id && joinedRoom) {
-  //     const res = await updateVideo(
-  //       nowPlaying.node.id,
-  //       undefined,
-  //       undefined,
-  //       true,
-  //     )
-  //   }
-  // }, [joinedRoom, nowPlaying?.node.id, nowPlaying?.node.videoId, user?.id])
-
-  // useEffect(() => {
-  //   if (!ownsQueue || !nowPlaying) return
-  //   makeSureNowPlayingIsPlayingTrue()
-  // }, [makeSureNowPlayingIsPlayingTrue, nowPlaying, ownsQueue])
 
   return (
     <Box h={PLAYER_HEIGHT}>

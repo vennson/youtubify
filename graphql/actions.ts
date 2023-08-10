@@ -3,7 +3,6 @@
 import { useAppStore } from '~/store/store'
 import { apolloClient } from './client'
 import { GET_QUEUE, GET_USER } from './queries'
-import { Queue } from '~/gql/gql'
 
 export async function getQueue(queueId: string) {
   const res = await apolloClient.query<QueueQueryResponse>({
