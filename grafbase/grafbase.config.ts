@@ -11,7 +11,7 @@ const queue = g.model('Queue', {
     .optional()
     .list()
     .optional(),
-  owner: g.relation(user).optional(), // !temporary kasi may bug: nagna null ang owner ng queue ng video, pagka delete ng video
+  owner: g.relation(user).optional(), // !temporary kasi may bug: nagna null ang owner ng queue ng video, pagka delete ng video.
   nowPlaying: g.json().optional(),
 })
 
