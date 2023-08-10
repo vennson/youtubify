@@ -56,7 +56,7 @@ export default function QueueItem({ queuedVideo }: Props) {
       },
     })
 
-    onRefreshQueue()
+    await onRefreshQueue()
     setLoading(false)
   }
 

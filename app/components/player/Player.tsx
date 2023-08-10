@@ -108,7 +108,7 @@ export default function Player() {
         },
       })
       setNowPlaying(undefined)
-      onRefreshQueue()
+      await onRefreshQueue()
     }
 
     setLoading(false)

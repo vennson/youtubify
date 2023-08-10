@@ -50,14 +50,14 @@ export default function SearchBar(props: Props) {
       console.log('onSearch error', error)
     }
 
-    onRefreshQueue()
+    await onRefreshQueue()
     setLoading(false)
   }
 
   async function clearQuery() {
     form.reset()
     setResults([])
-    onRefreshQueue()
+    await onRefreshQueue()
   }
 
   useEffect(() => {
