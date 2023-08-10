@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Modal } from '@mantine/core'
+import { Center, Loader, Modal } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 
 import { useAppStore } from '~/store/store'
@@ -11,6 +11,7 @@ import NicknameForm from './NicknameForm'
 export default function WelcomeModal() {
   const user = useAppStore((state) => state.user)
   const initUser = useAppStore((state) => state.initUser)
+  const loadingInitUser = useAppStore((state) => state.loadingInitUser)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
 
   const router = useRouter()
@@ -29,8 +30,16 @@ export default function WelcomeModal() {
 
   return (
     <Modal opened={true} onClose={() => {}} centered withCloseButton={false}>
-      <NicknameForm />
-      <JoinRoomForm />
+      {loadingInitUser ? (
+        <Center>
+          <Loader />
+        </Center>
+      ) : (
+        <>
+          <NicknameForm />
+          <JoinRoomForm />
+        </>
+      )}
     </Modal>
   )
 }

@@ -4,6 +4,8 @@ import { getQueue, getUser } from '~/graphql/actions'
 interface AppState {
   user?: User
   initUser: () => Promise<boolean>
+  loadingInitUser: boolean
+  setLoadingInitUser: (loading: boolean) => void
   setUser: (user: User) => void
   joinedRoom: string
   setJoinedRoom: (queueId: string) => Promise<void>
@@ -26,6 +28,8 @@ interface AppState {
 export const useAppStore = create<AppState>((set, get) => ({
   user: undefined,
   initUser: async () => {
+    set({ loadingInitUser: true })
+
     const user = localStorage.getItem('user')
     let hasSession = false
 
@@ -38,8 +42,12 @@ export const useAppStore = create<AppState>((set, get) => ({
         set({ user: queriedUser })
       }
     }
+
+    set({ loadingInitUser: false })
     return hasSession
   },
+  loadingInitUser: false,
+  setLoadingInitUser: (loading) => set({ loadingInitUser: loading }),
   setUser: (user: User) => {
     localStorage.setItem('user', JSON.stringify(user))
     set({ user })
@@ -47,11 +55,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   joinedRoom: '',
   setJoinedRoom: async (joinedRoom) => {
     set({ joinedRoom })
-    // const res = await getQueue(joinedRoom)
-    // if (res) {
-    //   const isOwner = res.queue.owner.id === get().user?.id
-    //   set({ ownsQueue: isOwner })
-    // }
   },
   pendingRoom: '',
   setPendingRoom: async (pendingRoom) => {
