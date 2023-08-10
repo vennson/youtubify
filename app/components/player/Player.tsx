@@ -5,6 +5,7 @@ import {
   Card,
   Center,
   Flex,
+  Loader,
   Text,
   Tooltip,
 } from '@mantine/core'
@@ -41,6 +42,7 @@ export default function Player() {
   const [deleteVideo] = useVideoDeleteMutation()
 
   const [playing, setPlaying] = useState(true)
+  const [loading, setLoading] = useState(false)
   const playerRef = useRef<YouTubePlayer>(null)
 
   const notYetPlayedVideos = queue.filter((v) => !v.node.isPlaying)
@@ -49,6 +51,7 @@ export default function Player() {
   // *only queue owner can trigger this
   async function playNext() {
     if (!ownsQueue) return
+    setLoading(true)
 
     const newQueue = await onRefreshQueue()
     const newVideos = newQueue?.videos?.edges
@@ -121,6 +124,8 @@ export default function Player() {
       setNowPlaying(undefined)
       await onRefreshQueue()
     }
+
+    setLoading(false)
   }
 
   // // *double check to make sure now playing is marked as isPlaying true
@@ -151,13 +156,19 @@ export default function Player() {
             {pendingVideo?.node.videoId ? (
               <Tooltip label='only the room owner can start' hidden={ownsQueue}>
                 <Box>
-                  <Button
-                    onClick={playNext}
-                    leftIcon={<IconBrandYoutubeFilled />}
-                    disabled={!ownsQueue}
-                  >
-                    let&apos;s get rolin!
-                  </Button>
+                  {loading ? (
+                    <Button leftIcon={<Loader size={16} />} disabled>
+                      preparing song...
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={playNext}
+                      leftIcon={<IconBrandYoutubeFilled />}
+                      disabled={!ownsQueue}
+                    >
+                      let&apos;s get rolin!
+                    </Button>
+                  )}
                 </Box>
               </Tooltip>
             ) : (
