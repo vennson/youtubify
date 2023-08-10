@@ -12,7 +12,11 @@ import Image from 'next/image'
 import { RED } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { useAppStore } from '~/store/store'
-import { useVideoCreateMutation, useVideoUpdateMutation } from '~/gql/gql'
+import {
+  useVideoCreateMutation,
+  useVideoDeleteMutation,
+  useVideoUpdateMutation,
+} from '~/gql/gql'
 import { abbreviateNumber, formatSeconds } from './utils'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 import { useState } from 'react'
@@ -31,6 +35,7 @@ export default function ResultItem(props: Props) {
   const [createVideo, { loading: videoCreateLoading }] =
     useVideoCreateMutation()
   const [updateVideo] = useVideoUpdateMutation()
+  const [deleteVideo] = useVideoDeleteMutation()
 
   const [loading, setLoading] = useState(false)
   const onRefreshQueue = useRefreshQueue()
@@ -50,22 +55,29 @@ export default function ResultItem(props: Props) {
   }
 
   async function onClickResultItem() {
-    // *enable to disable voting on already voted videos
-    // if (hasVotes && !userInVotes) return
-
     if (!joinedRoom || !user?.id) return
     setLoading(true)
 
     if (queuedVideo) {
       const linkStatus = userInVotes ? 'unlink' : 'link'
-      const res = await updateVideo({
-        variables: {
-          by: { id: queuedVideo.node.id },
-          input: { votes: [{ [linkStatus]: user.id }] },
-        },
-      })
+
+      // *if video has only 1 vote and user is the one who voted, remove video
+      if (linkStatus === 'unlink' && voteCount === 1) {
+        await deleteVideo({
+          variables: {
+            by: { id: queuedVideo.node.id },
+          },
+        })
+      } else {
+        await updateVideo({
+          variables: {
+            by: { id: queuedVideo.node.id },
+            input: { votes: [{ [linkStatus]: user.id }] },
+          },
+        })
+      }
     } else {
-      const res = await createVideo({
+      await createVideo({
         variables: {
           input: {
             author: searchedVideo.author,
