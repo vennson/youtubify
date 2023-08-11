@@ -54,7 +54,7 @@ export default function QueueItem({ queuedVideo }: Props) {
     setLoading(true)
     const linkStatus = userInVotes ? 'unlink' : 'link'
 
-    // *if video has only 1 vote and user is the one who voted, remove video
+    // *if video has only 1 vote and user is the one who voted, remove video.
     if (linkStatus === 'unlink' && voteCount === 1) {
       await deleteVideo({
         variables: {
