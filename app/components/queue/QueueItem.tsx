@@ -48,7 +48,6 @@ export default function QueueItem({ queuedVideo }: Props) {
   const isDone = queuedVideo?.isDone
 
   async function toggleVote() {
-    // if (hasVotes && !userInVotes) return
     if (!joinedRoom || !user?.id) return
 
     setLoading(true)
@@ -117,7 +116,6 @@ export default function QueueItem({ queuedVideo }: Props) {
                     <IconHeartFilled size={24} style={{ color: YELLOW }} />
                   ) : (
                     <IconHeart size={24} />
-                    // <IconHeartFilled size={24} style={{ color: YELLOW }} />
                   )}
                   {voteCount}
                 </Flex>

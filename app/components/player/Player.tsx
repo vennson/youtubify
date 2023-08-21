@@ -9,7 +9,11 @@ import {
   Text,
   Tooltip,
 } from '@mantine/core'
-import { IconBrandYoutubeFilled } from '@tabler/icons-react'
+import {
+  IconBrandYoutubeFilled,
+  IconHeart,
+  IconHeartFilled,
+} from '@tabler/icons-react'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
@@ -27,6 +31,7 @@ import {
 } from '~/gql/gql'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 import { sortQueue } from '~/lib/utils'
+import { YELLOW } from '~/constants/colors'
 
 export default function Player() {
   const queue = useAppStore((state) => state.queue)
@@ -54,6 +59,14 @@ export default function Player() {
   })
   const sortedQueue = sortQueue(notYetPlayedVideos)
   const pendingVideo = sortedQueue[0]
+
+  let userInVotes = false
+  if (nowPlaying?.votes) {
+    userInVotes = !!nowPlaying?.votes?.edges?.find(
+      (edge) => edge?.node.id === user?.id,
+    )
+  }
+  const voteCount = nowPlaying?.votes?.edges?.length
 
   // *only queue owner can trigger this
   async function playNext() {
@@ -177,7 +190,7 @@ export default function Player() {
           />
           <Box>
             <Card withBorder p='xs' shadow='sm'>
-              <Flex gap='sm' align='center'>
+              <Flex gap='sm' justify='space-between' align='center'>
                 <Avatar miw={60} mih={60}>
                   <Image
                     src={
@@ -204,6 +217,20 @@ export default function Player() {
                     {nowPlaying.channelTitle}
                   </Text>
                 </Box>
+
+                <Flex align='end' direction='column'>
+                  <Flex align='center'>
+                    {userInVotes ? (
+                      <IconHeartFilled size={24} style={{ color: YELLOW }} />
+                    ) : (
+                      <IconHeart size={24} />
+                    )}
+                    {voteCount}
+                  </Flex>
+                  <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
+                    {nowPlaying.addedBy.name}
+                  </Text>
+                </Flex>
               </Flex>
 
               <Control
