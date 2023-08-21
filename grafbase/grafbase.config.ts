@@ -16,10 +16,10 @@ const queue = g.model('Queue', {
 })
 
 const video = g.model('Video', {
-  author: g.json(),
-  lengthSeconds: g.int(),
-  stats: g.json(),
-  thumbnails: g.json().list(),
+  channelTitle: g.string(),
+  lengthText: g.string(),
+  viewCount: g.string(),
+  thumbnail: g.json().list(),
   title: g.string(),
   videoId: g.string(),
   votes: g.relation(user).optional().list().optional(),
