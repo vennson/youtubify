@@ -4,9 +4,6 @@ const nextConfig = {
     domains: ['i.ytimg.com'],
     unoptimized: true,
   },
-  experimental: {
-    serverComponentsExternalPackages: ['graphql-request', ''],
-  },
 }
 
 module.exports = nextConfig

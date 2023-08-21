@@ -3,6 +3,7 @@
 import { useAppStore } from '~/store/store'
 import { apolloClient } from './client'
 import { GET_QUEUE, GET_USER } from './queries'
+import { Queue } from '~/gql/gql'
 
 export async function getQueue(queueId: string) {
   const res = await apolloClient.query<QueueQueryResponse>({
@@ -31,7 +32,7 @@ export async function getUser(userId: string) {
   return res.data.user
 }
 
-export async function refreshQueue(newQueue: DBQueue) {
+export async function refreshQueue(newQueue: Queue) {
   const {
     joinedRoom,
     setQueue,
@@ -47,14 +48,17 @@ export async function refreshQueue(newQueue: DBQueue) {
 
   setQueueLoading(true)
 
-  const freshVideos = newQueue.videos.edges.filter((vid) => {
-    return !vid.node.isDone || !vid.node.isPlaying
+  const freshVideos = newQueue.videos?.edges?.filter((vid) => {
+    return !vid?.node.isDone || !vid.node.isPlaying
+  })
+  const vidsOnly = freshVideos?.map((vid) => {
+    return vid?.node
   })
 
-  setQueue(freshVideos)
-  setQueueOwner(newQueue.owner)
+  setQueue(vidsOnly)
+  newQueue.owner && setQueueOwner(newQueue.owner)
 
-  if (newQueue.owner.id === user?.id) {
+  if (newQueue.owner?.id === user?.id) {
     setOwnsQueue(true)
   }
 

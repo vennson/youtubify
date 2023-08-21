@@ -13,17 +13,18 @@ import { RED, YELLOW } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
 import { useAppStore } from '~/store/store'
 import {
+  Video,
   useVideoCreateMutation,
   useVideoDeleteMutation,
   useVideoUpdateMutation,
 } from '~/gql/gql'
-import { abbreviateNumber, formatSeconds } from './utils'
+import { abbreviateNumber } from './utils'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 import { useState } from 'react'
 
 type Props = {
-  searchedVideo: Video
-  queue: DBVideo[]
+  searchedVideo: SearchVideo
+  queue: (Video | undefined)[]
 }
 
 export default function ResultItem(props: Props) {
@@ -41,16 +42,16 @@ export default function ResultItem(props: Props) {
   const onRefreshQueue = useRefreshQueue()
 
   const queuedVideo = queue.find(
-    (queueVid) => queueVid.node.videoId === searchedVideo.videoId,
+    (queueVid) => queueVid?.videoId === searchedVideo.videoId,
   )
-  const alreadyPlayed = queuedVideo?.node?.isPlaying
-  const voteCount = queuedVideo?.node.votes?.edges.length
+  const alreadyPlayed = queuedVideo?.isPlaying
+  const voteCount = queuedVideo?.votes?.edges?.length
   const hasVotes = voteCount && voteCount > 0
 
   let userInVotes = false
   if (hasVotes) {
-    userInVotes = !!queuedVideo?.node.votes?.edges.find(
-      (edge) => edge.node.id === user?.id,
+    userInVotes = !!queuedVideo?.votes?.edges?.find(
+      (edge) => edge?.node.id === user?.id,
     )
   }
 
@@ -65,13 +66,13 @@ export default function ResultItem(props: Props) {
       if (linkStatus === 'unlink' && voteCount === 1) {
         await deleteVideo({
           variables: {
-            by: { id: queuedVideo.node.id },
+            by: { id: queuedVideo.id },
           },
         })
       } else {
         await updateVideo({
           variables: {
-            by: { id: queuedVideo.node.id },
+            by: { id: queuedVideo.id },
             input: { votes: [{ [linkStatus]: user.id }] },
           },
         })
@@ -80,12 +81,12 @@ export default function ResultItem(props: Props) {
       await createVideo({
         variables: {
           input: {
-            author: searchedVideo.author,
-            lengthSeconds: searchedVideo.lengthSeconds,
-            stats: searchedVideo.stats,
-            thumbnails: searchedVideo.thumbnails,
+            channelTitle: searchedVideo.channelTitle || '',
+            lengthText: searchedVideo.lengthText || '',
+            viewCount: searchedVideo.viewCount || '',
+            thumbnail: searchedVideo.thumbnail || [],
             title: searchedVideo.title,
-            videoId: searchedVideo.videoId,
+            videoId: searchedVideo.videoId || '',
             queue: { link: joinedRoom },
             votes: [{ link: user.id }],
             addedBy: {
@@ -109,7 +110,9 @@ export default function ResultItem(props: Props) {
             <Avatar miw={60} mih={60}>
               <Image
                 src={
-                  isProduction ? searchedVideo.thumbnails[0].url : '/avatar.jpg'
+                  isProduction
+                    ? searchedVideo.thumbnail?.[0].url || ''
+                    : '/avatar.jpg'
                 }
                 fill
                 style={{ objectFit: 'cover', flex: 1 }}
@@ -126,11 +129,11 @@ export default function ResultItem(props: Props) {
                 {searchedVideo.title}
               </Text>
               <Text size='xs' color='dimmed'>
-                {abbreviateNumber(searchedVideo.stats.views)} views ·{' '}
-                {formatSeconds(searchedVideo.lengthSeconds)}
+                {abbreviateNumber(parseInt(searchedVideo.viewCount || '0'))}{' '}
+                views · {searchedVideo.lengthText}
               </Text>
               <Text size='xs' color='dimmed'>
-                {searchedVideo.author.title}
+                {searchedVideo.channelTitle}
               </Text>
             </Box>
           </Flex>
@@ -145,7 +148,7 @@ export default function ResultItem(props: Props) {
                     {voteCount}
                   </Flex>
                   <Text size='xs' color='dimmed' ta='right' tw='no-wrap'>
-                    {queuedVideo.node.addedBy.name}
+                    {queuedVideo.addedBy.name}
                   </Text>
                 </>
               )}

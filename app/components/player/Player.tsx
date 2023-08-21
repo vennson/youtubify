@@ -49,8 +49,8 @@ export default function Player() {
   const playerRef = useRef<YouTubePlayer>(null)
 
   const notYetPlayedVideos = queue.filter((v) => {
-    const voteCount = v.node.votes?.edges.length
-    return !v.node.isPlaying && voteCount && voteCount > 0
+    const voteCount = v?.votes?.edges?.length
+    return !v?.isPlaying && voteCount && voteCount > 0
   })
   const sortedQueue = sortQueue(notYetPlayedVideos)
   const pendingVideo = sortedQueue[0]
@@ -66,29 +66,30 @@ export default function Player() {
     if (!newVideos) return
 
     const _notYetPlayedVideos = newVideos.filter((v) => !v?.node.isPlaying)
+    const _vidsOnly = _notYetPlayedVideos.map((v) => v?.node)
     // @ts-ignore
-    const _sortedQueue = sortQueue(_notYetPlayedVideos)
+    const _sortedQueue = sortQueue(_vidsOnly)
     const _pendingVideo = _sortedQueue[0]
 
-    if (nowPlaying?.node.videoId) {
+    if (nowPlaying?.videoId) {
       // *log the played video
       await createVideoLog({
         variables: {
           input: {
-            video: nowPlaying.node,
+            video: nowPlaying,
           },
         },
       })
 
-      // *delete played video
+      // *delete played video (only works in prod)
       await deleteVideo({
         variables: {
-          by: { id: nowPlaying.node.id },
+          by: { id: nowPlaying.id },
         },
       })
     }
 
-    if (_pendingVideo?.node.videoId && user?.id && joinedRoom) {
+    if (_pendingVideo?.videoId && user?.id && joinedRoom) {
       // *set the nowPlaying of the Queue
       await updateQueue({
         variables: {
@@ -100,7 +101,7 @@ export default function Player() {
       // *mark the video as isPlaying true
       await updateVideo({
         variables: {
-          by: { id: _pendingVideo.node.id },
+          by: { id: _pendingVideo.id },
           input: {
             isPlaying: true,
           },
@@ -130,13 +131,13 @@ export default function Player() {
 
   return (
     <Box h={PLAYER_HEIGHT}>
-      {!nowPlaying?.node.videoId && (
+      {!nowPlaying?.videoId && (
         <Center h='100%'>
           <Flex direction='column' align='center' gap='sm'>
             <Text>
               <b>{queueOwner?.name}&apos;s</b> room
             </Text>
-            {pendingVideo?.node.videoId ? (
+            {pendingVideo?.videoId ? (
               <Tooltip label='only the room owner can start' hidden={ownsQueue}>
                 <Box>
                   {loading ? (
@@ -163,11 +164,11 @@ export default function Player() {
         </Center>
       )}
 
-      {nowPlaying?.node.videoId && (
+      {nowPlaying?.videoId && (
         <>
           <ReactPlayer
             ref={playerRef}
-            url={`https://www.youtube.com/watch?v=${nowPlaying.node.videoId}`}
+            url={`https://www.youtube.com/watch?v=${nowPlaying.videoId}`}
             width='100%'
             height={0}
             onEnded={playNext}
@@ -181,8 +182,8 @@ export default function Player() {
                   <Image
                     src={
                       isProduction
-                        ? nowPlaying.node.thumbnails[0].url
-                          ? nowPlaying.node.thumbnails[0].url
+                        ? nowPlaying.thumbnail[0].url
+                          ? nowPlaying.thumbnail[0].url
                           : '/avatar.jpg'
                         : '/avatar.jpg'
                     }
@@ -194,13 +195,13 @@ export default function Player() {
 
                 <Box>
                   <Text size='sm' lineClamp={1}>
-                    {nowPlaying.node.title}
+                    {nowPlaying.title}
                   </Text>
                   <Text size='xs' color='dimmed'>
-                    {abbreviateNumber(nowPlaying.node.stats.views)} views
+                    {abbreviateNumber(parseInt(nowPlaying.viewCount))} views
                   </Text>
                   <Text size='xs' color='dimmed'>
-                    {nowPlaying.node.author.title}
+                    {nowPlaying.channelTitle}
                   </Text>
                 </Box>
               </Flex>

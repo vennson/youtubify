@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { Video } from '~/gql/gql'
 import { getQueue, getUser } from '~/graphql/actions'
 
 interface AppState {
@@ -11,12 +12,12 @@ interface AppState {
   setJoinedRoom: (queueId: string) => Promise<void>
   pendingRoom?: string
   setPendingRoom: (queueId: string) => Promise<void>
-  queue: DBVideo[]
-  setQueue: (queue: DBVideo[]) => void
+  queue: (Video | undefined)[]
+  setQueue: (queue?: (Video | undefined)[]) => void
   queueLoading: boolean
   setQueueLoading: (loading: boolean) => void
-  nowPlaying?: DBVideo
-  setNowPlaying: (video?: DBVideo) => void
+  nowPlaying?: Video
+  setNowPlaying: (video?: Video) => void
   ownsQueue: boolean
   setOwnsQueue: (ownsQueue: boolean) => void
   queueOwner?: { id: string; name: string }
@@ -66,17 +67,21 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   queue: [],
   setQueue: (queue) => {
-    const sortedQueue = queue.sort((a, b) => {
-      const bVoteCount = b.node.votes?.edges.length
-      const aVoteCount = a.node.votes?.edges.length
+    if (queue) {
+      const sortedQueue = queue.sort((a, b) => {
+        const bVoteCount = b?.votes?.edges?.length
+        const aVoteCount = a?.votes?.edges?.length
 
-      if (bVoteCount && aVoteCount) {
-        return bVoteCount - aVoteCount
-      } else {
-        return 0
-      }
-    })
-    set({ queue: sortedQueue })
+        if (bVoteCount && aVoteCount) {
+          return bVoteCount - aVoteCount
+        } else {
+          return 0
+        }
+      })
+      set({ queue: sortedQueue })
+    } else {
+      set({ queue: [] })
+    }
   },
   queueLoading: false,
   setQueueLoading: (loading) => set({ queueLoading: loading }),

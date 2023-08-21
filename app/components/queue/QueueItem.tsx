@@ -11,7 +11,7 @@ import { IconHeart, IconHeartFilled } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED, YELLOW } from '~/constants/colors'
 import { isProduction } from '~/lib/actions'
-import { abbreviateNumber, formatSeconds } from '../search/utils'
+import { abbreviateNumber } from '../search/utils'
 import { useAppStore } from '~/store/store'
 import {
   Video,
@@ -86,7 +86,7 @@ export default function QueueItem({ queuedVideo }: Props) {
             <Avatar miw={60} mih={60}>
               <Image
                 src={
-                  isProduction ? queuedVideo.thumbnails[0].url : '/avatar.jpg'
+                  isProduction ? queuedVideo.thumbnail[0].url : '/avatar.jpg'
                 }
                 fill
                 style={{ objectFit: 'cover', flex: 1 }}
@@ -99,11 +99,11 @@ export default function QueueItem({ queuedVideo }: Props) {
                 {queuedVideo.title}
               </Text>
               <Text size='xs' color='dimmed'>
-                {abbreviateNumber(queuedVideo.stats.views)} views ·{' '}
-                {formatSeconds(queuedVideo.lengthSeconds)}
+                {abbreviateNumber(parseInt(queuedVideo.viewCount))} views ·{' '}
+                {queuedVideo.lengthText}
               </Text>
               <Text size='xs' color='dimmed'>
-                {queuedVideo.author.title}
+                {queuedVideo.channelTitle}
               </Text>
             </Box>
           </Flex>

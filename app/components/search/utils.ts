@@ -1,9 +1,7 @@
-export function filterVids(contents: Content[]) {
+export function filterVids(contents: SearchVideo[]) {
   const filtered = contents.filter((content) => {
-    if (content.type === 'video') {
-      return content
-    }
-  }) as VideoContent[]
+    if (content.type === 'video') return content
+  }) as SearchVideo[]
 
   return filtered
 }

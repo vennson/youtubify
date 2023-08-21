@@ -7,21 +7,17 @@ export async function GET(request: Request) {
 
   const options = {
     method: 'GET',
-    url: 'https://youtube138.p.rapidapi.com/search/',
-    params: {
-      q: query,
-      hl: 'en',
-      gl: 'US',
-    },
+    url: `https://${process.env.YOUTUBE_API_HOST}/search`,
+    params: { query },
     headers: {
-      'X-RapidAPI-Key': process.env.X_RAPID_API_KEY,
-      'X-RapidAPI-Host': process.env.X_RAPID_API_HOST,
+      'X-RapidAPI-Host': process.env.YOUTUBE_API_HOST,
+      'X-RapidAPI-Key': process.env.YOUTUBE_API_KEY,
     },
   }
 
   try {
-    const { data } = await axios.request(options)
-    return NextResponse.json({ data })
+    const { data } = await axios.request<SearchVideoResponse>(options)
+    return NextResponse.json(data)
   } catch (error) {
     console.error(error)
   }

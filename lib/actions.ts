@@ -8,8 +8,9 @@ const serverUrl = isProduction
 
 export async function search(query: string) {
   const params = { query }
-  const { data } = await axios.get<SearchResult>(`${serverUrl}/api/search`, {
-    params,
-  })
+  const { data } = await axios.get<SearchVideoResponse>(
+    `${serverUrl}/api/search`,
+    { params },
+  )
   return data
 }

@@ -12,10 +12,10 @@ export const LIVE_GET_QUEUE = gql`
       videos(orderBy: { createdAt: ASC }, first: 50) {
         edges {
           node {
-            author
-            lengthSeconds
-            stats
-            thumbnails
+            channelTitle
+            lengthText
+            viewCount
+            thumbnail
             title
             videoId
             votes(first: 50) {
@@ -51,10 +51,10 @@ export const GET_QUEUE = gql`
       videos(orderBy: { createdAt: ASC }, first: 50) {
         edges {
           node {
-            author
-            lengthSeconds
-            stats
-            thumbnails
+            channelTitle
+            lengthText
+            viewCount
+            thumbnail
             title
             videoId
             votes(first: 50) {

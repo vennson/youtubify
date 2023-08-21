@@ -23,13 +23,6 @@ export type IdCollectionFilterInput = {
   in?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
-/** Possible operations for an Int field */
-export type IntOperationsInput = {
-  decrement?: InputMaybe<Scalars['Int']['input']>;
-  increment?: InputMaybe<Scalars['Int']['input']>;
-  set?: InputMaybe<Scalars['Int']['input']>;
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   /** Create a Queue */
@@ -434,14 +427,14 @@ export type QueueToVideoCreateQueueRelation = {
 /** Input to create a Video for the QueueToVideo relation of Queue */
 export type QueueToVideoCreateVideo = {
   addedBy: Scalars['JSON']['input'];
-  author: Scalars['JSON']['input'];
+  channelTitle: Scalars['String']['input'];
   isDone?: Scalars['Boolean']['input'];
   isPlaying?: Scalars['Boolean']['input'];
-  lengthSeconds: Scalars['Int']['input'];
-  stats: Scalars['JSON']['input'];
-  thumbnails: Array<Scalars['JSON']['input']>;
+  lengthText: Scalars['String']['input'];
+  thumbnail: Array<Scalars['JSON']['input']>;
   title: Scalars['String']['input'];
   videoId: Scalars['String']['input'];
+  viewCount: Scalars['String']['input'];
   votes?: InputMaybe<Array<InputMaybe<UserToVideoCreateUserRelation>>>;
 };
 
@@ -601,21 +594,21 @@ export type UserUpdatePayload = {
 export type Video = {
   __typename?: 'Video';
   addedBy: Scalars['JSON']['output'];
-  author: Scalars['JSON']['output'];
+  channelTitle: Scalars['String']['output'];
   /** when the model was created */
   createdAt: Scalars['DateTime']['output'];
   /** Unique identifier */
   id: Scalars['ID']['output'];
   isDone: Scalars['Boolean']['output'];
   isPlaying: Scalars['Boolean']['output'];
-  lengthSeconds: Scalars['Int']['output'];
+  lengthText: Scalars['String']['output'];
   queue?: Maybe<Queue>;
-  stats: Scalars['JSON']['output'];
-  thumbnails: Array<Scalars['JSON']['output']>;
+  thumbnail: Array<Scalars['JSON']['output']>;
   title: Scalars['String']['output'];
   /** when the model was updated */
   updatedAt: Scalars['DateTime']['output'];
   videoId: Scalars['String']['output'];
+  viewCount: Scalars['String']['output'];
   votes?: Maybe<UserConnection>;
 };
 
@@ -646,15 +639,15 @@ export type VideoConnection = {
 /** Input to create a Video */
 export type VideoCreateInput = {
   addedBy: Scalars['JSON']['input'];
-  author: Scalars['JSON']['input'];
+  channelTitle: Scalars['String']['input'];
   isDone?: Scalars['Boolean']['input'];
   isPlaying?: Scalars['Boolean']['input'];
-  lengthSeconds: Scalars['Int']['input'];
+  lengthText: Scalars['String']['input'];
   queue?: InputMaybe<QueueToVideoCreateQueueRelation>;
-  stats: Scalars['JSON']['input'];
-  thumbnails: Array<Scalars['JSON']['input']>;
+  thumbnail: Array<Scalars['JSON']['input']>;
   title: Scalars['String']['input'];
   videoId: Scalars['String']['input'];
+  viewCount: Scalars['String']['input'];
   votes?: InputMaybe<Array<InputMaybe<UserToVideoCreateUserRelation>>>;
 };
 
@@ -788,15 +781,15 @@ export type VideoOrderByInput = {
 /** Input to update a Video */
 export type VideoUpdateInput = {
   addedBy?: InputMaybe<Scalars['JSON']['input']>;
-  author?: InputMaybe<Scalars['JSON']['input']>;
+  channelTitle?: InputMaybe<Scalars['String']['input']>;
   isDone?: InputMaybe<Scalars['Boolean']['input']>;
   isPlaying?: InputMaybe<Scalars['Boolean']['input']>;
-  lengthSeconds?: InputMaybe<IntOperationsInput>;
+  lengthText?: InputMaybe<Scalars['String']['input']>;
   queue?: InputMaybe<QueueToVideoUpdateQueueRelation>;
-  stats?: InputMaybe<Scalars['JSON']['input']>;
-  thumbnails?: InputMaybe<Array<Scalars['JSON']['input']>>;
+  thumbnail?: InputMaybe<Array<Scalars['JSON']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['String']['input']>;
+  viewCount?: InputMaybe<Scalars['String']['input']>;
   votes?: InputMaybe<Array<InputMaybe<UserToVideoUpdateUserRelation>>>;
 };
 
@@ -857,7 +850,7 @@ export type QueueUpdateMutationVariables = Exact<{
 }>;
 
 
-export type QueueUpdateMutation = { __typename?: 'Mutation', queueUpdate?: { __typename?: 'QueueUpdatePayload', queue?: { __typename?: 'Queue', id: string, nowPlaying?: any | null, owner?: { __typename?: 'User', name: string, id: string } | null, videos?: { __typename?: 'VideoConnection', edges?: Array<{ __typename?: 'VideoEdge', node: { __typename?: 'Video', author: any, lengthSeconds: number, stats: any, thumbnails: Array<any>, title: string, videoId: string, createdAt: any, addedBy: any, isPlaying: boolean, isDone: boolean, id: string, votes?: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', name: string, id: string } } | null> | null } | null } } | null> | null } | null } | null } | null };
+export type QueueUpdateMutation = { __typename?: 'Mutation', queueUpdate?: { __typename?: 'QueueUpdatePayload', queue?: { __typename?: 'Queue', id: string, nowPlaying?: any | null, owner?: { __typename?: 'User', name: string, id: string } | null, videos?: { __typename?: 'VideoConnection', edges?: Array<{ __typename?: 'VideoEdge', node: { __typename?: 'Video', channelTitle: string, lengthText: string, viewCount: string, thumbnail: Array<any>, title: string, videoId: string, createdAt: any, addedBy: any, isPlaying: boolean, isDone: boolean, id: string, votes?: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', name: string, id: string } } | null> | null } | null } } | null> | null } | null } | null } | null };
 
 export type VideoLogCreateMutationVariables = Exact<{
   input: VideoLogCreateInput;
@@ -871,14 +864,14 @@ export type LiveQueueQueryVariables = Exact<{
 }>;
 
 
-export type LiveQueueQuery = { __typename?: 'Query', queue?: { __typename?: 'Queue', id: string, nowPlaying?: any | null, owner?: { __typename?: 'User', name: string, id: string } | null, videos?: { __typename?: 'VideoConnection', edges?: Array<{ __typename?: 'VideoEdge', node: { __typename?: 'Video', author: any, lengthSeconds: number, stats: any, thumbnails: Array<any>, title: string, videoId: string, createdAt: any, updatedAt: any, addedBy: any, isPlaying: boolean, isDone: boolean, id: string, votes?: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', name: string, id: string } } | null> | null } | null } } | null> | null } | null } | null };
+export type LiveQueueQuery = { __typename?: 'Query', queue?: { __typename?: 'Queue', id: string, nowPlaying?: any | null, owner?: { __typename?: 'User', name: string, id: string } | null, videos?: { __typename?: 'VideoConnection', edges?: Array<{ __typename?: 'VideoEdge', node: { __typename?: 'Video', channelTitle: string, lengthText: string, viewCount: string, thumbnail: Array<any>, title: string, videoId: string, createdAt: any, updatedAt: any, addedBy: any, isPlaying: boolean, isDone: boolean, id: string, votes?: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', name: string, id: string } } | null> | null } | null } } | null> | null } | null } | null };
 
 export type QueueQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type QueueQuery = { __typename?: 'Query', queue?: { __typename?: 'Queue', id: string, nowPlaying?: any | null, owner?: { __typename?: 'User', name: string, id: string } | null, videos?: { __typename?: 'VideoConnection', edges?: Array<{ __typename?: 'VideoEdge', node: { __typename?: 'Video', author: any, lengthSeconds: number, stats: any, thumbnails: Array<any>, title: string, videoId: string, createdAt: any, updatedAt: any, addedBy: any, isPlaying: boolean, isDone: boolean, id: string, votes?: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', name: string, id: string } } | null> | null } | null } } | null> | null } | null } | null };
+export type QueueQuery = { __typename?: 'Query', queue?: { __typename?: 'Queue', id: string, nowPlaying?: any | null, owner?: { __typename?: 'User', name: string, id: string } | null, videos?: { __typename?: 'VideoConnection', edges?: Array<{ __typename?: 'VideoEdge', node: { __typename?: 'Video', channelTitle: string, lengthText: string, viewCount: string, thumbnail: Array<any>, title: string, videoId: string, createdAt: any, updatedAt: any, addedBy: any, isPlaying: boolean, isDone: boolean, id: string, votes?: { __typename?: 'UserConnection', edges?: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', name: string, id: string } } | null> | null } | null } } | null> | null } | null } | null };
 
 export type UserQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1085,10 +1078,10 @@ export const QueueUpdateDocument = gql`
       videos(orderBy: {createdAt: ASC}, first: 50) {
         edges {
           node {
-            author
-            lengthSeconds
-            stats
-            thumbnails
+            channelTitle
+            lengthText
+            viewCount
+            thumbnail
             title
             videoId
             votes(first: 50) {
@@ -1185,10 +1178,10 @@ export const LiveQueueDocument = gql`
     videos(orderBy: {createdAt: ASC}, first: 50) {
       edges {
         node {
-          author
-          lengthSeconds
-          stats
-          thumbnails
+          channelTitle
+          lengthText
+          viewCount
+          thumbnail
           title
           videoId
           votes(first: 50) {
@@ -1251,10 +1244,10 @@ export const QueueDocument = gql`
     videos(orderBy: {createdAt: ASC}, first: 50) {
       edges {
         node {
-          author
-          lengthSeconds
-          stats
-          thumbnails
+          channelTitle
+          lengthText
+          viewCount
+          thumbnail
           title
           videoId
           votes(first: 50) {

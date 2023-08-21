@@ -18,7 +18,7 @@ import useRefreshQueue from '~/app/hooks/useRefreshQueue'
 type Props = {
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
-  setResults: Dispatch<SetStateAction<Video[]>>
+  setResults: Dispatch<SetStateAction<SearchVideo[]>>
   form: UseFormReturnType<{ query: string }>
 }
 
@@ -41,10 +41,10 @@ export default function SearchBar(props: Props) {
     setResults([])
 
     try {
-      const { data } = await search(query)
-      const vidsOnly = filterVids(data.contents)
-      const videos = vidsOnly.map((content) => content.video)
-      setResults(videos)
+      const res = await search(query)
+      const vidsOnly = filterVids(res.data)
+      // const videos = vidsOnly.map((content) => content.video)
+      setResults(vidsOnly)
     } catch (error) {
       console.log('onSearch error', error)
     }

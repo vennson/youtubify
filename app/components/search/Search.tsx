@@ -33,7 +33,7 @@ export default function SearchPage({ roomId }: Props) {
 
   const onRefreshQueue = useRefreshQueue()
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<Video[]>([])
+  const [results, setResults] = useState<SearchVideo[]>([])
   const form = useForm({
     initialValues: {
       query: '',
@@ -43,8 +43,8 @@ export default function SearchPage({ roomId }: Props) {
 
   const hasQuery = form.values.query.length > 0
   const notYetPlayedVideos = queue.filter((v) => {
-    const voteCount = v.node.votes?.edges.length
-    return !v.node.isPlaying && voteCount && voteCount > 0
+    const voteCount = v?.votes?.edges?.length
+    return !v?.isPlaying && voteCount && voteCount > 0
   })
   const sortedQueue = sortQueue(notYetPlayedVideos)
 
@@ -140,9 +140,8 @@ export default function SearchPage({ roomId }: Props) {
                 (queuedVideo, i) =>
                   queuedVideo && (
                     <QueueItem
-                      key={`${queuedVideo.node.videoId}-${i}`}
-                      // @ts-ignore
-                      queuedVideo={queuedVideo.node}
+                      key={`${queuedVideo.videoId}-${i}`}
+                      queuedVideo={queuedVideo}
                     />
                   ),
               )}
