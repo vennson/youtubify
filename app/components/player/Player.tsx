@@ -191,32 +191,34 @@ export default function Player() {
           <Box>
             <Card withBorder p='xs' shadow='sm'>
               <Flex gap='sm' justify='space-between' align='center'>
-                <Avatar miw={60} mih={60}>
-                  <Image
-                    src={
-                      isProduction
-                        ? nowPlaying.thumbnail[0].url
+                <Flex gap='sm'>
+                  <Avatar miw={60} mih={60}>
+                    <Image
+                      src={
+                        isProduction
                           ? nowPlaying.thumbnail[0].url
+                            ? nowPlaying.thumbnail[0].url
+                            : '/avatar.jpg'
                           : '/avatar.jpg'
-                        : '/avatar.jpg'
-                    }
-                    fill
-                    style={{ objectFit: 'cover', flex: 1 }}
-                    alt='now playing'
-                  />
-                </Avatar>
+                      }
+                      fill
+                      style={{ objectFit: 'cover', flex: 1 }}
+                      alt='now playing'
+                    />
+                  </Avatar>
 
-                <Box>
-                  <Text size='sm' lineClamp={1}>
-                    {nowPlaying.title}
-                  </Text>
-                  <Text size='xs' color='dimmed'>
-                    {abbreviateNumber(parseInt(nowPlaying.viewCount))} views
-                  </Text>
-                  <Text size='xs' color='dimmed'>
-                    {nowPlaying.channelTitle}
-                  </Text>
-                </Box>
+                  <Box>
+                    <Text size='sm' lineClamp={1}>
+                      {nowPlaying.title}
+                    </Text>
+                    <Text size='xs' color='dimmed'>
+                      {abbreviateNumber(parseInt(nowPlaying.viewCount))} views
+                    </Text>
+                    <Text size='xs' color='dimmed'>
+                      {nowPlaying.channelTitle}
+                    </Text>
+                  </Box>
+                </Flex>
 
                 <Flex align='end' direction='column'>
                   <Flex align='center'>
