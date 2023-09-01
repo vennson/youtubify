@@ -27,6 +27,7 @@ const video = g.model('Video', {
   addedBy: g.json(),
   isPlaying: g.boolean().default(false),
   isDone: g.boolean().default(false),
+  extra: g.json().optional(),
 })
 
 const videoLog = g.model('VideoLog', {
