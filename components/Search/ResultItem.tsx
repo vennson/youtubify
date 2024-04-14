@@ -48,9 +48,9 @@ export default function ResultItem({ searchedVideo }: Props) {
 
     if (queuedVideo) {
       if (userInVotes) {
-        await downVoteVideo(user.id)
+        await downVoteVideo({ videoId: queuedVideo.id, userId: user.id })
       } else {
-        await upVoteVideo(user.id)
+        await upVoteVideo({ videoId: queuedVideo.id, userId: user.id })
       }
     } else {
       await createVideo({

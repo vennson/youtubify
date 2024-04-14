@@ -11,8 +11,7 @@ import Player from '../Player'
 import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
 import useRefreshQueue from '~/hooks/useRefreshQueue'
-import { sortQueueVideos } from '~/utils'
-import { joinRoomIfExists } from '~/prisma/actions'
+import { joinRoomIfExists, sortQueueVideos } from '~/utils'
 
 type Props = {
   roomId: string
@@ -27,7 +26,7 @@ export default function Search({ roomId }: Props) {
   const initUser = useAppStore((state) => state.initUser)
   const setPendingRoom = useAppStore((state) => state.setPendingRoom)
   const queueVideos = useAppStore((state) => state.queueVideos)
-  // const queueLoading = useAppStore((state) => state.queueLoading)
+  const queueLoading = useAppStore((state) => state.queueLoading)
 
   const onRefreshQueue = useRefreshQueue()
   const [loading, setLoading] = useState(false)
@@ -41,11 +40,6 @@ export default function Search({ roomId }: Props) {
   const { push } = router
 
   const hasQuery = form.values.query.length > 0
-  // const notYetPlayedVideos = queueVideos.filter((video) => {
-  //   const voteCount = video?.votes?.length
-  //   const isPlaying = video?.playingInQueues.find((q) => q.id === joinedRoom)
-  //   return !isPlaying && voteCount > 0
-  // })
   const sortedQueue = sortQueueVideos(queueVideos)
 
   const joinRoomOrRedirect = useCallback(
@@ -143,7 +137,7 @@ export default function Search({ roomId }: Props) {
                 ),
             )}
           </Stack>
-          {queueVideos.length === 0 && (
+          {queueLoading && queueVideos.length === 0 && (
             <Skeleton mt='md' height={82} radius='sm' />
           )}
           {sortedQueue.length === 0 && (

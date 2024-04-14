@@ -2,8 +2,9 @@ import { Button, Loader, Text, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useState } from 'react'
 import { z } from 'zod'
-import { createQueue, joinRoomIfExists } from '~/prisma/actions'
+import { createQueue } from '~/prisma/actions'
 import { useAppStore } from '~/store'
+import { joinRoomIfExists } from '~/utils'
 
 const validSchema = z.object({
   roomId: z.string().min(11, { message: 'invalid room id' }),
@@ -35,7 +36,6 @@ export default function JoinRoomForm() {
     setLoading((prev) => ({ ...prev, creating: true }))
     if (user?.id) {
       const newQueue = await createQueue(user.id)
-      console.log('@@ newQueue', newQueue)
       if (newQueue.owner) {
         setQueueOwner(newQueue.owner)
         await setJoinedRoom(newQueue.id)

@@ -28,9 +28,7 @@ export default function QueueItem({ queuedVideo }: Props) {
   const [loading, setLoading] = useState(false)
   const onRefreshQueue = useRefreshQueue()
 
-  const userInVotes = !!queuedVideo?.votes.find(
-    (vote) => vote?.id === user?.id,
-  )
+  const userInVotes = !!queuedVideo?.votes.find((vote) => vote?.id === user?.id)
   const voteCount = queuedVideo?.votes?.length //! filter with correct queueId
   const hasVotes = voteCount && voteCount > 0
   const isPlaying = !!queuedVideo?.playingInQueues.find(
@@ -43,9 +41,9 @@ export default function QueueItem({ queuedVideo }: Props) {
 
     setLoading(true)
     if (userInVotes) {
-      await downVoteVideo(user.id)
+      await downVoteVideo({ videoId: queuedVideo.id, userId: user.id })
     } else {
-      await upVoteVideo(user.id)
+      await upVoteVideo({ videoId: queuedVideo.id, userId: user.id })
     }
     await onRefreshQueue()
     setLoading(false)

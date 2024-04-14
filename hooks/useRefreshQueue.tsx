@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
-import { getQueue, refreshQueue } from '~/prisma/actions'
+import { getQueue } from '~/prisma/actions'
 import { useAppStore } from '~/store'
+import { refreshQueue } from '~/utils'
 
 export default function useRefreshQueue() {
   const joinedRoom = useAppStore((state) => state.joinedRoom)
@@ -9,7 +10,7 @@ export default function useRefreshQueue() {
     if (!joinedRoom) return
     const newQueue = await getQueue(joinedRoom)
     if (newQueue) {
-      await refreshQueue(newQueue)
+      refreshQueue(newQueue)
     }
     return newQueue
   }, [joinedRoom])

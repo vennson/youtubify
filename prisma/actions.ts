@@ -114,17 +114,29 @@ export async function createVideo({
   return video
 }
 
-export async function upVoteVideo(userId: number) {
+export async function upVoteVideo({
+  videoId,
+  userId,
+}: {
+  videoId: number
+  userId: number
+}) {
   const video = await prisma.video.update({
-    where: { id: userId },
+    where: { id: videoId },
     data: { votes: { connect: { id: userId } } },
   })
   return video
 }
 
-export async function downVoteVideo(userId: number) {
+export async function downVoteVideo({
+  videoId,
+  userId,
+}: {
+  videoId: number
+  userId: number
+}) {
   const video = await prisma.video.update({
-    where: { id: userId },
+    where: { id: videoId },
     data: { votes: { disconnect: { id: userId } } },
   })
   return video
@@ -148,51 +160,4 @@ export async function unlinkVideoFromQueue({
     },
   })
   return video
-}
-
-// APP
-export async function joinRoomIfExists(roomId: number) {
-  const { setQueueOwner } = useAppStore.getState()
-  const queue = await getQueue(roomId)
-  if (queue?.id) {
-    useAppStore.getState().setJoinedRoom(queue.id)
-    setQueueOwner(queue.owner)
-    return queue.id
-  }
-}
-
-export async function refreshQueue(newQueue: QueueResponse) {
-  const {
-    joinedRoom,
-    setQueueVideos,
-    setQueueOwner,
-    setNowPlaying,
-    ownsQueue,
-    setOwnsQueue,
-    setQueueLoading,
-    user,
-  } = useAppStore.getState()
-
-  if (!joinedRoom) return
-
-  setQueueLoading(true)
-
-  const freshVideos = newQueue?.videos.filter((v) => {
-    const hasVotes = v.votes.length > 0
-    const inSameQueue = !!v.queue.find((q) => q.id === joinedRoom)
-    return hasVotes && inSameQueue
-  })
-  setQueueVideos(freshVideos)
-  newQueue?.owner && setQueueOwner(newQueue.owner)
-
-  if (newQueue?.owner?.id === user?.id) {
-    setOwnsQueue(true)
-  }
-
-  if (!ownsQueue) {
-    setNowPlaying(newQueue?.nowPlaying)
-  }
-  setQueueLoading(false)
-
-  return newQueue
 }
