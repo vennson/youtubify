@@ -1,4 +1,4 @@
-import SearchPage from '~/app/components/search/Search'
+import Search from '~/components/Search'
 
 type Props = {
   params: {
@@ -6,10 +6,6 @@ type Props = {
   }
 }
 
-export default function Room({ params }: Props) {
-  return (
-    <main>
-      <SearchPage roomId={params.slug} />
-    </main>
-  )
+export default function RoomPage({ params }: Props) {
+  return <Search roomId={params.slug} />
 }

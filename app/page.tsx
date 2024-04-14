@@ -1,9 +1,5 @@
-import WelcomeModal from './components/welcome/Welcome'
+import WelcomeModal from '../components/Welcome'
 
-export default function Home() {
-  return (
-    <main>
-      <WelcomeModal />
-    </main>
-  )
+export default function HomePage() {
+  return <WelcomeModal />
 }

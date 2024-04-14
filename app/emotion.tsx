@@ -1,10 +1,8 @@
 'use client'
 
-import { ApolloProvider } from '@apollo/client'
 import { CacheProvider } from '@emotion/react'
 import { useEmotionCache, MantineProvider } from '@mantine/core'
 import { useServerInsertedHTML } from 'next/navigation'
-import { apolloClient } from '~/graphql/client'
 
 type Props = {
   children: React.ReactNode
@@ -33,7 +31,7 @@ export default function RootStyleRegistry({ children }: Props) {
           primaryColor: 'yellow',
         }}
       >
-        <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
+        {children}
       </MantineProvider>
     </CacheProvider>
   )

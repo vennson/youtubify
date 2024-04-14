@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "db-migrate": "npx prisma migrate dev --name init",
-    "db-push": "npx prisma db push"
+    "db-push": "npx prisma db push",
+    "db-generate": "npx prisma generate"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -28,12 +29,11 @@
     "eslint-config-next": "13.4.12",
     "lodash": "^4.17.21",
     "nanoid": "^4.0.2",
-    "next": "13.4.12",
+    "next": "14.2.1",
     "nextjs-progressbar": "^0.0.16",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-player": "^2.12.0",
-    "short-uuid": "^4.2.2",
     "zod": "^3.21.4",
     "zustand": "^4.3.9"
   },

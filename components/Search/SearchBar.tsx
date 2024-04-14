@@ -10,10 +10,9 @@ import {
 import { UseFormReturnType } from '@mantine/form'
 import { IconArrowLeft, IconRefresh, IconSearch } from '@tabler/icons-react'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { search } from '~/utils'
+import useRefreshQueue from '~/hooks/useRefreshQueue'
 import { filterVids } from './utils'
-import { useAppStore } from '~/store/store'
-import useRefreshQueue from '~/app/hooks/useRefreshQueue'
+import { search } from '~/app/api'
 
 type Props = {
   loading: boolean
@@ -22,8 +21,12 @@ type Props = {
   form: UseFormReturnType<{ query: string }>
 }
 
-export default function SearchBar(props: Props) {
-  const { loading, setLoading, setResults, form } = props
+export default function SearchBar({
+  loading,
+  setLoading,
+  setResults,
+  form,
+}: Props) {
   const onRefreshQueue = useRefreshQueue()
   const [refreshLoading, setRefreshLoading] = useState(false)
 
@@ -39,16 +42,13 @@ export default function SearchBar(props: Props) {
   async function onSearch(query: string) {
     setLoading(true)
     setResults([])
-
     try {
       const res = await search(query)
       const vidsOnly = filterVids(res.data)
-      // const videos = vidsOnly.map((content) => content.video)
       setResults(vidsOnly)
     } catch (error) {
       console.log('onSearch error', error)
     }
-
     await onRefreshQueue()
     setLoading(false)
   }
@@ -96,7 +96,7 @@ export default function SearchBar(props: Props) {
 
         <TextInput
           id='search'
-          placeholder='type ka dito sirs...'
+          placeholder='search for a song'
           icon={searchBarIcon}
           disabled={loading}
           w='100%'

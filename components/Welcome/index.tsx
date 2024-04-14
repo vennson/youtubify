@@ -3,17 +3,32 @@
 import { useEffect } from 'react'
 import { Center, Loader, Modal } from '@mantine/core'
 import { useRouter } from 'next/navigation'
-import { useAppStore } from '~/store/store'
+import { useAppStore } from '~/store'
 import JoinRoomForm from './JoinRoomForm'
 import NicknameForm from './NicknameForm'
+import { noop } from 'lodash'
 
 export default function WelcomeModal() {
   const user = useAppStore((state) => state.user)
   const initUser = useAppStore((state) => state.initUser)
   const loadingInitUser = useAppStore((state) => state.loadingInitUser)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
-
+  const pendingRoom = useAppStore((state) => state.pendingRoom)
   const router = useRouter()
+
+  function renderBody() {
+    if (loadingInitUser) {
+      return (
+        <Center>
+          <Loader size={24} />
+        </Center>
+      )
+    }
+    if (user?.id && !pendingRoom) {
+      return <JoinRoomForm />
+    }
+    return <NicknameForm />
+  }
 
   useEffect(() => {
     if (joinedRoom) {
@@ -28,17 +43,8 @@ export default function WelcomeModal() {
   }, [initUser, user?.id])
 
   return (
-    <Modal opened={true} onClose={() => {}} centered withCloseButton={false}>
-      {loadingInitUser ? (
-        <Center>
-          <Loader size={24} />
-        </Center>
-      ) : (
-        <>
-          <NicknameForm />
-          <JoinRoomForm />
-        </>
-      )}
+    <Modal opened centered onClose={noop} withCloseButton={false}>
+      {renderBody()}
     </Modal>
   )
 }

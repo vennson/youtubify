@@ -8,7 +8,7 @@ import {
   Text,
   Tooltip,
 } from '@mantine/core'
-import { formatSeconds } from '../search/utils'
+import { formatSeconds } from '../Search/utils'
 import {
   IconPlayerPauseFilled,
   IconPlayerPlayFilled,
@@ -16,7 +16,7 @@ import {
 } from '@tabler/icons-react'
 import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react'
 import YouTubePlayer from 'react-player/youtube'
-import { useAppStore } from '~/store/store'
+import { useAppStore } from '~/store'
 
 type Props = {
   playing: boolean
@@ -93,7 +93,6 @@ export default function Control(props: Props) {
         ) : (
           <Skeleton height={8} radius='xl' />
         )}
-
         <Flex justify='space-between'>
           <Text color='dimmed' fz='xs' mt={6}>
             {formatSeconds(currentPlayTime)}

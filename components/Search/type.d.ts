@@ -17,7 +17,7 @@ type Author = {
   title: string
 }
 
-type Video = {
+type YoutubeVideo = {
   author: Author
   badges: Badge[] | string[]
   descriptionSnippet: string | null
@@ -49,7 +49,7 @@ type Channel = {
 
 type VideoContent = {
   type: 'video'
-  video: Video
+  video: YoutubeVideo
 }
 
 type ChannelContent = {
