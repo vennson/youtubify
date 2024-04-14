@@ -7,7 +7,7 @@ import {
 } from '@apollo/client'
 import { SSELink, isLiveQuery } from '@grafbase/apollo-link'
 import { getOperationAST } from 'graphql'
-import { isProduction } from '~/lib/actions'
+import { isProduction } from '~/utils'
 
 const uri = isProduction
   ? process.env.NEXT_PUBLIC_GRAFBASE_API_URL || ''

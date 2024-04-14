@@ -17,7 +17,7 @@ import {
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
-import { isProduction } from '~/lib/actions'
+import { isProduction } from '~/utils'
 import { abbreviateNumber } from '../search/utils'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
 import YouTubePlayer from 'react-player/youtube'
@@ -30,7 +30,7 @@ import {
   useVideoUpdateMutation,
 } from '~/gql/gql'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
-import { sortQueue } from '~/lib/utils'
+import { sortQueue } from '~/utils/utils'
 import { YELLOW } from '~/constants/colors'
 
 export default function Player() {

@@ -10,7 +10,7 @@ import {
 import { UseFormReturnType } from '@mantine/form'
 import { IconArrowLeft, IconRefresh, IconSearch } from '@tabler/icons-react'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { search } from '~/lib/actions'
+import { search } from '~/utils'
 import { filterVids } from './utils'
 import { useAppStore } from '~/store/store'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'

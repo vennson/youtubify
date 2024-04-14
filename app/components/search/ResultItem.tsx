@@ -10,7 +10,7 @@ import {
 import { IconHeartFilled, IconPlus } from '@tabler/icons-react'
 import Image from 'next/image'
 import { RED, YELLOW } from '~/constants/colors'
-import { isProduction } from '~/lib/actions'
+import { isProduction } from '~/utils'
 import { useAppStore } from '~/store/store'
 import {
   Video,

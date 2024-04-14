@@ -1,35 +1,31 @@
 {
   "name": "youtubify",
-  "version": "0.1.0",
+  "version": "2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "graphql-codegen -r dotenv/config"
+    "db-migrate": "npx prisma migrate dev --name init",
+    "db-push": "npx prisma db push"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.17",
     "@emotion/react": "^11.11.1",
     "@emotion/server": "^11.11.0",
-    "@grafbase/apollo-link": "^1.1.0",
     "@mantine/core": "^6.0.17",
     "@mantine/form": "^6.0.17",
     "@mantine/hooks": "^6.0.17",
     "@mantine/next": "^6.0.17",
+    "@prisma/client": "5.12.1",
     "@tabler/icons-react": "^2.30.0",
     "@types/lodash": "^4.14.196",
-    "@types/node": "20.4.5",
     "@types/react": "18.2.16",
     "@types/react-dom": "18.2.7",
     "@vercel/analytics": "^1.0.1",
     "axios": "^1.4.0",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",
-    "graphql": "^16.7.1",
-    "graphql-request": "^6.1.0",
-    "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "nanoid": "^4.0.2",
     "next": "13.4.12",
@@ -42,15 +38,9 @@
     "zustand": "^4.3.9"
   },
   "devDependencies": {
-    "@grafbase/sdk": "~0.1.0",
-    "@graphql-codegen/cli": "5.0.0",
-    "@graphql-codegen/client-preset": "^4.1.0",
-    "@graphql-codegen/typescript": "4.0.1",
-    "@graphql-codegen/typescript-document-nodes": "4.0.1",
-    "@graphql-codegen/typescript-operations": "^4.0.1",
-    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
-    "@parcel/watcher": "^2.2.0",
-    "encoding": "^0.1.13",
+    "@types/node": "20.4.5",
+    "prisma": "^5.12.1",
+    "ts-node": "^10.9.2",
     "typescript": "5.1.6"
   },
   "prettier": {

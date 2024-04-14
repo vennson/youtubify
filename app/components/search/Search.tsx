@@ -14,7 +14,7 @@ import Player from '../player/Player'
 import ResultItem from './ResultItem'
 import SearchBar from './SearchBar'
 import useRefreshQueue from '~/app/hooks/useRefreshQueue'
-import { sortQueue } from '~/lib/utils'
+import { sortQueue } from '~/utils/utils'
 
 type Props = {
   roomId: string
