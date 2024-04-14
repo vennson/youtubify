@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id          Int     @id @default(autoincrement())
+  name        String
+  queuesOwned Queue[] @relation(name: "queueOwner")
+  videosAdded Video[] @relation(name: "videoAddedBy")
+  videosVoted Video[] @relation(name: "videoVotes")
+}
+
+model Queue {
+  id                Int     @id @default(autoincrement())
+  videos            Video[] @relation(name: "videoAddedInQueues")
+  owner             User    @relation(fields: [ownerId], references: [id], name: "queueOwner")
+  ownerId           Int
+  nowPlaying        Video?  @relation(fields: [nowPlayingVideoId], references: [id], name: "videoNowPlaying")
+  nowPlayingVideoId Int?
+}
+
+model Video {
+  id              Int     @id @default(autoincrement())
+  channelTitle    String
+  lengthText      String
+  viewCount       String
+  thumbnailUrl    String
+  title           String
+  videoId         String
+  addedBy         User    @relation(fields: [addedById], references: [id], name: "videoAddedBy")
+  addedById       Int
+  votes           User[]  @relation(name: "videoVotes")
+  queue           Queue[] @relation(name: "videoAddedInQueues")
+  playingInQueues Queue[] @relation(name: "videoNowPlaying")
+}

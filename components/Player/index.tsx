@@ -17,108 +17,69 @@ import {
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
-import { isProduction } from '~/lib/actions'
-import { abbreviateNumber } from '../search/utils'
+import { sortQueueVideos } from '~/utils'
+import { abbreviateNumber } from '../Search/utils'
 import { PLAYER_HEIGHT } from '~/constants/numbers'
 import YouTubePlayer from 'react-player/youtube'
 import Control from './Control'
-import { useAppStore } from '~/store/store'
-import {
-  useQueueUpdateMutation,
-  useVideoDeleteMutation,
-  useVideoLogCreateMutation,
-  useVideoUpdateMutation,
-} from '~/gql/gql'
-import useRefreshQueue from '~/app/hooks/useRefreshQueue'
-import { sortQueue } from '~/lib/utils'
+import { useAppStore } from '~/store'
+import useRefreshQueue from '~/hooks/useRefreshQueue'
 import { YELLOW } from '~/constants/colors'
+import {
+  clearQueueNowPlaying,
+  setQueueNowPlaying,
+  unlinkVideoFromQueue,
+} from '~/prisma/actions'
 
 export default function Player() {
-  const queue = useAppStore((state) => state.queue)
+  const queueVideos = useAppStore((state) => state.queueVideos)
   const queueOwner = useAppStore((state) => state.queueOwner)
   const ownsQueue = useAppStore((state) => state.ownsQueue)
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const nowPlaying = useAppStore((state) => state.nowPlaying)
   const setNowPlaying = useAppStore((state) => state.setNowPlaying)
-
   const onRefreshQueue = useRefreshQueue()
-
-  const [updateVideo] = useVideoUpdateMutation()
-  const [updateQueue] = useQueueUpdateMutation()
-  const [deleteVideo] = useVideoDeleteMutation()
-  const [createVideoLog] = useVideoLogCreateMutation()
 
   const [playing, setPlaying] = useState(true)
   const [loading, setLoading] = useState(false)
   const playerRef = useRef<YouTubePlayer>(null)
 
-  const notYetPlayedVideos = queue.filter((v) => {
-    const voteCount = v?.votes?.edges?.length
-    return !v?.isPlaying && voteCount && voteCount > 0
-  })
-  const sortedQueue = sortQueue(notYetPlayedVideos)
+  const sortedQueue = sortQueueVideos(queueVideos)
   const pendingVideo = sortedQueue[0]
 
-  let userInVotes = false
-  if (nowPlaying?.votes) {
-    userInVotes = !!nowPlaying?.votes?.edges?.find(
-      (edge) => edge?.node.id === user?.id,
-    )
-  }
-  const voteCount = nowPlaying?.votes?.edges?.length
+  const userInVotes = !!nowPlaying?.votes.find((vote) => vote.id === user?.id)
+  const voteCount = nowPlaying?.votes?.length //! filter with correct queueId
 
   // *only queue owner can trigger this
   async function playNext() {
-    if (!ownsQueue) return
+    if (!ownsQueue || !joinedRoom) return
     setLoading(true)
 
     const newQueue = await onRefreshQueue()
-    const newVideos = newQueue?.videos?.edges
+    const newVideos = newQueue?.videos
 
     if (!newVideos) return
 
-    const _notYetPlayedVideos = newVideos.filter((v) => !v?.node.isPlaying)
-    const _vidsOnly = _notYetPlayedVideos.map((v) => v?.node)
-    // @ts-ignore
-    const _sortedQueue = sortQueue(_vidsOnly)
-    const _pendingVideo = _sortedQueue[0]
+    const _notYetPlayedVideos = newVideos.filter(
+      (v) => !v?.playingInQueues.find((q) => q.id === joinedRoom),
+    )
+    const _sortedQueueVideos = sortQueueVideos(_notYetPlayedVideos)
+    const _pendingVideo = _sortedQueueVideos[0]
 
     if (nowPlaying?.videoId) {
-      // *log the played video
-      await createVideoLog({
-        variables: {
-          input: {
-            video: nowPlaying,
-          },
-        },
-      })
-
       // *delete played video (only works in prod)
-      await deleteVideo({
-        variables: {
-          by: { id: nowPlaying.id },
-        },
+      await unlinkVideoFromQueue({
+        videoId: nowPlaying.id,
+        queueId: joinedRoom,
       })
     }
 
     if (_pendingVideo?.videoId && user?.id && joinedRoom) {
       // *set the nowPlaying of the Queue
-      await updateQueue({
-        variables: {
-          by: { id: joinedRoom },
-          input: { nowPlaying: _pendingVideo },
-        },
-      })
-
-      // *mark the video as isPlaying true
-      await updateVideo({
-        variables: {
-          by: { id: _pendingVideo.id },
-          input: {
-            isPlaying: true,
-          },
-        },
+      await setQueueNowPlaying({
+        videoId: _pendingVideo.id,
+        queueId: joinedRoom,
       })
 
       // *refresh the new queue that actually reflects what's in db
@@ -129,12 +90,7 @@ export default function Player() {
       }
     } else {
       // *clear nowPlaying in db
-      await updateQueue({
-        variables: {
-          by: { id: joinedRoom },
-          input: { nowPlaying: null },
-        },
-      })
+      await clearQueueNowPlaying({ queueId: joinedRoom })
       setNowPlaying(undefined)
       await onRefreshQueue()
     }
@@ -163,7 +119,7 @@ export default function Player() {
                       leftIcon={<IconBrandYoutubeFilled />}
                       disabled={!ownsQueue}
                     >
-                      let&apos;s get rolin!
+                      let&apos;s play!
                     </Button>
                   )}
                 </Box>
@@ -176,7 +132,6 @@ export default function Player() {
           </Flex>
         </Center>
       )}
-
       {nowPlaying?.videoId && (
         <>
           <ReactPlayer
@@ -194,19 +149,12 @@ export default function Player() {
                 <Flex gap='sm'>
                   <Avatar miw={60} mih={60}>
                     <Image
-                      src={
-                        isProduction
-                          ? nowPlaying.thumbnail[0].url
-                            ? nowPlaying.thumbnail[0].url
-                            : '/avatar.jpg'
-                          : '/avatar.jpg'
-                      }
+                      src={nowPlaying.thumbnailUrl}
                       fill
                       style={{ objectFit: 'cover', flex: 1 }}
                       alt='now playing'
                     />
                   </Avatar>
-
                   <Box>
                     <Text size='sm' lineClamp={1}>
                       {nowPlaying.title}
@@ -219,7 +167,6 @@ export default function Player() {
                     </Text>
                   </Box>
                 </Flex>
-
                 <Flex align='end' direction='column'>
                   <Flex align='center'>
                     {userInVotes ? (
@@ -234,7 +181,6 @@ export default function Player() {
                   </Text>
                 </Flex>
               </Flex>
-
               <Control
                 playing={playing}
                 setPlaying={setPlaying}

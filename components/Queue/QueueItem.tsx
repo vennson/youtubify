@@ -9,66 +9,42 @@ import {
 } from '@mantine/core'
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react'
 import Image from 'next/image'
-import { RED, YELLOW } from '~/constants/colors'
-import { isProduction } from '~/lib/actions'
-import { abbreviateNumber } from '../search/utils'
-import { useAppStore } from '~/store/store'
-import {
-  Video,
-  useVideoDeleteMutation,
-  useVideoUpdateMutation,
-} from '~/gql/gql'
+import { YELLOW } from '~/constants/colors'
+import { abbreviateNumber } from '../Search/utils'
+import { useAppStore } from '~/store'
 import { useState } from 'react'
-import useRefreshQueue from '~/app/hooks/useRefreshQueue'
+import useRefreshQueue from '~/hooks/useRefreshQueue'
+import { QueueVideo } from '~/prisma/types'
+import { downVoteVideo, upVoteVideo } from '~/prisma/actions'
 
 type Props = {
-  queuedVideo: Video
+  queuedVideo: QueueVideo
 }
 
 export default function QueueItem({ queuedVideo }: Props) {
   const user = useAppStore((state) => state.user)
   const joinedRoom = useAppStore((state) => state.joinedRoom)
   const disabledAction = useAppStore((state) => state.disabledAction)
-
-  const [deleteVideo] = useVideoDeleteMutation()
-  const [updateVideo] = useVideoUpdateMutation()
-
   const [loading, setLoading] = useState(false)
   const onRefreshQueue = useRefreshQueue()
 
-  let userInVotes = false
-  if (queuedVideo?.votes) {
-    userInVotes = !!queuedVideo?.votes?.edges?.find(
-      (edge) => edge?.node.id === user?.id,
-    )
-  }
-  const voteCount = queuedVideo?.votes?.edges?.length
+  const userInVotes = !!queuedVideo?.votes.find((vote) => vote?.id === user?.id)
+  const voteCount = queuedVideo?.votes?.length //! filter with correct queueId
   const hasVotes = voteCount && voteCount > 0
-  const isPlaying = queuedVideo?.isPlaying
-  const isDone = queuedVideo?.isDone
+  const isPlaying = !!queuedVideo?.playingInQueues.find(
+    (q) => q.id === joinedRoom,
+  )
+  // const isDone = queuedVideo?.isDone //! unlink to queue instead if done
 
   async function toggleVote() {
     if (!joinedRoom || !user?.id) return
 
     setLoading(true)
-    const linkStatus = userInVotes ? 'unlink' : 'link'
-
-    // *if video has only 1 vote and user is the one who voted, remove video.
-    if (linkStatus === 'unlink' && voteCount === 1) {
-      await deleteVideo({
-        variables: {
-          by: { id: queuedVideo.id },
-        },
-      })
+    if (userInVotes) {
+      await downVoteVideo({ videoId: queuedVideo.id, userId: user.id })
     } else {
-      await updateVideo({
-        variables: {
-          by: { id: queuedVideo.id },
-          input: { votes: [{ [linkStatus]: user.id }] },
-        },
-      })
+      await upVoteVideo({ videoId: queuedVideo.id, userId: user.id })
     }
-
     await onRefreshQueue()
     setLoading(false)
   }
@@ -76,7 +52,7 @@ export default function QueueItem({ queuedVideo }: Props) {
   return (
     <UnstyledButton
       onClick={toggleVote}
-      hidden={!hasVotes || isPlaying || isDone}
+      hidden={!hasVotes || isPlaying}
       disabled={disabledAction}
     >
       <Card withBorder p='xs'>
@@ -84,9 +60,7 @@ export default function QueueItem({ queuedVideo }: Props) {
           <Flex gap='sm'>
             <Avatar miw={60} mih={60}>
               <Image
-                src={
-                  isProduction ? queuedVideo.thumbnail[0].url : '/avatar.jpg'
-                }
+                src={queuedVideo.thumbnailUrl || ''}
                 fill
                 style={{ objectFit: 'cover', flex: 1 }}
                 alt='queuedVideo'

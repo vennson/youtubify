@@ -1,6 +1,7 @@
+import { User } from '@prisma/client'
 import { create } from 'zustand'
-import { Video } from '~/gql/gql'
-import { getQueue, getUser } from '~/graphql/actions'
+import { getQueue, getUser } from '~/prisma/actions'
+import { QueueVideo } from '~/prisma/types'
 
 interface AppState {
   user?: User
@@ -8,20 +9,20 @@ interface AppState {
   loadingInitUser: boolean
   setLoadingInitUser: (loading: boolean) => void
   setUser: (user: User) => void
-  joinedRoom: string
-  setJoinedRoom: (queueId: string) => Promise<void>
+  joinedRoom?: number
+  setJoinedRoom: (queueId: number) => Promise<void>
   pendingRoom?: string
   setPendingRoom: (queueId: string) => Promise<void>
-  queue: (Video | undefined)[]
-  setQueue: (queue?: (Video | undefined)[]) => void
+  queueVideos: QueueVideo[]
+  setQueueVideos: (queue?: QueueVideo[]) => void
   queueLoading: boolean
   setQueueLoading: (loading: boolean) => void
-  nowPlaying?: Video
-  setNowPlaying: (video?: Video) => void
+  nowPlaying?: QueueVideo| null
+  setNowPlaying: (video?: QueueVideo | null) => void
   ownsQueue: boolean
   setOwnsQueue: (ownsQueue: boolean) => void
-  queueOwner?: { id: string; name: string }
-  setQueueOwner: (queueOwner: { id: string; name: string }) => void
+  queueOwner?: { id: number; name: string }
+  setQueueOwner: (queueOwner: { id: number; name: string }) => void
   disabledAction: boolean
   setDisabledAction: () => void
 }
@@ -30,14 +31,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   user: undefined,
   initUser: async () => {
     set({ loadingInitUser: true })
-
     const user = localStorage.getItem('user')
     let hasSession = false
 
     if (user) {
-      const userId = JSON.parse(user).id
+      const userId = parseInt(JSON.parse(user).id)
       const queriedUser = await getUser(userId)
-
       if (queriedUser?.id) {
         hasSession = true
         set({ user: queriedUser })
@@ -53,34 +52,33 @@ export const useAppStore = create<AppState>((set, get) => ({
     localStorage.setItem('user', JSON.stringify(user))
     set({ user })
   },
-  joinedRoom: '',
+  joinedRoom: undefined,
   setJoinedRoom: async (joinedRoom) => {
     set({ joinedRoom })
   },
   pendingRoom: '',
   setPendingRoom: async (pendingRoom) => {
-    const queriedQueue = await getQueue(pendingRoom)
+    const queriedQueue = await getQueue(parseInt(pendingRoom))
     if (queriedQueue?.id) {
       set({ pendingRoom })
     }
   },
 
-  queue: [],
-  setQueue: (queue) => {
+  queueVideos: [],
+  setQueueVideos: (queue) => {
     if (queue) {
       const sortedQueue = queue.sort((a, b) => {
-        const bVoteCount = b?.votes?.edges?.length
-        const aVoteCount = a?.votes?.edges?.length
-
+        const bVoteCount = b?.votes?.length
+        const aVoteCount = a?.votes?.length
         if (bVoteCount && aVoteCount) {
           return bVoteCount - aVoteCount
         } else {
           return 0
         }
       })
-      set({ queue: sortedQueue })
+      set({ queueVideos: sortedQueue })
     } else {
-      set({ queue: [] })
+      set({ queueVideos: [] })
     }
   },
   queueLoading: false,

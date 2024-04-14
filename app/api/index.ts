@@ -1,6 +1,5 @@
 import axios from 'axios'
-
-export const isProduction = process.env.NODE_ENV === 'production'
+import { isProduction } from '~/utils'
 
 const serverUrl = isProduction
   ? process.env.NEXT_PUBLIC_SERVER_URL
