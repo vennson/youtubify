@@ -7,7 +7,7 @@ import { useAppStore } from '~/store'
 import { joinRoomIfExists } from '~/utils'
 
 const validSchema = z.object({
-  roomId: z.string().min(11, { message: 'invalid room id' }),
+  roomId: z.string(),
 })
 
 export default function JoinRoomForm() {
