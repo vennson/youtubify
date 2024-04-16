@@ -20,6 +20,7 @@
     "@mantine/hooks": "^6.0.17",
     "@mantine/next": "^6.0.17",
     "@prisma/client": "5.12.1",
+    "@prisma/extension-accelerate": "^1.0.0",
     "@tabler/icons-react": "^2.30.0",
     "@types/lodash": "^4.14.196",
     "@types/react": "18.2.16",
