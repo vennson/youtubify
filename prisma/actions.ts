@@ -1,18 +1,17 @@
 'use server'
 
-import { acceleratedDb } from './client'
+import { db } from './client'
 
-// @ts-nocheck
 // USER
 export async function createUser(name: string) {
-  const user = await acceleratedDb.user.create({
+  const user = await db.user.create({
     data: { name },
   })
   return user
 }
 
 export async function getUser(id: number) {
-  const user = await acceleratedDb.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id },
   })
   return user
@@ -20,7 +19,7 @@ export async function getUser(id: number) {
 
 // QUEUE
 export async function createQueue(ownerId: number) {
-  const queue = await acceleratedDb.queue.create({
+  const queue = await db.queue.create({
     data: { ownerId },
     include: { owner: true, videos: true },
   })
@@ -28,7 +27,7 @@ export async function createQueue(ownerId: number) {
 }
 
 export async function getQueue(id: number) {
-  const queue = await acceleratedDb.queue.findUnique({
+  const queue = await db.queue.findUnique({
     where: { id },
     include: {
       owner: true,
@@ -60,7 +59,7 @@ export async function setQueueNowPlaying({
   videoId: number
   queueId: number
 }) {
-  const queue = await acceleratedDb.queue.update({
+  const queue = await db.queue.update({
     where: { id: queueId },
     data: { nowPlaying: { connect: { id: videoId } } },
   })
@@ -68,7 +67,7 @@ export async function setQueueNowPlaying({
 }
 
 export async function clearQueueNowPlaying({ queueId }: { queueId: number }) {
-  const queue = await acceleratedDb.queue.update({
+  const queue = await db.queue.update({
     where: { id: queueId },
     data: { nowPlaying: { disconnect: true } },
   })
@@ -96,7 +95,7 @@ export async function createVideo({
   title,
   videoId,
 }: CreateVideoArgs) {
-  const video = await acceleratedDb.video.create({
+  const video = await db.video.create({
     data: {
       channelTitle,
       lengthText,
@@ -120,7 +119,7 @@ export async function upVoteVideo({
   videoId: number
   userId: number
 }) {
-  const video = await acceleratedDb.video.update({
+  const video = await db.video.update({
     where: { id: videoId },
     data: { votes: { connect: { id: userId } } },
   })
@@ -134,7 +133,7 @@ export async function downVoteVideo({
   videoId: number
   userId: number
 }) {
-  const video = await acceleratedDb.video.update({
+  const video = await db.video.update({
     where: { id: videoId },
     data: { votes: { disconnect: { id: userId } } },
   })
@@ -150,7 +149,7 @@ export async function unlinkVideoFromQueue({
   queueId,
 }: UnlinkVideoFromQueueArgs) {
   //! clear votes from the right queueId only
-  const video = await acceleratedDb.video.update({
+  const video = await db.video.update({
     where: { id: videoId },
     data: {
       votes: { set: [] },
