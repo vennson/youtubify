@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "npx prisma generate --no-engine && next build",
     "start": "next start",
     "lint": "next lint",
     "db-migrate": "npx prisma migrate dev --name init",
     "db-push": "npx prisma db push",
     "db-generate": "npx prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
