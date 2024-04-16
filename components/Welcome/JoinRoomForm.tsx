@@ -1,4 +1,4 @@
-import { Button, Loader, Text, TextInput } from '@mantine/core'
+import { Button, Loader, NumberInput, Text } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useState } from 'react'
 import { z } from 'zod'
@@ -7,7 +7,7 @@ import { useAppStore } from '~/store'
 import { joinRoomIfExists } from '~/utils'
 
 const validSchema = z.object({
-  roomId: z.string(),
+  roomId: z.number({ invalid_type_error: 'enter a number' }),
 })
 
 export default function JoinRoomForm() {
@@ -49,10 +49,11 @@ export default function JoinRoomForm() {
         hello <b>{user?.name}</b>
       </Text>
       <form onSubmit={form.onSubmit((values) => onJoinRoom(values.roomId))}>
-        <TextInput
+        <NumberInput
           id='room-id'
           label='room id'
-          placeholder='paste the room id'
+          placeholder='enter the room id'
+          hideControls
           {...form.getInputProps('roomId')}
         />
         <Button type='submit' disabled={loading.joining} fullWidth mt='md'>
