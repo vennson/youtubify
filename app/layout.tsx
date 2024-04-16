@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import RootStyleRegistry from './emotion'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   title: 'YouTubify by ben',
@@ -23,6 +24,7 @@ export default function RootLayout({
           <main>{children}</main>
         </RootStyleRegistry>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
